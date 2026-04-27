@@ -1,0 +1,128 @@
+{
+  "ANNEXES": {
+    "CHAPITRE_1_DEFINITIONS_GENERALES": {
+      "Accès": {
+        "définition": "L'accès est un des éléments de la desserte d'une unité foncière formant une jonction avec une voie. La largeur de l'accès se mesure hors tout à la jonction avec la voie. Lorsque l'accès est prolongé par une portion de terrain (bande d'accès ou servitude de passage) permettant l'accès en profondeur, la largeur de l'accès doit être observée sur la totalité de la bande d'accès.",
+        "règle": "Un accès ne peut desservir qu'une seule unité foncière ; ainsi, un accès qui dessert plusieurs propriétés sera considéré comme une voie qu'il soit public ou privé (en cas de servitude de passage)."
+      },
+      "Acrotère": {
+        "définition": "Rebords ou garde-corps, pleins ou à claire-voie, en périphérie d'une toiture terrasse."
+      },
+      "Alignement": {
+        "définition": "L'alignement est la détermination, par l'autorité administrative, de la limite entre les voies et emprises publiques existantes et à créer, ou les voies privées ouvertes au public et le volume principal de la construction."
+      },
+      "Annexe": {
+        "définition": "Une annexe est une construction secondaire, de dimensions réduites et inférieures à la construction principale, qui apporte un complément aux fonctionnalités de la construction principale. Elle doit être implantée selon un éloignement restreint entre les deux constructions afin de marquer un lien d'usage. Elle peut être accolée ou non à la construction principale avec qui elle entretient un lien fonctionnel, sans disposer d'accès direct depuis la construction principale."
+      },
+      "Attique": {
+        "source": "CAUE",
+        "définition": "Étage sommital d'un bâtiment et en retrait par rapport à l'étage inférieur. Il ne correspond pas au nu des façades des constructions."
+      },
+      "Bande_d_implantation": {
+        "définition": "La bande d'implantation principale, dans les zones où elle est prévue par le règlement, correspond à la portion du terrain d'assiette bordant les emprises publiques et voies, les emplacements réservés pour création ou élargissement de voirie ou les marges de recul.",
+        "bande_secondaire": "Le terrain non compris dans la bande de constructibilité principale constitue la bande d'implantation secondaire.",
+        "mesure": "La profondeur de la bande d'implantation principale est mesurée horizontalement et perpendiculairement à la limite de l'emprise publique, voie, emplacement réservé pour création ou élargissement de voirie ou marge de recul."
+      },
+      "Clôture": {
+        "définition": "Ouvrage divisant ou délimitant un espace, servant le plus souvent à séparer deux propriétés : propriété privée et domaine public ou deux propriétés privées."
+      },
+      "Comble": {
+        "définition": "Partie de l'espace intérieur d'un bâtiment, comprise sous les versants du toit et séparée des parties inférieures par un plancher."
+      },
+      "Emplacement_réservé": {
+        "définition": "Emplacement destiné à accueillir des équipements d'intérêt public (voirie, ouvrages publics d'infrastructure ou de superstructure, installations d'intérêt général, espaces verts, logement social)."
+      },
+      "Emprise_au_sol": {
+        "source": "Code de l'urbanisme",
+        "définition": "L'emprise au sol correspond à la projection verticale du volume de la construction.",
+        "inclus_dans_le_calcul": [
+          "Les piscines couvertes ainsi que leurs surfaces d'accompagnements hors sol naturel / les bassins",
+          "Toute construction ou partie de construction maçonnée, quelle que soit la hauteur : terrasses couvertes, perrons, rampes d'accès de parkings, garages, etc."
+        ],
+        "exclus_du_calcul": [
+          "Les éléments architecturaux d'ornements (éléments de modénature, marquises, etc.) ainsi que les balcons",
+          "Les éléments d'isolation par l'extérieur des constructions existantes (de 0,30 m d'épaisseur maximum)"
+        ],
+        "coefficient": "Le coefficient d'emprise au sol est le rapport entre l'emprise au sol et la surface de l'unité foncière comprise au sein de la zone considérée."
+      },
+      "Emprise_publique": {
+        "définition": "Emprise affectée aux déplacements, ainsi que les espaces qui les accompagnent (trottoir, stationnement).",
+        "exclusions": "Les voies ferrées et fluviales, les parcs et jardins ouverts au public et les cheminements doux ne constituent pas des emprises publiques ou des voies."
+      },
+      "Espace_de_pleine_terre": {
+        "définition": "Un espace non construit peut être qualifié de pleine terre si les conditions suivantes sont cumulativement réunies :",
+        "conditions": [
+          "Son revêtement est perméable",
+          "Son sous-sol est libre de toute construction, installation ou équipement sur une profondeur de 10 m à compter de sa surface, à l'exclusion du passage de réseaux",
+          "Il doit pouvoir recevoir des plantations"
+        ]
+      },
+      "Extension": {
+        "source": "Lexique national d'urbanisme",
+        "définition": "Agrandissement de la construction existante présentant des dimensions inférieures à celle-ci. L'extension peut être horizontale ou verticale (par surélévation, excavation ou agrandissement), et doit présenter un lien physique et fonctionnel avec la construction existante. Elle ne peut excéder l'emprise au sol ou la surface de plancher de la construction principale."
+      },
+      "Façade": {
+        "source": "Lexique national d'urbanisme",
+        "définition": "Ensemble des parois extérieures d'une construction hors toiture. Elle intègre tous les éléments structurels, tels que les baies, les bardages, les ouvertures, l'isolation extérieure et les éléments de modénature."
+      },
+      "Faîtage": {
+        "source": "CAUE",
+        "définition": "Arête supérieure d'un toit."
+      },
+      "Haute_tige": {
+        "définition": "Les arbres de haute tige correspondent aux arbres dont le tronc mesure au moins 40 cm de circonférence à 1,5 m du sol et qui atteignent au moins 4 m de hauteur."
+      },
+      "Hauteur_maximale": {
+        "définition": "Différence d'altitude maximale admise entre tout point de l'édifice et sa projection verticale sur le terrain naturel avant travaux.",
+        "terrains_en_pente": "Sur les terrains en pente, la cote de hauteur applicable est la cote moyenne."
+      },
+      "Houppier": {
+        "définition": "Ensemble des branches, rameaux et feuillage d'un arbre."
+      },
+      "Limite_séparative": {
+        "source": "Lexique national d'urbanisme",
+        "définition": "Limite entre le terrain d'assiette de la construction, constitué d'une ou plusieurs unités foncières, et le ou les terrains contigus. Elles peuvent être distinguées en deux types : les limites latérales et les limites de fond de terrain. En sont exclues les limites de l'unité foncière par rapport aux voies et emprises publiques."
+      },
+      "Reconstruction": {
+        "définition": "Construction d'un immeuble en remplacement d'un autre pour le même usage."
+      },
+      "Recul": {
+        "définition": "Distance séparant le projet de construction des emprises publiques ou des voies. Il se mesure horizontalement et perpendiculairement à la limite d'emprise publique ou de voie ou d'emplacement réservé."
+      },
+      "Rénovation": {
+        "définition": "Ensemble des travaux tendant à remettre à neuf une construction impliquant de grosses modifications par rapport à l'état primitif, pouvant aller jusqu'à la démolition partielle et reconstruction avec modernisation."
+      },
+      "Restauration": {
+        "définition": "Ensemble de travaux, consolidations, reconstitutions ou réfections, tendant à conserver une construction, en respectant l'état primitif."
+      },
+      "Retrait": {
+        "définition": "Le retrait est la distance séparant le projet de construction d'une limite séparative. Il se mesure horizontalement et perpendiculairement à la limite séparative."
+      },
+      "Surface_de_plancher": {
+        "source": "Code de l'urbanisme",
+        "définition": "La surface de plancher de la construction est égale à la somme des surfaces de plancher de chaque niveau clos et couvert, calculée à partir du nu intérieur des façades.",
+        "déductions": [
+          "Les surfaces correspondant à l'épaisseur des murs entourant les embrasures des portes et fenêtres donnant sur l'extérieur",
+          "Les vides et les trémies afférentes aux escaliers et ascenseurs",
+          "Les surfaces de plancher d'une hauteur sous plafond inférieure ou égale à 1,80 m",
+          "Les surfaces de plancher aménagées en vue du stationnement des véhicules motorisés ou non, y compris les rampes d'accès et les aires de manœuvres",
+          "Les surfaces de plancher des combles non aménageables pour l'habitation ou pour des activités à caractère professionnel, artisanal, industriel ou commercial",
+          "Les surfaces de plancher des locaux techniques nécessaires au fonctionnement d'un groupe de bâtiments ou d'un immeuble autre qu'une maison individuelle, y compris les locaux de stockage des déchets",
+          "Les surfaces de plancher des caves ou des celliers, annexes à des logements, dès lors que ces locaux sont desservis uniquement par une partie commune",
+          "Une surface égale à 10 % des surfaces de plancher affectées à l'habitation, dès lors que les logements sont desservis par des parties communes intérieures"
+        ]
+      },
+      "Toiture_terrasse": {
+        "définition": "Toiture plate, c'est-à-dire un toit à versants dont la pente n'excède pas 15 %, sans charpente, donc sans comble. L'élément porteur est couronné en sa périphérie par un acrotère."
+      },
+      "Unité_foncière": {
+        "définition": "L'unité foncière est constituée de l'ensemble des parcelles cadastrales contiguës qui appartiennent au même propriétaire ou à la même indivision.",
+        "application_PLUi": "L'unité foncière est la seule notion retenue pour l'application du règlement du PLUi.",
+        "limite_de_zone": "Lorsqu'une limite de zone coupe une unité foncière, seule la partie de l'unité foncière à l'intérieur de la zone est prise en compte pour le calcul des différentes règles."
+      },
+      "Voirie": {
+        "définition": "Les voies ouvertes à la circulation générale (affectées à la circulation publique) correspondent aux voies publiques ou privées permettant de relier entre eux les différents quartiers des communes. Elles se distinguent des voies dites de desserte, dont l'objet est la liaison entre la voirie ouverte à la circulation générale et une opération déterminée."
+      }
+    }
+  }
+}
