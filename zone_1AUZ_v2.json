@@ -1,0 +1,495 @@
+{
+  "$schema": "https://schema.plu.fr/reglement/v1.0",
+  "meta": {
+    "type_document": "PLUi",
+    "commune": "Grand Angoulême",
+    "version": "1.0.0"
+  },
+  "zone": {
+    "code": "1AUZ",
+    "famille": "1A",
+    "libelle": "La zone 1AUZ correspond aux secteurs de développement urbains encadrés par une procédure de Zone d'aménagement concerté (ZAC). Elle se limite à la date d'approbation du PLUi-M au périmètre de la ZAC des Seguins et des Ribéreaux sur le territoire de Ruelle-sur-Touvre.",
+    "description": "La zone 1AUZ correspond aux secteurs de développement urbains encadrés par une procédure de Zone d'aménagement concerté (ZAC). Elle se limite à la date d'approbation du PLUi-M au périmètre de la ZAC des Seguins et des Ribéreaux sur le territoire de Ruelle-sur-Touvre.",
+    "note_generale": "Tous les secteurs 1AUZ sont concernés par une Orientation d'Aménagement et de Programmation. Les constructions seront implantées en compatibilité avec les orientations d'aménagement.",
+    "localisation": null,
+    "objectifs": [
+      "Permettre une plus grande diversité des formes urbaines, notamment encadrée par les OAP",
+      "Renforcer la végétalisation des espaces urbanisés tant dans les espaces publics que privés"
+    ],
+    "secteurs": [
+      {
+        "code": "1AUZ",
+        "libelle": "Zone unique correspondant à la ZAC des Seguins et des Ribéreaux à Ruelle-sur-Touvre"
+      }
+    ]
+  },
+  "section_1_destinations": {
+    "mode": "tableau",
+    "legende": {
+      "X": "Occupations et utilisations du sol interdites",
+      "V*": "Occupations et utilisations du sol autorisées sous conditions",
+      "V": "Autorisé (tout ce qui n'est pas X ou V*)"
+    },
+    "categories": [
+      {
+        "id": "HABITATION",
+        "usages": [
+          {
+            "libelle": "Logement",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "1AUZ",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Hébergement",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "1AUZ",
+                "statut": "V"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "COMMERCE_ET_ACTIVITE_DE_SERVICE",
+        "usages": [
+          {
+            "libelle": "Artisanat et commerce de détail",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "1AUZ",
+                "statut": "V*",
+                "conditions": [
+                  "L'activité ne doit pas générer de nuisances incompatibles avec l'habitat"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Restauration",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "1AUZ",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Commerce de gros",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "1AUZ",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Activités de services où s'effectue l'accueil d'une clientèle",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "1AUZ",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Hébergement hôtelier",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "1AUZ",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Camping et hôtellerie de plein-air",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "1AUZ",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Cinéma",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "1AUZ",
+                "statut": "X"
+              }
+            ]
+          }
+        ],
+        "note": "Se référer au chapitre 11 du titre I sur le commerce pour les activités entrant dans son champ d'application"
+      },
+      {
+        "id": "EQUIPEMENTS_INTERET_COLLECTIF_ET_SERVICES_PUBLICS",
+        "usages": [
+          {
+            "libelle": "Locaux et bureaux accueillant du public des administrations publiques et assimilés",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "1AUZ",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Locaux techniques et industriels des administrations publiques et assimilés",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "1AUZ",
+                "statut": "V*",
+                "conditions": [
+                  "Sous réserve d'absence de nuisances"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Etablissements d'enseignement, de santé et d'action sociale",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "1AUZ",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Salles d'art et de spectacles",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "1AUZ",
+                "statut": "V*",
+                "conditions": [
+                  "Compatibilité avec l'habitat"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Equipements sportifs",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "1AUZ",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Autres équipements recevant du public",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "1AUZ",
+                "statut": "V"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "AUTRES_ACTIVITES_SECONDAIRE_OU_TERTIAIRE",
+        "usages": [
+          {
+            "libelle": "Industrie",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "1AUZ",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Entrepôts",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "1AUZ",
+                "statut": "V*",
+                "conditions": [
+                  "Sous réserve d'une compatibilité avec les vocations des sols environnants",
+                  "Uniquement en rive droite de la ZAC aux Seguins"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Bureau",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "1AUZ",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Centre de congrès",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "1AUZ",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Salles d'exposition",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "1AUZ",
+                "statut": "V"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "EXPLOITATION_AGRICOLE_ET_FORESTIERE",
+        "usages": [
+          {
+            "libelle": "Exploitation agricole",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "1AUZ",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Exploitation forestière",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "1AUZ",
+                "statut": "X"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "AUTRES_OCCUPATIONS_ET_UTILISATIONS_DU_SOL",
+        "usages": [
+          {
+            "libelle": "Habitat Léger Permanent",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "1AUZ",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Stationnement isolé de caravanes / Habitations Légères de Loisirs (HLL) / Résidences Mobiles de Loisirs (RML)",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "1AUZ",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Terrains familiaux et résidences mobiles constituant l'habitat permanent des gens du voyage",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "1AUZ",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Coopératives d'utilisation de matériel agricole agréées",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "1AUZ",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Locaux et installations de diversification de l'activité agricole",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "1AUZ",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Camping à la ferme",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "1AUZ",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Affouillements et exhaussements de sol",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "1AUZ",
+                "statut": "V*",
+                "conditions": [
+                  "Ils sont directement liés aux travaux de constructions autorisées ou nécessaires pour la recherche archéologique"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Carrières",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "1AUZ",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Déchets de toute nature, stockage de ferrailles et matériaux de démolition ou de récupération",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "1AUZ",
+                "statut": "X"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "dispositions_specifiques": [
+      {
+        "id": "MIXITE_SOCIALE_ET_FONCTIONNELLE",
+        "contenu": {
+          "mixite_sociale": "Tous les secteurs 1AUZ sont concernés par une Orientation d'Aménagement et de Programmation, et doivent être compatibles avec les orientations de mixité sociale définies dans l'OAP"
+        }
+      }
+    ]
+  },
+  "section_2_caracteristiques": {
+    "art_2_1_implantation": {
+      "note": "Les constructions et installations liées et nécessaires aux services publics et d'intérêt collectif ne sont pas réglementées",
+      "par_rapport_aux_voies": {
+        "regle_generale": "Non réglementé"
+      },
+      "par_rapport_aux_limites_separatives": {
+        "regle_generale": "Non réglementé"
+      },
+      "emprise_au_sol": null,
+      "hauteur": {
+        "regle_generale": "Non réglementé"
+      }
+    },
+    "art_2_2_qualite_architecturale": {
+      "note": "Les constructions et installations liées et nécessaires aux services publics et d'intérêt collectif ne sont pas réglementées",
+      "GENERALITES": {
+        "integration": "Tout projet de construction doit s'intégrer à son environnement par leur situation, leur architecture, leur hauteur, leur proportion, leur toiture, le traitement et la couleur de leurs façades, la disposition et la proportion des ouvertures, leur adaptation au sol",
+        "paysage_et_perspectives": "Le caractère et l'intérêt des lieux avoisinants, les sites, paysages naturels ou urbains et la conservation des perspectives monumentales doivent être respectés",
+        "architecture_contemporaine": "L'architecture contemporaine et/ou bioclimatique est autorisée dans la mesure où elle s'intègre à l'environnement bâti (par sa volumétrie, ses types de matériaux, sa couleur…)"
+      },
+      "DISPOSITIONS_SPECIFIQUES_RUELLE_SUR_TOUVRE": {
+        "developpement_durable": "Le projet s'inscrit dans une logique de développement durable et intègrera des préoccupations d'ordre paysager, de cohérence urbaine, de qualité architecturale en relation harmonieuse avec son environnement (orientation, ensoleillement, traitement des façades) et de priorité à la gestion des énergies (énergies renouvelables, approche bioclimatique, isolation)",
+        "caractere_parc_urbain": "La mise en évidence du caractère d'un parc urbain est le support de l'implantation des architectures, qui selon le programme, doivent pouvoir s'inscrire dans une définition spatiale originale",
+        "abords_touvre": "Les abords de la Touvre feront l'objet d'un aménagement paysager des rives en promenade (piétons et cycles) avec une plantation dense des espaces ouverts",
+        "quartier_campus": "La constitution de ce quartier « campus » est en rupture avec le modèle existant à Ruelle-sur-Touvre. Sa nouveauté est inspirée tant par la mixité de la programmation que par l'originalité du site",
+        "espace_public": "L'aménagement de l'espace public précisera de manière originale les limites entre espace public et espace privé, en accordant aux architectures le soin de définir cette relation et d'en proposer l'usage"
+      }
+    },
+    "art_2_3_traitement_paysager": {
+      "note": "Les constructions et installations liées et nécessaires aux services publics et d'intérêt collectif ne sont pas réglementées",
+      "ESPACES_PUBLICS": "L'espace public doit s'imposer comme le prolongement du milieu naturel et mettre en scène une végétalisation adaptée aux espaces publics"
+    },
+    "art_2_4_stationnement": {
+      "principe": "Le stationnement des véhicules de toute nature, correspondant aux besoins des installations et constructions autorisées dans la zone, doit être assuré en dehors des voies publiques ou privées, par la réalisation d'aires de stationnement sur le terrain propre à l'opération. Les dispositions applicables figurent au chapitre 7 du titre I du présent règlement. La possibilité de stationnement des cycles sera prévue",
+      "alternative_mutualisation": null,
+      "cycles": null,
+      "residences_personnes_agees": null,
+      "revetement_collectif": {
+        "principe": "Les aires de stationnement collectif ne doivent être ni imperméables ni de couleur foncée",
+        "materiaux_autorises": [
+          "Pleine terre",
+          "Mélange terre/pierre",
+          "Revêtements alvéolaires de couleur claire engazonnés",
+          "Pavés perméables de couleur claire",
+          "Pierres concassées, graviers de couleur claire",
+          "Bétons poreux",
+          "Dalles alvéolées avec gravillon sur structures drainantes",
+          "Tout autre procédé utilisant des matériaux naturels assurant une perméabilité et une bonne réfraction de la lumière"
+        ]
+      },
+      "plantations_collectif": {
+        "regle": "Les aires de stationnement collectif doivent comporter 25 % d'arbres de haute tige rapportés au nombre d'emplacements de stationnement",
+        "disposition_arbres": "Les arbres de haute tige doivent être disposés de façon optimale pour protéger de l'ensoleillement ces emplacements",
+        "pieds_arbres": "Les pieds des arbres de haute tige doivent comporter une surface de 4 m² non imperméabilisée",
+        "essences": "Ces arbres de haute tige devront être d'essences locales variées (se référer au chapitre 10 du titre I et à l'OAP thématique Trames verte et bleue)",
+        "applicabilite": "Les dispositions sont également applicables aux places de stationnement réalisées dans les espaces communs des opérations d'aménagement en zones urbaines et en zone 1AUa, 1AUb, 1AUX et 1AUY"
+      },
+      "stationnement_individuel": {
+        "recommandation": "Il est recommandé que le stationnement individuel sur la parcelle privative ne soit ni imperméable ni de couleur foncée",
+        "surfaces_preferentielles": [
+          "Pleine terre",
+          "Mélange terre/pierre",
+          "Revêtements alvéolaires de couleur claire engazonnés",
+          "Pavés perméables de couleur claire",
+          "Pierres concassées, graviers de couleur claire",
+          "Bétons poreux",
+          "Tout autre procédé utilisant des matériaux naturels assurant une perméabilité et une bonne réfraction de la lumière"
+        ]
+      },
+      "exceptions": {
+        "portance_voie": "Les dispositions sur les revêtements ne s'appliquent pas quand il est démontré que la portance de la voie au regard des véhicules à stationner n'est pas compatible avec un revêtement perméable",
+        "PMR": "Les dispositions ne s'appliquent pas aux emplacements de stationnement obligatoires réalisés pour les véhicules des personnes à mobilité réduite"
+      },
+      "besoin_en_stationnement": "Voir chapitre 7 du titre I du présent règlement"
+    }
+  },
+  "section_3_voirie_acces": {
+    "art_3_1_desserte_voies": {
+      "DISPOSITION_GENERALE": {
+        "referentiel": "Un règlement général de voirie constitue un référentiel. Le respect de ses prescriptions permet un classement, dans le domaine public, des voies privées",
+        "constructibilite": "Pour être constructible, un terrain doit avoir accès à une voie publique ou privée ouverte à la circulation, soit directement, soit par l'intermédiaire d'un passage aménagé sur fonds voisin",
+        "caracteristiques_voies": [
+          "Répondre à l'importance et à la destination des constructions projetées",
+          "Permettre la circulation et l'utilisation des moyens de secours et des engins de lutte contre l'incendie",
+          "Permettre d'assurer la sécurité des usagers au regard de la nature et de l'intensité de trafic"
+        ],
+        "voies_acces_privees": {
+          "recommandation": "Il est recommandé de traiter les voies d'accès privées secondaires peu passantes avec des matériaux clairs non imperméables",
+          "materiaux_recommandes": [
+            "Revêtements alvéolaires perméables",
+            "Pavés résines perméables",
+            "Graviers et pierres concassées",
+            "Tout autre procédé non imperméable et évitant les couleurs foncées"
+          ],
+          "exception": "Ces dispositions ne s'appliquent pas quand il est démontré que la portance de la voie d'accès au regard des véhicules qui doivent l'emprunter n'est pas compatible avec un revêtement perméable"
+        },
+        "trottoirs_voies_privees": {
+          "materiaux_autorises": [
+            "Pleine terre engazonnée lorsqu'il existe un autre cheminement possible aussi direct pour les personnes à mobilité réduite",
+            "Stabilisé clair",
+            "Béton poreux",
+            "Dalles alvéolées avec gravillons sur structures drainantes",
+            "Tout autre procédé non imperméable et évitant les couleurs foncées"
+          ]
+        }
+      },
+      "VOIE_DE_CIRCULATION": {
+        "integration": "Toute nouvelle voie doit s'intégrer au maillage viaire environnant et participer à une bonne desserte du quartier",
+        "impasse": "Toute nouvelle voie doit éviter les effets d'impasse et être aménagée de manière à permettre de faire aisément demi-tour",
+        "deux_roues_pietons_PMR": "En cas de création ou de réhabilitation des voies, la circulation et la sécurité des deux roues, des piétons et des personnes à mobilité réduite devront être prises en compte et assurées",
+        "voies_en_impasse": "Sauf dispositions spécifiques au sein des OAP, les nouvelles voies en impasse seront uniquement autorisées en l'absence de solution permettant les connexions et devront permettre aux véhicules de faire aisément demi-tour (notamment véhicules de lutte contre l'incendie)",
+        "circulations_douces": "Les circulations douces (cheminements piétons et cyclables) devront être prises en compte dans toute création de voie nouvelle",
+        "largeur_minimale": "Les voies de circulation doivent respecter un minimum de 3 m de bande roulante"
+      },
+      "ACCES": {
+        "visibilite_et_securite": "Toutes dispositions permettant une bonne visibilité et assurant la sécurité des usagers des voies publiques et celle des personnes utilisant les accès créés doivent être prises en compte pour le débouché des véhicules sur voie publique ou privée : position, configuration, nombre, etc.",
+        "limitation_acces": "Le nombre des accès sur les voies publiques pourra notamment être limité dans l'intérêt de la sécurité. Lorsque le terrain est desservi par plusieurs voies, les constructions peuvent n'être autorisées que sous réserve que l'accès soit établi sur la voie où la gêne pour la circulation sera la moindre",
+        "mutualisation": "La mutualisation des accès pourra être exigée afin d'éviter la multiplication des accès et de préserver les conditions de sécurité",
+        "regroupement": "Les accès sur la voie publique des batteries de garage, des parcs de stationnement, des groupes d'habitation, doivent être regroupés s'ils présentent une gêne ou un risque pour la circulation",
+        "largeur_minimale": "La largeur d'un accès ne peut être inférieure à 3 m sauf lorsque l'accès ne concerne qu'un nombre réduit de constructions nouvelles notamment dans le cadre d'opérations BIMBY et que le secours incendie est assuré"
+      }
+    },
+    "art_3_2_desserte_reseaux": null
+  }
+}

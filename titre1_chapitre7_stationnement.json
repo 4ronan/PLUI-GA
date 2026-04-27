@@ -1,0 +1,236 @@
+{
+  "TITRE": "TITRE I - DISPOSITIONS GÉNÉRALES ET SPÉCIFIQUES À DES PÉRIMÈTRES QUI NE CONSTITUENT PAS DES ZONES OU SECTEURS DU RÈGLEMENT GRAPHIQUE",
+  "CHAPITRE": "CHAPITRE 7 : DISPOSITIONS RELATIVES AU STATIONNEMENT",
+  "article_reference": "Article 2.4 de chacune des zones",
+  "source": "Règlement écrit - Pièce n°5.2.a - PLUi valant Plan de Mobilité - Communauté d'agglomération de GrandAngoulême",
+  "pages": "24-29",
+
+  "DISPOSITIONS_GENERALES": {
+    "principe": "Le stationnement des véhicules et les zones de manœuvre correspondant aux besoins des constructions, installations et aménagements doivent être réalisés sur le terrain d'assiette du projet, en dehors des voies publiques ouvertes à la circulation",
+
+    "operations_soumises": [
+      "Toute construction neuve",
+      "Tout changement de destination et de sous-destination de tout ou partie d'une construction existante entraînant des besoins de stationnement supplémentaires",
+      "Toute division de logements existants même non soumise à une autorisation d'urbanisme, à l'exception des zones UA, UF, UHa, UG et UP",
+      "Toute reconstruction après démolition, à l'exception des reconstructions suite à un sinistre"
+    ],
+
+    "arrondi_places": "Le nombre de places est arrondi à l'unité supérieure si la décimale est supérieure ou égale à 0,5, à l'inférieure dans le cas inverse",
+
+    "impossibilite_terrain_assiette": {
+      "alternatives": [
+        "Création ou acquisition des places dans un parc privé à une distance inférieure à 300 m",
+        "Obtention d'une concession à long terme dans un parc public existant ou en cours de réalisation à une distance inférieure à 300 m"
+      ]
+    },
+
+    "abords_BHNS": {
+      "perimetre": "Bande de 300 m de part et d'autre des limites de l'emprise du BHNS",
+      "regle": "Aucune place de stationnement n'est imposée pour les bâtiments à usage d'activités économiques (artisanat et commerce de détail, restauration, activités de service avec accueil clientèle, hébergement hôtelier et touristique, bureau) en deçà de 200 m² de surface de plancher créée",
+      "reference_legislative": "L151-47 CU",
+      "champ_application": "Commune d'Angoulême uniquement"
+    },
+
+    "proximite_gare_transport": {
+      "reference_legislative": "L151-36 CU",
+      "regle": "Pour les constructions destinées à l'habitation situées à moins de 800 m d'une gare ou d'une station de transport public guidé ou de transport collectif en site propre, il ne peut être exigé la réalisation de plus d'une aire de stationnement par logement, dès lors que la qualité de la desserte le permet"
+    },
+
+    "constructions_affectations_multiples": "Lorsqu'une construction comporte plusieurs affectations, les règles afférentes à chacune d'entre elles sont appliquées au prorata de la surface de plancher qu'elles occupent",
+
+    "rehabilitation_extension_changement": "En cas de réhabilitation, d'extension ou de changement d'affectation, le nombre de places à réaliser est égal à la différence entre le nombre de places imposé par le règlement et le nombre de places nécessaire à l'utilisation antérieure",
+
+    "destinations_non_prevues": "La règle applicable aux destinations non prévues dans le tableau est celle à laquelle le projet est le plus directement assimilable"
+  },
+
+  "STATIONNEMENT_PAR_DESTINATION_ET_PAR_ZONE": {
+
+    "HABITATION": {
+
+      "Logement": {
+        "UA_UF_UG_UHa_UP": {
+          "places_auto_minimum": "1 place minimum jusqu'à 100 m² de SDP créée, 1 place supplémentaire au-delà par tranche de 100 m² de SDP créée. Une place par logement pourra être imposée en cas de carence d'offre de stationnement dans le secteur du projet",
+          "places_velo_minimum": "Un minimum de 2,5 % de la SDP pour toute opération de plus de 2 logements"
+        },
+        "UB_UC_UHb": {
+          "places_auto_minimum": "2 places par logement dont 1 perméable",
+          "places_velo_minimum": "Un minimum de 2,5 % de la SDP pour toute opération de plus de 2 logements"
+        },
+        "UM": {
+          "places_auto_minimum": "1 place minimum jusqu'à 80 m² de SDP, 1 place supplémentaire au-delà par tranche de 80 m² de SDP",
+          "places_velo_minimum": "Un minimum de 2,5 % de la SDP pour toute opération de plus de 2 logements"
+        },
+        "UPr_1AU": {
+          "places_auto_minimum": "2 places par logement (garage ou carport pris en compte) à l'intérieur du terrain d'assiette dont au moins 1 perméable. 1 place pour 2 logements sur les espaces communs de l'opération. Les obligations peuvent être ramenées à 1 place par logement sur décision de l'autorité compétente pour les opérations de logements collectifs situées à moins de 300 m d'un arrêt de transport en commun dans un secteur ne présentant pas une saturation du stationnement",
+          "places_velo_minimum": "Un minimum de 2,5 % de la SDP pour toute opération de plus de 2 logements"
+        }
+      },
+
+      "Logement_locatif_social": {
+        "toutes_zones": {
+          "places_auto_minimum": "Seule une place par logement pourra être exigée",
+          "places_velo_minimum": "Un minimum de 2,5 % de la SDP pour toute opération de plus de 400 m² de SDP"
+        }
+      },
+
+      "Hébergement": {
+        "toutes_zones": {
+          "places_auto_minimum": "Selon les besoins de l'établissement",
+          "places_velo_minimum": "Un minimum de 2,5 % de la SDP"
+        }
+      }
+    },
+
+    "COMMERCE_ET_ACTIVITE_DE_SERVICE": {
+
+      "Artisanat_et_commerce_de_detail": {
+        "toutes_zones_sauf_UA": {
+          "places_auto_minimum": "SDP < 50 m² : non réglementé. SDP entre 50 et 200 m² : 2 places minimum. SDP entre 200 et 1 000 m² : 2 places minimum pour les premiers 200 m² de SDP, puis 1 place par tranche de 50 m² de SDP supplémentaire. SDP > 1 000 m² : 2 places minimum pour les premiers 200 m² de SDP, puis 1 place par tranche de 50 m² de SDP supplémentaire (nombre pouvant être majoré ou minoré selon la nature de l'équipement et/ou sa situation géographique)",
+          "places_velo_minimum": "SDP créée < 300 m² : au moins 1 emplacement pour les salariés + 2,5 % de la SDP totale minimum si création de stationnement VL. SDP créée ≥ 300 m² : au moins 1 emplacement par tranche de 10 salariés + un minimum de 2,5 % de la SDP totale"
+        },
+        "UA": {
+          "places_auto_minimum": "Aucune règle définie pour SDP entre 50 et 200 m²",
+          "places_velo_minimum": "SDP créée < 300 m² : au moins 1 emplacement pour les salariés + 2,5 % de la SDP totale minimum si création de stationnement VL. SDP créée ≥ 300 m² : au moins 1 emplacement par tranche de 10 salariés + un minimum de 2,5 % de la SDP totale"
+        }
+      },
+
+      "Commerce_de_gros": {
+        "UB_UC_UHb_UX_1AUX": {
+          "places_auto_minimum": "1 place minimum par tranche de 25 m² de surface accueillant du public",
+          "places_velo_minimum": "1 place par tranche de 25 m² de surface accueillant du public"
+        }
+      },
+
+      "Activites_de_services_accueil_clientele": {
+        "UB_UC_UHb_UX_1AUX": {
+          "places_auto_minimum": "1 place minimum par tranche de 25 m² de surface accueillant du public",
+          "places_velo_minimum": "1 place par tranche de 25 m² de surface accueillant du public"
+        }
+      },
+
+      "Restauration": {
+        "UB_UC_UHb_UX_1AUX": {
+          "places_auto_minimum": "1 place minimum par tranche de 25 m² de surface accueillant du public",
+          "places_velo_minimum": "1 place par tranche de 25 m² de surface accueillant du public"
+        }
+      },
+
+      "Hebergement_hotelier_et_touristique": {
+        "UB_UC_UHb_UXa": {
+          "places_auto_minimum": "1 place minimum par chambre",
+          "places_velo_minimum": "Un minimum de 2 m² par tranche de 5 chambres"
+        },
+        "UPg": {
+          "places_auto_minimum": "1 place minimum pour 5 chambres",
+          "places_velo_minimum": "Un minimum de 2 m² par tranche de 5 chambres"
+        }
+      },
+
+      "Cinema": {
+        "toutes_zones": {
+          "places_auto_minimum": "Selon les besoins de l'activité",
+          "places_velo_minimum": "1 place par tranche de 25 m² accueillant du public"
+        }
+      }
+    },
+
+    "EQUIPEMENTS_INTERET_COLLECTIF_ET_SERVICES_PUBLICS": {
+      "categories": [
+        "Locaux et bureaux accueillant du public des administrations publiques et assimilés",
+        "Locaux techniques et industriels des administrations publiques et assimilés",
+        "Établissements d'enseignement, de santé et d'action sociale",
+        "Salles d'art et de spectacles",
+        "Équipements sportifs",
+        "Autres équipements recevant du public"
+      ],
+      "toutes_zones": {
+        "places_auto_minimum": "Le nombre de places exigé sera étudié en fonction de la nature de l'équipement et/ou de sa situation géographique",
+        "places_velo_minimum": "Si un parc de stationnement est réalisé, les places vélo devront correspondre à 15 % des usagers accueillis simultanément dans le bâtiment et à 15 % de l'effectif salarié accueilli simultanément dans le bâtiment"
+      }
+    },
+
+    "AUTRES_ACTIVITES_PRIMAIRE_SECONDAIRE_TERTIAIRE": {
+
+      "Bureau": {
+        "toutes_zones": {
+          "places_auto_minimum": "SDP < 50 m² : non réglementé. SDP entre 50 et 200 m² : 2 places minimum. SDP entre 200 et 1 000 m² : 2 places minimum pour les premiers 200 m² de SDP, puis 1 place par tranche de 50 m² de SDP supplémentaire. SDP > 1 000 m² : 2 places minimum pour les premiers 200 m² de SDP, puis 1 place par tranche de 50 m² de SDP supplémentaire (nombre pouvant être majoré ou minoré selon la nature de l'équipement et/ou sa situation géographique)",
+          "places_velo_minimum": "Places pour 15 % de l'effectif total accueilli simultanément dans le bâtiment"
+        }
+      },
+
+      "Industrie": {
+        "toutes_zones": {
+          "places_auto_minimum": "Selon les besoins de l'activité",
+          "places_velo_minimum": "Places pour 15 % de l'effectif total accueilli simultanément dans le bâtiment"
+        }
+      },
+
+      "Centre_de_congres_et_exposition": {
+        "toutes_zones": {
+          "places_auto_minimum": "Selon les besoins de l'activité",
+          "places_velo_minimum": "Un minimum de 1 % de la surface de plancher"
+        }
+      }
+    }
+  },
+
+  "MUTUALISATION_STATIONNEMENT": {
+    "principe": "La mutualisation des emplacements de stationnement est possible dans toutes les zones dans le but d'économiser l'espace, de maintenir la biodiversité et les capacités d'absorption des eaux pluviales",
+    "condition": "Les obligations de création de places peuvent être diminuées à concurrence de l'utilisation des emplacements d'un autre équipement ou construction s'il est démontré une absence de recouvrement temporel des besoins liés à l'usage des différents immeubles"
+  },
+
+  "BORNES_DE_RECHARGE": {
+    "batiments_neufs": {
+      "prequipement": "20 % des places doivent être pré-équipées",
+      "parkings_plus_10_places": "1 point de charge minimum, puis 1 point de charge supplémentaire par tranche de 20 emplacements",
+      "accessibilite_PMR": "2 % des emplacements pré-équipés doivent être accessibles aux personnes à mobilité réduite avec au moins 1 emplacement",
+      "parkings_plus_200_places": "Au moins 2 bornes doivent être accessibles",
+      "exception_PME": "Les conditions d'implantation sur les parcs de plus de 20 emplacements ne s'appliquent pas aux petites et moyennes entreprises (moins de 250 salariés, bilan inférieur à 40 M€ et/ou chiffre d'affaires inférieur à 50 M€), conformément à l'article L111-3-6 du code des transports"
+    },
+    "batiments_non_residentiels_existants": {
+      "regle": "1 borne minimum et 1 emplacement équipé supplémentaire par tranche de 20 places"
+    }
+  },
+
+  "CARACTERISTIQUES_PLACES_STATIONNEMENT": {
+
+    "places_automobiles": {
+      "longueur_minimale": "5,00 m",
+      "largeur_minimale": "2,50 m",
+      "degagement": "3 m (5,50 m pour les places en bataille)",
+      "autonomie": "Chaque place doit être autonome par rapport aux voies d'accès",
+      "rampes_acces_sous_sol": "Ne doivent pas entraîner de modification dans le niveau des trottoirs. Pente maximale de 5 % dans les 5 premiers mètres à partir de l'alignement, sauf impossibilité technique avérée"
+    },
+
+    "places_velos_et_poussettes": {
+      "surface_minimale": "Local ou emplacement couvert d'une surface minimum de 5 m²",
+      "dispositif_attache": "1 dispositif d'attache vélo"
+    },
+
+    "places_PMR": {
+      "installations_neuves_ouvertes_public": {
+        "largeur_minimale": "3,30 m",
+        "longueur_minimale": "5 m (arrêté du 20 avril 2017)",
+        "pente_maximale": "2 %",
+        "devers_maximal": "2 %",
+        "places_epi_ou_bataille": "Surlongueur de 1,20 m matérialisée sur la voie de circulation à l'aide d'une peinture ou signalisation adaptée au sol",
+        "sol": "Non meuble et non glissant",
+        "signaletique": "Signalétique adaptée à la réglementation en vigueur",
+        "nombre_minimum": "2 % du nombre total de places"
+      },
+      "installations_existantes_ouvertes_public": {
+        "regle": "Nombre de places à aménager déterminé en fonction de la ou des installations desservies, sans ratio fixe applicable"
+      },
+      "batiments_habitation_collectifs_neufs": {
+        "pourcentage_minimum": "5 % des places destinées aux habitants et visiteurs",
+        "places_adaptables": "Places intérieures dites adaptables si après travaux simples elles satisfont aux exigences PMR : bande d'accès latérale d'au moins 0,80 m, largeur totale de l'emplacement non inférieure à 3,30 m"
+      }
+    },
+
+    "livraisons": {
+      "champ_application": "Commerces et locaux d'activités",
+      "dimensionnement": "Adapté au bon fonctionnement de l'opération, sans générer de dysfonctionnements sur les voies et espaces ouverts à la circulation publique",
+      "localisation": "Les aires de livraison peuvent être aménagées sur les espaces libres de l'unité foncière dans la limite de l'équivalent de deux places de stationnement VL"
+    }
+  }
+}

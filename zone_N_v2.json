@@ -1,0 +1,1547 @@
+{
+  "$schema": "https://schema.plu.fr/reglement/v1.0",
+  "meta": {
+    "type_document": "PLUi",
+    "commune": "Grand Angoulême",
+    "version": "1.0.0"
+  },
+  "zone": {
+    "code": "N",
+    "famille": "N",
+    "libelle": "La zone N regroupe les secteurs de la commune, équipés ou non, à protéger en raison soit de la qualité des sites, des milieux naturels, des paysages et de leur intérêt, notamment du point de vue esthétique, historique ou écologique, soit de leur caractère inondable. Les possibilités de constructions y sont très strictement encadrées.",
+    "description": "La zone N regroupe les secteurs de la commune, équipés ou non, à protéger en raison soit de la qualité des sites, des milieux naturels, des paysages et de leur intérêt, notamment du point de vue esthétique, historique ou écologique, soit de leur caractère inondable. Les possibilités de constructions y sont très strictement encadrées.",
+    "note_generale": "Une partie de la zone N est concernée par les Plans de prévention des risques d'inondation (PPRi) qui figurent en annexe du présent PLU. En cas de divergence entre les règles du PLUi et du PPRi, c'est la règle la plus contraignante qui doit être appliquée.",
+    "note_stecal": "Les STECAL sont les Secteurs de Taille et de Capacité d'Accueil Limitées, qui permettent d'accepter des installations et constructions ne correspondant pas à la vocation générale de la zone, mais compatibles avec elle.",
+    "localisation": null,
+    "objectifs": [],
+    "secteurs": [
+      {
+        "code": "Na",
+        "libelle": "STECAL – Sites patrimoniaux remarquables (manoirs, châteaux)"
+      },
+      {
+        "code": "Ne",
+        "libelle": "Destiné à des services publics ou d'intérêt collectif (cimetière, équipements sportifs…)"
+      },
+      {
+        "code": "Neq",
+        "libelle": "STECAL – Activités équestres de loisirs avec pension de chevaux sans élevage"
+      },
+      {
+        "code": "Ngv",
+        "libelle": "STECAL – Terrains familiaux et résidences mobiles constituant l'habitat permanent des gens du voyage"
+      },
+      {
+        "code": "Ngvx",
+        "libelle": "STECAL (sous-secteur de Ngv) – Installation de forains abritant des locaux nécessaires à leur activité"
+      },
+      {
+        "code": "Nha",
+        "libelle": "STECAL – Structure d'agriculture écologique et pédagogique"
+      },
+      {
+        "code": "Nhal",
+        "libelle": "STECAL (sous-secteur de Nha) – Création d'une structure d'agriculture écologique, collaborative et pédagogique"
+      },
+      {
+        "code": "Nhf",
+        "libelle": "STECAL – Équipements de formation autour de hameaux existants en zone naturelle"
+      },
+      {
+        "code": "Nj",
+        "libelle": "Éléments de la trame verte urbaine à protéger : jardins, jardins familiaux, parcs, coulées et coupures vertes, îlots végétalisés et de fraîcheur"
+      },
+      {
+        "code": "Nl",
+        "libelle": "STECAL – Aménagements légers destinés à la découverte et à la pratique de loisirs en espaces naturels"
+      },
+      {
+        "code": "Nla",
+        "libelle": "STECAL (sous-secteur de Nl) – Reconversion du centre de loisirs de Clairgon à Puymoyen"
+      },
+      {
+        "code": "Nm",
+        "libelle": "Installations liées et nécessaires à l'activité de maraîchage dans le respect de la sensibilité environnementale du lieu"
+      },
+      {
+        "code": "Npat",
+        "libelle": "Dispositions répondant à des enjeux paysagers et patrimoniaux dans le périmètre autour d'un monument historique"
+      },
+      {
+        "code": "Npv",
+        "libelle": "STECAL – Accueil de parc photovoltaïque"
+      },
+      {
+        "code": "Nt",
+        "libelle": "STECAL – Activités touristiques"
+      },
+      {
+        "code": "Nx",
+        "libelle": "STECAL – Activités économiques isolées en zone naturelle"
+      },
+      {
+        "code": "Nxf",
+        "libelle": "STECAL (sous-secteur de Nx) – Installations de forage et de conditionnement d'eau minérale"
+      },
+      {
+        "code": "Nxp",
+        "libelle": "STECAL (sous-secteur de Nx) – Zone économique de projet : changements de destination et extension limitée uniquement, activités industrielles interdites"
+      },
+      {
+        "code": "Nxs",
+        "libelle": "STECAL (sous-secteur de Nx) – Aires de stationnements paysagées et non imperméabilisées uniquement"
+      }
+    ]
+  },
+  "section_1_destinations": {
+    "mode": "liste_interdictions",
+    "legende": {
+      "V": "Autorisé sans condition particulière",
+      "V*": "Autorisé sous conditions",
+      "X": "Interdit"
+    },
+    "principe_general": "Dans l'ensemble de la zone N, sont interdits tous les modes d'occupation du sol et notamment les constructions quelle que soit leur destination, à l'exception de ceux autorisés ou autorisés sous conditions.",
+    "autorisations_communes": {
+      "description": "Autorisations communes à tous les secteurs sauf Npat",
+      "usages": [
+        {
+          "libelle": "Reconstruction après sinistre",
+          "reglementation_par_secteur": [
+            {
+              "secteur": "N (tous secteurs sauf Npat)",
+              "statut": "V*",
+              "conditions": [
+                "Reconstruction à l'identique d'un bâtiment détruit ou démoli depuis moins de 10 ans, sous réserve que la construction d'origine ait été édifiée régulièrement, sauf si la construction peut être soumise à un risque"
+              ]
+            }
+          ]
+        },
+        {
+          "libelle": "Constructions liées à la sécurité ou ouverture au public",
+          "reglementation_par_secteur": [
+            {
+              "secteur": "N (tous secteurs sauf Npat)",
+              "statut": "V*",
+              "conditions": [
+                "Sous réserve d'une bonne insertion dans le site : abris pour arrêts de transports collectifs, abris d'observation de la faune, sentiers piétons, aires naturelles de stationnement, installations sanitaires, ouvrages techniques (transformateurs, postes de refoulement, supports de transport d'énergie) nécessaires aux réseaux d'utilité publique, infrastructures routières d'intérêt public si nécessité technique justifiée"
+              ]
+            }
+          ]
+        },
+        {
+          "libelle": "Infrastructures modes doux",
+          "reglementation_par_secteur": [
+            {
+              "secteur": "N (tous secteurs sauf Npat)",
+              "statut": "V*",
+              "conditions": [
+                "Compatibles avec la protection du milieu"
+              ]
+            }
+          ]
+        },
+        {
+          "libelle": "Pontons et cales à bateaux",
+          "reglementation_par_secteur": [
+            {
+              "secteur": "N (tous secteurs sauf Npat)",
+              "statut": "V*",
+              "conditions": [
+                "Aménagements nécessaires aux pontons et cales à bateaux d'intérêt public, sous réserve de ne pas porter atteinte à l'environnement et d'une bonne intégration dans le site"
+              ]
+            }
+          ]
+        },
+        {
+          "libelle": "Travaux restauration milieux naturels",
+          "reglementation_par_secteur": [
+            {
+              "secteur": "N (tous secteurs sauf Npat)",
+              "statut": "V"
+            }
+          ]
+        },
+        {
+          "libelle": "Travaux protection berges",
+          "reglementation_par_secteur": [
+            {
+              "secteur": "N (tous secteurs sauf Npat)",
+              "statut": "V*",
+              "conditions": [
+                "Dans le respect des dispositions de la loi sur l'eau, en privilégiant le fascinage. En cas d'impossibilité technique, d'autres dispositifs pourront être autorisés (tunage). Ces dispositifs pourront servir d'amarrage pour les bateaux."
+              ]
+            }
+          ]
+        },
+        {
+          "libelle": "Constructions pastoralisme",
+          "reglementation_par_secteur": [
+            {
+              "secteur": "N (tous secteurs sauf Npat)",
+              "statut": "V"
+            }
+          ]
+        },
+        {
+          "libelle": "Bâtiments élevage sans nuisance",
+          "reglementation_par_secteur": [
+            {
+              "secteur": "N (tous secteurs sauf Npat)",
+              "statut": "V*",
+              "conditions": [
+                "N'entraînant aucune nuisance pour l'habitat environnant (ex. héliciculture)"
+              ]
+            }
+          ]
+        },
+        {
+          "libelle": "Abris pour animaux",
+          "reglementation_par_secteur": [
+            {
+              "secteur": "N (tous secteurs sauf Npat)",
+              "statut": "V*",
+              "conditions": [
+                "Dans la limite de 150 m² d'emprise au sol"
+              ]
+            }
+          ]
+        },
+        {
+          "libelle": "Extensions bâtiments agricoles",
+          "reglementation_par_secteur": [
+            {
+              "secteur": "N (tous secteurs sauf Npat)",
+              "statut": "V*",
+              "conditions": [
+                "Extensions mesurées des bâtiments agricoles préexistant au moment de l'approbation du PLUi"
+              ]
+            }
+          ]
+        },
+        {
+          "libelle": "Production électricité autoconsommation",
+          "reglementation_par_secteur": [
+            {
+              "secteur": "N (tous secteurs sauf Npat)",
+              "statut": "V*",
+              "conditions": [
+                "Dans la limite de 50 m² d'emprise au sol"
+              ]
+            }
+          ]
+        },
+        {
+          "libelle": "Changement de destination",
+          "reglementation_par_secteur": [
+            {
+              "secteur": "N (tous secteurs sauf Npat)",
+              "statut": "V*",
+              "conditions": [
+                "Bâtiments spécifiquement identifiés aux documents graphiques (chapitre 8 du titre I), à condition de ne pas compromettre l'activité agricole, les espaces naturels ou la qualité paysagère du site et du bâti"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "zone_n_hors_secteur": {
+      "description": "Zone N hors secteur spécifique",
+      "usages": [
+        {
+          "libelle": "Extension logements existants",
+          "reglementation_par_secteur": [
+            {
+              "secteur": "N",
+              "statut": "V*",
+              "conditions": [
+                "Ne pas créer de nouveaux logements",
+                "Dans la limite de 50 m² d'emprise au sol sans pouvoir excéder ce seuil par des opérations successives",
+                "Sous réserve d'une bonne intégration paysagère et architecturale à l'environnement bâti existant"
+              ]
+            }
+          ]
+        },
+        {
+          "libelle": "Annexes constructions principales",
+          "reglementation_par_secteur": [
+            {
+              "secteur": "N",
+              "statut": "V*",
+              "conditions": [
+                "Liées à un logement existant dans la zone ou dans la zone urbaine ou naturelle contiguës",
+                "La superficie de l'ensemble des annexes existantes (en excluant celle du bâti ancien) ou créées ne doit pas dépasser 40 m² d'emprise au sol (hors piscine) pour la durée d'application du PLUi-M",
+                "Doivent être incluses entièrement dans un rayon de 25 m de l'habitation"
+              ]
+            }
+          ]
+        },
+        {
+          "libelle": "Piscines",
+          "reglementation_par_secteur": [
+            {
+              "secteur": "N",
+              "statut": "V*",
+              "conditions": [
+                "Liées à un logement existant dans la zone ou dans la zone urbaine ou naturelle contiguës",
+                "Incluses entièrement dans un rayon de 25 m de l'habitation (à l'exception des abris pour animaux)",
+                "Ne doivent pas excéder 2 m de haut pour les piscines hors sol"
+              ]
+            }
+          ]
+        },
+        {
+          "libelle": "Changement de destination",
+          "reglementation_par_secteur": [
+            {
+              "secteur": "N",
+              "statut": "V*",
+              "conditions": [
+                "Bâtiments identifiés aux documents graphiques (chapitre 8 du titre I), à condition de ne pas compromettre l'activité agricole, les espaces naturels ou la qualité paysagère du site"
+              ]
+            }
+          ]
+        },
+        {
+          "libelle": "Affouillements et exhaussements",
+          "reglementation_par_secteur": [
+            {
+              "secteur": "N",
+              "statut": "V*",
+              "conditions": [
+                "Liés et nécessaires à l'activité de la zone, aux travaux de constructions autorisés ou aux travaux nécessaires pour la recherche archéologique"
+              ]
+            }
+          ]
+        },
+        {
+          "libelle": "Constructions exploitation forestière",
+          "reglementation_par_secteur": [
+            {
+              "secteur": "N",
+              "statut": "V"
+            }
+          ]
+        }
+      ]
+    },
+    "secteurs_specifiques": [
+      {
+        "id": "SECTEUR_Na_STECAL",
+        "secteur": "Na",
+        "usages": [
+          {
+            "libelle": "Extensions habitation",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Na",
+                "statut": "V*",
+                "conditions": [
+                  "Dès lors qu'elles respectent le caractère naturel du site"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Bâtiments annexes habitations",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Na",
+                "statut": "V*",
+                "conditions": [
+                  "Dans la limite de 40 m² d'emprise au sol (hors transformation du bâti ancien et hors piscine) pour la durée d'application du PLUi-M ; abris pour animaux autres que bâtiments d'élevage autorisés"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Changement de destination",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Na",
+                "statut": "V*",
+                "conditions": [
+                  "Bâtiments identifiés aux documents graphiques (chapitre 8 du titre I), à condition de ne pas compromettre l'activité agricole, les espaces naturels ou la qualité paysagère du site et du bâti"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Logements de gardien",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Na",
+                "statut": "V*",
+                "conditions": [
+                  "Nécessaires à la surveillance du domaine et intégrés au sein de ses dépendances"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "SECTEUR_Ne",
+        "secteur": "Ne",
+        "usages": [
+          {
+            "libelle": "Infrastructures épuration",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Ne",
+                "statut": "V*",
+                "conditions": [
+                  "Infrastructures, superstructures et constructions (bureaux, sanitaires, locaux techniques, stockage) liées au fonctionnement des installations d'épuration"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Locaux techniques administrations",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Ne",
+                "statut": "V*",
+                "conditions": [
+                  "Dans la limite de 250 m² de surface de plancher ; panneaux photovoltaïques liés à l'autoconsommation autorisés"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Équipements collectifs sportifs loisirs culturels",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Ne",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Locaux restauration fleuve",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Ne",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Cimetières paysagers",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Ne",
+                "statut": "V*",
+                "conditions": [
+                  "Imperméabilisation limitée (traitement des allées en pleine terre notamment)"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Aires stationnement collectif",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Ne",
+                "statut": "V*",
+                "conditions": [
+                  "Ni imperméables ni de couleur foncée"
+                ]
+              }
+            ]
+          }
+        ],
+        "note": "Sous réserve d'une bonne intégration dans le site et du respect de la qualité des paysages et du site"
+      },
+      {
+        "id": "SECTEUR_Neq_STECAL",
+        "secteur": "Neq",
+        "usages": [
+          {
+            "libelle": "Constructions activités équestres",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Neq",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Nouvelles habitations",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Neq",
+                "statut": "V*",
+                "conditions": [
+                  "Destinées au logement des personnes dont la présence permanente est nécessaire au fonctionnement de l'activité, sous réserve d'être incluses dans un rayon de 50 m des bâtiments existants"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Constructions services publics équipements collectifs",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Neq",
+                "statut": "V*",
+                "conditions": [
+                  "Sous réserve d'une bonne intégration dans le site"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Affouillements exhaussements",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Neq",
+                "statut": "V*",
+                "conditions": [
+                  "Liés et nécessaires à l'activité, aux constructions autorisées ou à la recherche archéologique"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Extension logements existants",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Neq",
+                "statut": "V*",
+                "conditions": [
+                  "Ne pas créer de nouveaux logements",
+                  "Dans la limite de 50 m² d'emprise au sol",
+                  "Sous réserve d'une bonne intégration paysagère"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Annexes",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Neq",
+                "statut": "V*",
+                "conditions": [
+                  "Liées à un logement existant",
+                  "Dans la limite de 40 m² d'emprise au sol (surface cumulée, hors piscine)",
+                  "Incluses dans un rayon de 25 m de l'habitation"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Piscines",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Neq",
+                "statut": "V*",
+                "conditions": [
+                  "Liées à un logement existant",
+                  "Incluses dans un rayon de 25 m de l'habitation",
+                  "Ne pas excéder 2 m de haut pour les piscines hors sol"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Production électricité autoconsommation",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Neq",
+                "statut": "V*",
+                "conditions": [
+                  "Dans la limite de 50 m² d'emprise au sol"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "SECTEUR_Ngv_STECAL",
+        "secteur": "Ngv",
+        "usages": [
+          {
+            "libelle": "Résidences mobiles gens du voyage",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Ngv",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Aménagements constructions fonctionnement",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Ngv",
+                "statut": "V*",
+                "conditions": [
+                  "Sous réserve d'une parfaite intégration paysagère"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Bâtiments stockage forains",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Ngvx",
+                "statut": "V"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "SECTEUR_Nha_STECAL",
+        "secteur": "Nha",
+        "usages": [
+          {
+            "libelle": "Habitations liées exploitation agricole",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nha",
+                "statut": "V*",
+                "conditions": [
+                  "Uniquement dans le sous-secteur Nhal, dans la limite totale de 180 m² d'emprise au sol"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Annexes habitations",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nha",
+                "statut": "V*",
+                "conditions": [
+                  "Uniquement dans le sous-secteur Nhal, dans la limite totale de 120 m²"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Bâtiments stockage production agricole",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nha",
+                "statut": "V*",
+                "conditions": [
+                  "Dans la limite totale de 400 m² d'emprise au sol"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Locaux accueil public pédagogie restauration vente",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nha",
+                "statut": "V*",
+                "conditions": [
+                  "Dans la limite totale de 200 m² d'emprise au sol"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Locaux transformation ateliers stockage chaud",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nha",
+                "statut": "V*",
+                "conditions": [
+                  "Dans la limite totale de 100 m² d'emprise au sol"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Serres de plants et production",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nha",
+                "statut": "V*",
+                "conditions": [
+                  "Dans la limite totale de 2 000 m² d'emprise au sol"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "SECTEUR_Nhf_STECAL",
+        "secteur": "Nhf",
+        "usages": [
+          {
+            "libelle": "Réhabilitation changement destination",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nhf",
+                "statut": "V*",
+                "conditions": [
+                  "Pour la création de locaux permettant l'accueil d'une clientèle et l'enseignement"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Extension constructions existantes",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nhf",
+                "statut": "V*",
+                "conditions": [
+                  "Dans la limite de 100 m² de surface de plancher"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Constructions neuves équipements sportifs enseignement",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nhf",
+                "statut": "V*",
+                "conditions": [
+                  "Dans la limite de 100 m² ; liées à des activités de plein air et locaux d'enseignement"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Locaux techniques administrations",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nhf",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Production électricité autoconsommation",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nhf",
+                "statut": "V*",
+                "conditions": [
+                  "Dans la limite de 50 m² d'emprise au sol"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "SECTEUR_Nj",
+        "secteur": "Nj",
+        "usages": [
+          {
+            "libelle": "Constructions légères dépendances",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nj",
+                "statut": "V*",
+                "conditions": [
+                  "Locaux techniques, locaux pour ordures ménagères, abris de jardin, piscines, terrasses couvertes ; constructions légères isolées ou accolées à la construction principale sur la même unité foncière"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Abris matériel jardinage",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nj",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Mobilier urbain kiosques constructions publiques",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nj",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Production électricité autoconsommation",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nj",
+                "statut": "V*",
+                "conditions": [
+                  "Dans la limite de 50 m² d'emprise au sol"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "SECTEUR_Nl_STECAL",
+        "secteur": "Nl",
+        "usages": [
+          {
+            "libelle": "Parcours santé équipements sportifs",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nl",
+                "statut": "V*",
+                "conditions": [
+                  "Limités en surface"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Constructions aménagements loisirs nature",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nl",
+                "statut": "V*",
+                "conditions": [
+                  "Tables de pique-nique, kiosques, buvettes, signalisation, panneaux d'information ; conçus pour permettre un retour du site à l'état naturel"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Réhabilitation reconversion Clairgon",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nla",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Changement de destination",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nla",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Extension mesurée",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nla",
+                "statut": "V"
+              }
+            ]
+          }
+        ],
+        "note": "Sous réserve du respect du règlement du PPRi applicable"
+      },
+      {
+        "id": "SECTEUR_Nm",
+        "secteur": "Nm",
+        "usages": [
+          {
+            "libelle": "Serres démontables tunnels plastiques",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nm",
+                "statut": "V*",
+                "conditions": [
+                  "Dans la limite de 20 % de la surface exploitée"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Installations irrigation",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nm",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Constructions stockage agricole",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nm",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Constructions services publics équipements collectifs",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nm",
+                "statut": "V*",
+                "conditions": [
+                  "Sous réserve d'une bonne intégration dans le site"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Affouillements exhaussements",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nm",
+                "statut": "V*",
+                "conditions": [
+                  "Liés et nécessaires à l'activité, aux constructions autorisées ou à la recherche archéologique"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Production électricité autoconsommation",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nm",
+                "statut": "V*",
+                "conditions": [
+                  "Dans la limite de 50 m² d'emprise au sol"
+                ]
+              }
+            ]
+          }
+        ],
+        "note": "Sous réserve de ne pas porter atteinte à la sauvegarde des espaces naturels et des paysages"
+      },
+      {
+        "id": "SECTEUR_Npat",
+        "secteur": "Npat",
+        "usages": [
+          {
+            "libelle": "Aménagements activités agricoles pastorales forestières",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Npat",
+                "statut": "V*",
+                "conditions": [
+                  "Ne créant pas plus de 50 m² d'emprise au sol",
+                  "À l'exclusion de toute forme d'hébergement",
+                  "En harmonie avec le site"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Extensions habitation et annexes",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Npat",
+                "statut": "V*",
+                "conditions": [
+                  "L'emprise au sol totale de l'extension (en une ou plusieurs fois) ne doit pas excéder 40 % d'emprise supplémentaire au regard de l'emprise au sol de la construction principale constatée à la date d'approbation du PLU, et ne peut excéder 60 m²",
+                  "Les annexes (constructions détachées) n'excéderont pas 40 m² d'emprise au sol totale et devront être implantées à moins de 20 m des limites d'emprise de la construction principale existante",
+                  "Les piscines : taille du bassin n'excédant pas 40 m² ; implantées à moins de 20 m des limites d'emprise de la construction principale"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Cheminements piétonniers cyclables équestres",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Npat",
+                "statut": "V*",
+                "conditions": [
+                  "Ni cimentés ni bitumés ; nécessaires à la gestion ou à l'ouverture au public"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Équipements démontables hygiène sécurité",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Npat",
+                "statut": "V*",
+                "conditions": [
+                  "Lorsque leur localisation dans ces espaces est rendue indispensable"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Constructions services publics réseaux",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Npat",
+                "statut": "V*",
+                "conditions": [
+                  "Liées à la voirie et aux réseaux divers (transport et distribution d'énergie électrique, eaux usées et pluviales, téléphonie, télécommunications, gaz…), sous réserve de contraintes techniques justifiées"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "SECTEUR_Npv_STECAL",
+        "secteur": "Npv",
+        "usages": [
+          {
+            "libelle": "Installations énergie photovoltaïque",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Npv",
+                "statut": "V*",
+                "conditions": [
+                  "Sous réserve d'une bonne insertion dans le site"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Installations solaires hors friches",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Npv",
+                "statut": "V*",
+                "conditions": [
+                  "Ne constituant pas de la consommation d'espace et de l'artificialisation des sols, correspondant aux caractéristiques définies par le décret et l'arrêté du 29 décembre 2023"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Ouvrages services publics",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Npv",
+                "statut": "V"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "SECTEUR_Nt_STECAL",
+        "secteur": "Nt",
+        "usages": [
+          {
+            "libelle": "Gîtes chambres hôtes meublés tourisme",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nt",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Habitats alternatifs",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nt",
+                "statut": "V*",
+                "conditions": [
+                  "Tiny house, yourte, etc. ; uniquement pour occupation non permanente et touristique ; non visibles depuis les voies publiques ; bien intégrés aux espaces bâtis et naturels environnants"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Extension logements existants",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nt",
+                "statut": "V*",
+                "conditions": [
+                  "Ne pas créer de nouveaux logements",
+                  "Dans la limite de 50 m² d'emprise au sol sans dépasser ce seuil par des opérations successives",
+                  "Sous réserve d'une bonne intégration paysagère"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Annexes",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nt",
+                "statut": "V*",
+                "conditions": [
+                  "Liées à un logement existant",
+                  "Dans la limite de 40 m² d'emprise au sol (surface cumulée excluant les surfaces du bâti ancien, hors piscine)",
+                  "Incluses dans un rayon de 25 m de l'habitation (sauf abris pour animaux)"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Piscines",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nt",
+                "statut": "V*",
+                "conditions": [
+                  "Liées à un logement existant",
+                  "Incluses dans un rayon de 25 m de l'habitation",
+                  "Ne pas excéder 2 m de haut pour les piscines hors sol"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Constructions services publics équipements collectifs",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nt",
+                "statut": "V*",
+                "conditions": [
+                  "Sous réserve d'une bonne intégration dans le site"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Affouillements exhaussements",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nt",
+                "statut": "V*",
+                "conditions": [
+                  "Liés et nécessaires à l'activité, aux constructions autorisées ou à la recherche archéologique"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Production électricité autoconsommation",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nt",
+                "statut": "V*",
+                "conditions": [
+                  "Dans la limite de 50 m² d'emprise au sol"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Bâtiments stockage",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nt",
+                "statut": "V*",
+                "conditions": [
+                  "Indispensables à l'activité, dans la limite de 150 m² d'emprise au sol"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "SECTEUR_Nx_STECAL",
+        "secteur": "Nx",
+        "usages": [
+          {
+            "libelle": "Extension constructions activités existantes",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nx",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Aires stationnement",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nx",
+                "statut": "V*",
+                "conditions": [
+                  "Paysagées et non imperméabilisées"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Changement destination bâtiments activité économique",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nx",
+                "statut": "V*",
+                "conditions": [
+                  "La nouvelle activité ne relève pas des sous-destinations logement ou industrie ; conforme à l'article 11 des dispositions générales sur le commerce ; compatible avec la protection des paysages, des espaces naturels et l'activité agricole environnante"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Constructions installations embouteillage eau",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nxf",
+                "statut": "V*",
+                "conditions": [
+                  "Nécessaires à l'activité d'embouteillage d'eau potable liée à l'usine d'eau de source sur le territoire de Voeuil-et-Giget (y compris forages et constructions de protection) ; sans aggravation du risque inondation ni gêne significative au flux d'espèces en zone humide. Comprend réhabilitation, remise aux normes, extension limitée des constructions existantes."
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Changement destination et extension",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "Nxp",
+                "statut": "V*",
+                "conditions": [
+                  "Sans que les nouvelles activités puissent créer des nuisances incompatibles avec les logements à proximité. Les activités à vocation industrielle sont interdites."
+                ]
+              }
+            ]
+          }
+        ],
+        "note": "À l'exception du sous-secteur Nxf ; sous réserve d'une bonne intégration paysagère"
+      }
+    ]
+  },
+  "section_2_caracteristiques": {
+    "art_2_1_implantation": {
+      "note": "Les constructions et installations liées et nécessaires aux services publics et d'intérêt collectif ne sont pas réglementées.",
+      "par_rapport_aux_voies": {
+        "Règle_générale": {
+          "RN_10_141_RN_141_St_Yrieix_RD_1000": {
+            "habitations_et_annexes": "Retrait de 100 m minimum par rapport à l'axe",
+            "bâtiments_agricoles": "Retrait de 50 m minimum par rapport à l'axe"
+          },
+          "RD_939_Soyaux": {
+            "habitations_et_annexes": "Retrait de 75 m minimum par rapport à l'axe",
+            "bâtiments_agricoles": "Retrait de 50 m minimum par rapport à l'axe"
+          },
+          "Autres_RD": {
+            "habitations_et_annexes": {
+              "RD_1ère_catégorie_RD939_RD674_RD910": "Retrait de 10 m par rapport à l'alignement",
+              "autres_RD": "Retrait de 5 m minimum par rapport à l'alignement"
+            },
+            "bâtiments_agricoles": "Retrait de 10 m minimum par rapport à l'alignement"
+          },
+          "Autres_voies": {
+            "habitations_et_annexes": "Retrait de 3 m minimum par rapport à l'alignement",
+            "bâtiments_agricoles": "Retrait de 10 m minimum par rapport à l'alignement"
+          }
+        },
+        "Règles_concernant_les_extensions": "Ces règles ne s'appliquent pas dès lors qu'il s'agit de l'extension d'une construction existante ne respectant pas ces marges, sous réserve que l'extension ne contribue pas à réduire la marge de recul initiale.",
+        "Sécurité": "En cas de problème de sécurité lié notamment à la visibilité, une distance supérieure pourra être exigée après avis du gestionnaire de la voirie.",
+        "Implantation_par_rapport_emprises_ferroviaires": {
+          "LGV_site_propre_habitations": "50 m minimum (hors secteur des embranchements vers la gare d'Angoulême)",
+          "autres_lignes_habitations": "15 m minimum",
+          "autres_lignes_annexes": "5 m minimum",
+          "autres_constructions_LGV_site_propre": "10 m minimum",
+          "autres_constructions_autres_sections_LGV_et_autres_lignes": "5 m minimum"
+        },
+        "Par_rapport_aux_massifs_forestiers": "Les constructions ne peuvent être réalisées à moins de 5 m d'un massif forestier sauf impossibilité technique démontrée.",
+        "Parcelle_bordée_de_plusieurs_voies": "Les règles de cette section s'appliquent par rapport à toutes les voies."
+      },
+      "par_rapport_aux_limites_separatives": {
+        "Règle_générale": "Les nouvelles constructions à usage d'habitation s'implantent soit en limite séparative, soit en retrait. Dans le cas d'une implantation en retrait, la marge de recul doit être au moins égale à 3 m.",
+        "Autres_implantations_possibles": [
+          "Pour les annexes de moins de 20 m², sans être inférieur à 1 m, et les piscines",
+          "Pour l'amélioration des performances énergétiques des constructions existantes",
+          "Pour les constructions et installations nécessaires aux services publics ou d'intérêt collectif",
+          "Lorsque le projet jouxte une construction existante ayant une implantation différente",
+          "Lorsqu'un retrait est nécessaire pour améliorer la visibilité et la sécurité routière",
+          "Pour tenir compte de la configuration de la parcelle sous réserve d'une meilleure intégration",
+          "Pour respecter la dominante du paysage urbain sur la façade de l'îlot"
+        ]
+      },
+      "emprise_au_sol": {
+        "Zone_N_hors_secteur": "Non réglementée",
+        "Secteur_Na": {
+          "Extensions_habitation": "Limitée à 30 % de la surface de plancher existante à la date d'approbation du PLUi",
+          "Bâtiments_annexes_et_abris_animaux": "Limitée à 40 m² de surface de plancher",
+          "Dépendances_séparées": "Limitée à 25 % de la surface de plancher existante"
+        },
+        "Secteur_Ne": "Limitée à 25 % de l'unité foncière",
+        "Secteur_Neq": "Limitée à 30 % des bâtiments existants au moment de l'entrée en vigueur du PLUi",
+        "Secteur_Ngv_et_Ngvx": "Limitée à 30 % de l'unité foncière ; extensions limitées à 30 % de la surface des bâtiments existants à date d'approbation du PLUi",
+        "Secteur_Nha": "Voir les dispositions de l'article N1",
+        "Secteur_Nhf": "Limitée à 200 m² pour les constructions nouvelles",
+        "Secteur_Nj": "Limitée à 40 m² par terrain",
+        "Secteur_Nl": "Limitée à 100 m² de surface de plancher cumulée à compter de la date d'approbation du PLUi ; extensions limitées à 30 % des bâtiments existants",
+        "Sous_secteur_Nla": "Extensions limitées à 25 % des bâtiments existants",
+        "Secteur_Nm": {
+          "Serres_et_tunnels": "Limitée à 20 % de la surface exploitée en maraîchage",
+          "Constructions_stockage_agricole": "Ne peut excéder 50 m²"
+        },
+        "Secteur_Npat": "Ne peut excéder 30 % de l'unité foncière",
+        "Secteur_Npv": "Limitée à 90 % de la surface de l'unité foncière",
+        "Secteur_Nt": "Limitée à 30 % des bâtiments existants",
+        "Secteur_Nx": "Limitée à 30 % des bâtiments existants à la date d'approbation du PLUi",
+        "Sous_secteur_Nxf": {
+          "Extensions": "Limitée à 30 % de l'immeuble existant",
+          "Autour_nouveau_forage": "L'emprise au sol ne peut excéder 15 m²"
+        },
+        "Sous_secteur_Nxp": "Extensions limitées à 25 % de l'immeuble existant"
+      },
+      "hauteur": {
+        "Dispositifs_techniques_équipements_collectifs": "Non réglementée, mais doivent faire l'objet d'une bonne intégration visuelle",
+        "Zone_N_hors_secteur": {
+          "Constructions_et_extensions": "Limitée à 10 m au point le plus haut",
+          "Annexes": "Limitée à 4 m au point le plus haut",
+          "Piscines": "Ne peut dépasser 2 m"
+        },
+        "Secteur_Na": {
+          "Extensions": "Ne dépassera pas la hauteur du bâtiment existant",
+          "Constructions_nouvelles": "Limitée à 4,50 m au point le plus haut"
+        },
+        "Secteur_Ne": "Limitée à 12 m",
+        "Secteur_Neq": "Limitée à 10 m au point le plus haut",
+        "Secteur_Ngv": {
+          "Constructions": "Limitée à 4,50 m au point le plus haut",
+          "Sous_secteur_Ngvx": "Peut atteindre 10 m"
+        },
+        "note_mesure_hauteur": "La hauteur des constructions, en tout point, est mesurée à partir du niveau du terrain naturel (niveau du sol existant avant les éventuels travaux de terrassement et d'exhaussement).",
+        "Secteur_Nha": {
+          "Constructions_nouvelles": "Limitée à 8 m hors tout",
+          "Serres": "Limitée à 3,50 m hors tout",
+          "Abris_pour_animaux": "Limitée à 3 m hors tout"
+        },
+        "Secteur_Nhf": "Limitée à 7 m à l'égout du toit",
+        "Secteur_Nj": "Limitée à 4 m",
+        "Secteur_Nl": "Limitée à 4 m",
+        "Sous_secteur_Nla": "Ne dépassera pas la hauteur du bâtiment existant",
+        "Secteur_Nm": {
+          "Extensions": "Ne dépassera pas la hauteur du bâtiment existant",
+          "Serres_et_tunnels": "Limitée à 3,50 m au point le plus haut",
+          "Autres_constructions": "Limitée à 4,50 m au point le plus haut"
+        },
+        "Secteur_Npat": {
+          "Extensions": "Ne dépassera pas la hauteur des bâtiments existants",
+          "Constructions": "Limitée à 4,50 m au point le plus haut"
+        },
+        "Secteur_Npv": "Limitée à 5 m au point le plus haut",
+        "Secteur_Nt": "Ne pourra dépasser la hauteur des constructions existantes sur l'unité foncière",
+        "Secteur_Nx": "Ne dépassera pas la hauteur du bâtiment existant",
+        "Sous_secteur_Nxf": {
+          "Extensions": "Ne peuvent dépasser le point le plus haut des constructions existantes",
+          "Constructions_nouveau_forage": "Ne peut excéder 3 m au point le plus haut"
+        },
+        "Sous_secteur_Nxp": "Ne peut dépasser la hauteur des bâtiments existants"
+      }
+    },
+    "art_2_2_qualite_architecturale": {
+      "LES_ENERGIES_RENOUVELABLES": {
+        "principe": "Sont autorisées et encouragées les techniques d'architecture bioclimatiques ou d'écoconstructions, ainsi que celles favorisant l'installation de matériel utilisant les énergies renouvelables (toitures végétalisées, constructions bois, panneaux solaires en toiture ou au sol…), sous réserve de la protection des sites et des paysages.",
+        "équipements_extérieurs": "Les capteurs solaires, pompes à chaleur, etc. en extérieur du bâtiment doivent être considérés comme des éléments de composition architecturale à part entière, implantés en cohérence avec la trame des ouvertures des façades, en évitant la multiplicité des dimensions et des implantations.",
+        "dérogation": "Pour les projets mettant en œuvre ces principes, il pourra être dérogé aux règles de l'article 2.2, sous réserve de ne pas porter atteinte aux lieux avoisinants."
+      },
+      "PERFORMANCES_ENERGETIQUES_ET_ENVIRONNEMENTALES": "Pour toutes les constructions, il sera privilégié un choix de matériaux intégrant des critères environnementaux : faible énergie grise, bois provenant de forêts durablement gérées, matériaux ayant un étiquetage environnemental. Le bois et tous les matériaux concourant à de meilleures performances thermiques ou issus d'une éco-filière sont recommandés.",
+      "GENERALITES": {
+        "définition_bâtiments_anciens": "Bâtiments construits avant le 1er janvier 1948, à composition à dominante de matériaux poreux.",
+        "intégration_environnement": [
+          "Simplicité et proportions des volumes et cohérence architecturale",
+          "Qualité et pérennité des matériaux",
+          "Harmonie des couleurs",
+          "Les annexes autorisées doivent s'intégrer avec l'ensemble des constructions existantes"
+        ],
+        "matériaux_interdits": [
+          "Emploi à nu des matériaux destinés à être enduits (brique creuse, carreaux de plâtre, parpaing de ciment…)",
+          "Emploi de matériaux constituant une imitation d'un autre (PVC imitant le bois, fausses pierres, pastiche…)",
+          "Emploi de matériaux à caractère provisoire (fibrociment, tôle ondulée, carton ou feutre asphalté…)"
+        ],
+        "adaptation_au_terrain": "Ce sont la construction, ses annexes et extensions qui s'adapteront au mieux au relief du terrain et non l'inverse.",
+        "dérogation_équipements_collectifs": "Les constructions, équipements d'intérêt collectif peuvent déroger aux règles du présent article sous réserve d'un apport architectural significatif et/ou une conception bioclimatique.",
+        "harmonie_ensemble_bâti": "Lorsque des constructions existantes présentent des caractéristiques communes qualitatives (couleur de façade, forme ou couleur de toiture, clôture), elles seront à reprendre par la nouvelle construction."
+      },
+      "CONSTRUCTIONS_PRINCIPALES_HABITATION": {
+        "Adaptation_de_la_maison_au_terrain": {
+          "principe": "L'adaptation se fera en évitant tout tumulus, levée de terre et bouleversement excessif du terrain.",
+          "dalle_RDC": "La dalle du rez-de-chaussée ne peut être, sauf exceptions, à plus de 0,70 m au-dessus du terrain naturel (chapitre 9 du titre I du règlement).",
+          "ordonnance_architecturale": "Les constructions doivent tenir compte de l'ordonnance architecturale des constructions voisines et reprendre ses principaux éléments de composition (volumes, forme de toiture, couleur de la façade, rythme des ouvertures, clôtures)."
+        },
+        "Les_façades": {
+          "isolation_extérieure": "Les matériaux et revêtements utilisés doivent être traités selon les teintes naturelles des sables ou des sols locaux. Ils ne doivent pas présenter des couleurs foncées.",
+          "blanc_pur_interdit": true,
+          "protection_solaire": "Les dispositifs de protection contre le rayonnement solaire (brises soleils, débords de toit et auvents) en façade exposée Sud et Ouest sont recommandés à condition d'une intégration harmonieuse.",
+          "Façades_secteur_Npat": {
+            "a": "Les travaux de réfection des façades existantes seront réalisés selon les règles de l'art. Les éléments de modénatures doivent être conservés. Les pierres de taille seront maintenues apparentes, non peintes ni enduites. Nettoiement par pulvérisation d'eau et brossage ou hydro-gommage.",
+            "b": "Les joints des pierres de taille seront dégarnis avec soin. Le mortier de rejointoiement sera réalisé avec de la chaux naturelle et sable, ton sur ton avec la pierre.",
+            "c": "Les murs seront entièrement enduits en deux passes à base de chaux naturelle et sable, ton sur ton ocre brun, en retrait ou à fleur de parement des pierres de taille. Finition brossée, tête de moellons apparents.",
+            "d": "L'application d'enduit formulé prêt à l'emploi ou de peinture est interdite. Le sablage à sec, le chemin de fer, le disque abrasif sont interdits. Le rebouchage des trous avec un mortier est interdit.",
+            "e": "Le remplacement d'éléments en pierre de taille dégradés sera réalisé par incrustation de pierre de même nature, d'une profondeur d'au moins 15 cm.",
+            "f": "Tout matériau enlevé sera remplacé par un matériau de même nature, de même forme, suivant la technique traditionnelle de substitution dite « en tiroir ».",
+            "g": "La reprise, la surélévation ou le prolongement de murs existants devront être réalisés dans le respect des règles ci-dessus."
+          }
+        },
+        "Les_menuiseries": {
+          "couleur": "Les menuiseries (dormant, ouvrant, volets, porte de garage) doivent être de couleur claire sauf apport architectural significatif ou meilleure intégration démontrée.",
+          "volets_roulants_bâti_ancien": "Les volets roulants visibles depuis les voies publiques ou privées sont interdits sur le bâti ancien à usage d'habitation présentant une qualité architecturale et patrimoniale.",
+          "volets_roulants_autres": "Sur les autres constructions, ils peuvent être autorisés si le coffre est inclus dans la maçonnerie du linteau ou installé à l'intérieur, non visible depuis l'extérieur.",
+          "Menuiseries_secteur_Npat": {
+            "a": "Les percements et ouvertures seront conservés dans leur état d'origine ou effectués dans le respect de l'ordonnancement des ouvertures existantes.",
+            "b": "Les encadrements des baies nouvellement créées dans les murs en moellons seront réalisés en pierre de taille. Les placages en pierre sont interdits.",
+            "c": "Les menuiseries anciennes existantes seront conservées, restaurées ou remplacées à l'identique, en bois peint.",
+            "d": "Les nouvelles menuiseries seront en bois, reprenant les dispositions traditionnelles. Elles seront de couleur claire, non vive.",
+            "e": "Les ouvrants adopteront un aspect harmonisé, limité à deux tonalités, sans aspect vif ou brillant."
+          }
+        },
+        "Prescriptions_secteur_Nm": {
+          "matériaux_finition_brillante_interdits": "Tant en bardage vertical qu'en toiture (hors serres)",
+          "couleurs": "Mates, choisies pour se fondre avec l'environnement. Pour les nouveaux bâtiments, teintes foncées de préférence brun et vert. Matériaux naturels (bois, pierre) non altérés.",
+          "toiture": "Peut être réalisée avec des plaques ondulées teintées dans la masse.",
+          "raisons_sociales": "Disposées sur les parois verticales avec hauteur de lettres conforme au règlement du site patrimonial remarquable."
+        }
+      },
+      "LES_AUTRES_BATIMENTS": {
+        "principes": [
+          "Grande simplicité de volume",
+          "Proportions correctes d'ensemble et de détail",
+          "Unité et qualité des matériaux",
+          "Cohérence des couleurs",
+          "Implantation soignée en fonction de la topographie, de la végétation et des bâtiments voisins"
+        ],
+        "règles_spécifiques": [
+          "Le faîtage sera parallèle à la plus grande dimension de la construction",
+          "Aucun fronton ou acrotère ne viendra masquer les rampants du toit",
+          "Les matériaux de finition brillante sont interdits en bardage vertical et en toiture",
+          "Les couleurs seront mates et choisies pour se fondre avec l'environnement",
+          "La toiture pourra être réalisée avec des plaques ondulées teintées dans la masse",
+          "Les raisons sociales seront disposées sur les parois verticales"
+        ],
+        "Sous_secteur_Nxf_forage": "Les locaux techniques seront d'aspect bois et peints en couleur vert foncé (couleur RAL 6011 ou équivalent)."
+      },
+      "Prescriptions_toitures_Npat": {
+        "a": "Les nouvelles toitures ou réfections seront réalisées en tuiles canal de terre cuite, à talon, de réemploi ou neuves si nécessaire. Trois tons vieillis choisis parmi l'ocre, le jaune, le brun ou le rouge.",
+        "b": "En cas de réfection, les tuiles anciennes seront posées en chapeau sur des tuiles en courant neuves à talon.",
+        "c": "En cas de nouvelle toiture, tuiles de terre cuites neuves à talon, modèle demi-rond. Les tuiles de faîtage, rives, arêtiers ou égout seront scellées au mortier de chaux teinté.",
+        "d": "Les ouvrages en zinc seront révisés ou restaurés dans leurs dispositions d'origine. L'usage de PVC (bandeaux de rives ou habillage de l'égout) est proscrit.",
+        "e": "Les ouvertures en toiture s'inscriront dans la pente du toit. Les châssis de toit seront encastrés à la couverture, avec une typologie traditionnelle de tabatière avec meneau central extérieur."
+      },
+      "LES_CLOTURES": {
+        "Dispositions_générales": {
+          "cohérence": "Les clôtures doivent présenter une cohérence d'aspect avec la construction principale.",
+          "visibilité": "En bordure d'emprise publique ou de voie, toute réalisation de clôture peut être interdite, reculée ou limitée en hauteur pour ne pas dégrader les conditions de visibilité.",
+          "type_préférentiel": "Les clôtures grillagées à maille large « type mouton » doivent être privilégiées.",
+          "hauteur_supérieure": "Des hauteurs plus importantes peuvent être admises sur rue ou en limite séparative pour des impératifs de sécurité (équipements collectifs, services publics, activité économique).",
+          "Sous_secteur_Nxf": "Seules les clôtures grillagées à maille large sont autorisées avec ouverture au sol pour le passage de la petite faune."
+        },
+        "Clôtures_villages_et_hameaux_anciens_avant_XXe": {
+          "sur_rue": {
+            "hauteur_max": "2 m (sauf si murs en pierre existants de hauteur supérieure jouxtent le terrain)",
+            "types_autorisés": [
+              "Mur en pierres ou matériaux recouverts du même enduit que le bâtiment principal, sur les deux faces, et chapeauté",
+              "Mur bahut enduit (hauteur max 1 m) surmonté d'une grille simple à barreaudage vertical ou d'un grillage, doublé ou non d'une haie vive",
+              "Haie d'essences locales variées doublée ou non d'un grillage à vocabulaire urbain (non industriel à mailles étroites)",
+              "Ganivelles bois"
+            ],
+            "éléments_techniques": "Boîtes-aux-lettres, compteurs, etc. doivent être autant que possible intégrés aux clôtures."
+          },
+          "en_limite_séparative": {
+            "hauteur_max": "2 m",
+            "types_autorisés": [
+              "Mur plein en pierres ou matériaux recouverts du même enduit que le bâtiment principal, sur les deux faces, et chapeauté",
+              "Haie d'essences locales variées doublée ou non d'un grillage à vocabulaire urbain (non industriel à mailles étroites)",
+              "Ganivelles bois"
+            ]
+          },
+          "en_fond_de_parcelle_contact_espace_agricole_naturel": "Obligatoirement constituées de végétaux d'essences locales variées, doublées ou non d'un grillage à mailles permettant le passage de la petite faune."
+        },
+        "Clôtures_secteur_Npat": "Les murs existants en maçonnerie enduite et/ou en pierre apparente seront conservés. Les clôtures maçonnées seront construites en moellons en calcaire de réemploi, jointoyées à pierres vues au mortier de chaux naturelle et sable de pays dans les tons ocre beige. Les pierres apparentes, les mortiers prêts à l'emploi et les finitions grattées sont proscrites.",
+        "Clôtures_autres_bâti_XXe_et_XXIe": {
+          "sur_rue": {
+            "principe": "Les transparences entre la rue et les espaces libres des fonds de parcelle ou des cœurs d'îlots doivent être privilégiées.",
+            "matériaux_interdits": "Éléments composites tels que plaques de ciment ou de tôle, bâches ; aspect brillant interdit.",
+            "murs": "Les murs en matériaux devront être crépis avec des enduits de la couleur des pierres locales.",
+            "éléments_techniques": "Intégrés aux clôtures autant que possible."
+          },
+          "en_limite_séparative": {
+            "matériaux_interdits": "Éléments composites tels que plaques de ciment ou de tôle, bâches ; aspect brillant interdit.",
+            "fond_parcelle": "La clôture de fonds de parcelle non bordée par une autre propriété bâtie doit nécessairement être constituée de végétaux d'essences locales variées, doublée ou non d'un grillage à mailles permettant le passage de la petite faune."
+          }
+        }
+      }
+    },
+    "art_2_3_traitement_paysager": {
+      "Abattage_arbres": "Tout abattage d'arbre doit être compensé. Cette règle s'applique aux parcs et jardins mais pas aux bois et forêts.",
+      "Aires_stockage_et_propreté": "Les aires de stockage à l'air libre et les aires de propreté doivent être dissimulées.",
+      "Aires_stationnement": "Les parcs de stationnement publics ou privés doivent faire l'objet d'un traitement paysager de qualité."
+    },
+    "art_2_4_stationnement": {
+      "principe": "Le stationnement des véhicules de toute nature, correspondant aux besoins des installations et constructions autorisées dans la zone, doit être assuré en dehors des voies publiques ou privées, par la réalisation d'aires de stationnement sur le terrain propre à l'opération.",
+      "alternative_mutualisation": null,
+      "cycles": null,
+      "residences_personnes_agees": null,
+      "revetement_collectif": {
+        "règle": "Les aires de stationnement collectif ne doivent être ni imperméables ni de couleur foncée.",
+        "revêtements_autorisés": [
+          "Pleine terre",
+          "Mélange terre/pierre",
+          "Revêtements alvéolaires de couleur claire engazonnés",
+          "Pavés perméables de couleur claire",
+          "Pierres concassées, graviers de couleur claire",
+          "Bétons poreux",
+          "Dalles alvéolées avec gravillon sur structures drainantes",
+          "Tout autre procédé utilisant des matériaux naturels assurant une perméabilité et une bonne réfraction de la lumière"
+        ]
+      },
+      "plantations_collectif": {
+        "règle": "Les aires de stationnement collectif doivent comporter 25 % d'arbres de haute tige rapportés au nombre d'emplacements de stationnement.",
+        "disposition": "Les arbres de haute tige doivent être disposés de façon optimale pour protéger de l'ensoleillement les emplacements.",
+        "surface_pied_arbre": "4 m² non imperméabilisée",
+        "essences": "Essences locales variées (se référer au chapitre 10 du titre I et à l'OAP thématique Trames verte et bleue)",
+        "applicabilité_étendue": "Ces dispositions sont également applicables aux places de stationnement réalisées dans les espaces communs des opérations d'aménagement en zones urbaines et en zone 1AUa, 1AUb, 1AUX et 1AUY."
+      },
+      "stationnement_individuel": {
+        "recommandation": "Il est recommandé que le stationnement individuel sur la parcelle privative ne soit ni imperméable ni de couleur foncée.",
+        "revêtements_préférentiels": [
+          "Pleine terre",
+          "Mélange terre/pierre",
+          "Revêtements alvéolaires de couleur claire engazonnés",
+          "Pavés perméables de couleur claire",
+          "Pierres concassées, graviers de couleur claire",
+          "Bétons poreux",
+          "Tout autre procédé utilisant des matériaux naturels assurant une perméabilité et une bonne réfraction de la lumière"
+        ]
+      },
+      "exceptions": {
+        "portance_insuffisante": "Les dispositions sur les revêtements ne s'appliquent pas quand il est démontré que la portance de la voie au regard des véhicules à stationner n'est pas compatible avec un revêtement perméable.",
+        "PMR": "Elles ne s'appliquent pas aux emplacements de stationnement obligatoires réalisés pour les véhicules des personnes à mobilité réduite."
+      },
+      "besoin_en_stationnement": "Les dispositions applicables figurent au chapitre 7 du titre I du présent règlement.",
+      "dispositions_specifiques": {
+        "Sous_secteur_Nxs": "Le stationnement devra prendre la forme d'aires paysagées et non imperméabilisées."
+      }
+    }
+  },
+  "section_3_voirie_acces": {
+    "art_3_1_desserte_voies": {
+      "Disposition_générale": {
+        "matériaux_voies_privées_recommandés": [
+          "Revêtements alvéolaires perméables",
+          "Pavés résines perméables",
+          "Graviers et pierres concassées",
+          "Tout autre procédé non imperméable et évitant les couleurs foncées"
+        ],
+        "note_portance": "Ces dispositions ne s'appliquent pas quand il est démontré que la portance de la voie d'accès au regard des véhicules qui doivent l'emprunter n'est pas compatible avec un revêtement perméable.",
+        "trottoirs_voies_privées": [
+          "En pleine terre engazonnée lorsqu'il existe un autre cheminement possible aussi direct pour les personnes à mobilité réduite",
+          "En stabilisé clair",
+          "En béton poreux",
+          "En dalles alvéolées avec gravillons sur structures drainantes",
+          "Tout autre procédé non imperméable et évitant les couleurs foncées"
+        ]
+      },
+      "Voie_de_circulation": {
+        "règle": "Les terrains doivent être desservis par des voies répondant à l'importance et à la destination de la construction ou de l'ensemble des constructions qui y sont édifiés.",
+        "défense_incendie": "Les caractéristiques des voies créées doivent répondre aux critères d'accessibilité de la défense incendie et protection civile."
+      },
+      "Accès": {
+        "visibilité_sécurité": "Toutes dispositions permettant une bonne visibilité et assurant la sécurité des usagers des voies publiques et celle des personnes utilisant les accès créés doivent être prises en compte.",
+        "limitation_accès": "Le nombre des accès sur les voies publiques pourra être limité dans l'intérêt de la sécurité. Lorsque le terrain est desservi par plusieurs voies, l'accès doit être établi sur la voie où la gêne pour la circulation est la moindre.",
+        "refus_possible": "Un projet pourra être refusé lorsque l'augmentation des entrées et sorties qu'il engendre sur la voie qui le dessert est incompatible avec la fréquentation ou la configuration de celle-ci.",
+        "mutualisation": "Dans la mesure du possible, il est recommandé de mutualiser les accès."
+      }
+    },
+    "art_3_2_desserte_reseaux": null
+  }
+}

@@ -1,0 +1,631 @@
+{
+  "$schema": "https://schema.plu.fr/reglement/v1.0",
+  "meta": {
+    "type_document": "PLUi",
+    "commune": "Grand Angoulême",
+    "version": "1.0.0"
+  },
+  "zone": {
+    "code": "UA",
+    "famille": "U",
+    "libelle": "La zone UA correspond au noyau historique des centres-villes, centres bourgs et villages constitués du territoire. Le tissu bâti est caractérisé par des formes denses et la présence d'équipements et de services nécessaires à la vocation majoritairement résidentielle de la zone.",
+    "description": "La zone UA correspond au noyau historique des centres-villes, centres bourgs et villages constitués du territoire. Le tissu bâti est caractérisé par des formes denses et la présence d'équipements et de services nécessaires à la vocation majoritairement résidentielle de la zone.",
+    "note_generale": null,
+    "localisation": null,
+    "objectifs": [],
+    "secteurs": []
+  },
+  "section_1_destinations": {
+    "mode": "tableau",
+    "legende": {
+      "X": "Occupations et utilisations du sol interdites",
+      "V*": "Occupations et utilisations du sol autorisées sous conditions",
+      "V": "Autorisé (tout ce qui n'est pas X ou V*)"
+    },
+    "categories": [
+      {
+        "id": "HABITATION",
+        "usages": [
+          {
+            "libelle": "Logement",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UA",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Hébergement",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UA",
+                "statut": "V"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "COMMERCE_ET_ACTIVITE_DE_SERVICE",
+        "usages": [
+          {
+            "libelle": "Artisanat et commerce de détail",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UA",
+                "statut": "V*",
+                "conditions": [
+                  "L'activité ne doit pas générer de nuisances incompatibles avec l'habitat"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Restauration",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UA",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Commerce de gros",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UA",
+                "statut": "V*",
+                "conditions": [
+                  "Seule l'extension mesurée des constructions existantes sera autorisée dans la limite de 30 % de l'emprise au sol existante à la date d'approbation du PLUi"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Activités de services où s'effectue l'accueil d'une clientèle",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UA",
+                "statut": "V*",
+                "conditions": [
+                  "L'activité ne doit pas générer des nuisances incompatibles avec l'habitat"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Hébergement hôtelier",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UA",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Camping et hôtellerie de plein-air",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UA",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Cinéma",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UA",
+                "statut": "V"
+              }
+            ]
+          }
+        ],
+        "note": "Se référer au chapitre 11 du titre I sur le commerce pour les activités entrant dans son champ d'application"
+      },
+      {
+        "id": "EQUIPEMENTS_INTERET_COLLECTIF_ET_SERVICES_PUBLICS",
+        "usages": [
+          {
+            "libelle": "Locaux et bureaux accueillant du public des administrations publiques et assimilés",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UA",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Locaux techniques et industriels des administrations publiques et assimilés",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UA",
+                "statut": "V*",
+                "conditions": [
+                  "Les constructions techniques et industrielles, notamment celles concourant à la production d'énergie sont autorisées, toutes sous réserve d'absence de nuisances et d'une bonne intégration sur le site d'implantation"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Etablissements d'enseignement, de santé et d'action sociale",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UA",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Salles d'art et de spectacles",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UA",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Equipements sportifs",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UA",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Autres équipements recevant du public",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UA",
+                "statut": "V"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "AUTRES_ACTIVITES_SECONDAIRE_OU_TERTIAIRE",
+        "usages": [
+          {
+            "libelle": "Industrie",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UA",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Entrepôts",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UA",
+                "statut": "V*",
+                "conditions": [
+                  "L'extension est limitée à 15 % de l'emprise existante"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Bureau",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UA",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Centre de congrès et d'exposition",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UA",
+                "statut": "V"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "EXPLOITATION_AGRICOLE_ET_FORESTIERE",
+        "usages": [
+          {
+            "libelle": "Exploitation agricole",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UA",
+                "statut": "V*",
+                "conditions": [
+                  "Les bâtiments d'élevage n'entraînant aucune nuisance pour l'habitat environnant tels que ceux nécessaires à l'héliciculture notamment"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Exploitation forestière",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UA",
+                "statut": "X"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "AUTRES_OCCUPATIONS_ET_UTILISATIONS_DU_SOL",
+        "usages": [
+          {
+            "libelle": "Habitat Léger Permanent",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UA",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Stationnement isolé de caravanes / HLL / RML",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UA",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Stationnement d'une caravane sur le terrain de la résidence principale de son utilisateur",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UA",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Terrains familiaux et résidences mobiles constituant l'habitat permanent des gens du voyage",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UA",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Coopératives d'utilisation de matériel agricole agréées",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UA",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Locaux et installations de diversification de l'activité agricole",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UA",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Camping à la ferme",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UA",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Affouillements et exhaussements de sol",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UA",
+                "statut": "V*",
+                "conditions": [
+                  "Ils sont directement liés aux travaux de constructions autorisées ou nécessaires pour la recherche archéologique"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Carrières",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UA",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Déchets, stockage de ferrailles et matériaux de démolition ou de récupération",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UA",
+                "statut": "X"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "dispositions_specifiques": [
+      {
+        "id": "MIXITE_FONCTIONNELLE",
+        "contenu": {
+          "Dispositions_relatives_a_la_mixite_fonctionnelle": "Les dispositions applicables sur les activités commerciales figurent au chapitre 11 du titre 1 du présent règlement.",
+          "Dispositions_relatives_aux_lineaires_commerciaux": {
+            "description": "Les linéaires commerciaux sont matérialisés en violet sur le document graphique.",
+            "règle": "Le changement de destination des commerces, des locaux artisanaux dans lesquels s'effectue une activité commerciale de vente de biens ou de services sont interdits. Cette disposition s'applique au rez-de-chaussée des constructions ayant une façade sur les voies concernées par le linéaire commercial repéré au document graphique.",
+            "exception": "Cette règle ne s'applique pas aux parties communes des constructions nécessaires à leur fonctionnement (hall d'entrée, local technique, accès aux étages supérieurs, etc.) pour une mise aux normes."
+          },
+          "Dispositions_relatives_aux_centralites": "Les dispositions définies par le SCoT-AEC et notamment le DAACL sur les centralités devront être respectées.",
+          "Dispositions_relatives_a_la_taille_des_logements": {
+            "note": "Ces dispositions ne s'appliquent pas à la sous-destination hébergement.",
+            "règles": {
+              "3_a_4_logements": "Il sera réalisé au moins un T3 ou logement de taille supérieure.",
+              "5_a_9_logements": "Il sera réalisé au moins deux T3 ou logements de taille supérieure.",
+              "10_logements_et_plus": "La moitié ou plus devront être des T3 ou logements de taille supérieure."
+            },
+            "dérogation_possible": "Ces règles peuvent être écartées dans le cadre des réhabilitations en cas d'impossibilité technique et patrimoniale avérée (surface de plancher réduite existante par niveau, impossibilité de regrouper deux niveaux, etc.)."
+          }
+        }
+      }
+    ]
+  },
+  "section_2_caracteristiques": {
+    "art_2_1_implantation": {
+      "note": "Toutes les règles d'implantation s'appliquent au nu des façades.",
+      "par_rapport_aux_voies": {
+        "Règle_générale": "La façade principale des nouvelles constructions devra être implantée soit à l'alignement des voies, soit en limite des emprises publiques.",
+        "Autres_implantations_possibles": [
+          "Lorsque le projet de construction jouxte une construction existante sur un fonds voisin présentant une qualité patrimoniale en respectant la même marge de recul",
+          "Lorsqu'un retrait est nécessaire pour améliorer la visibilité et la sécurité routière",
+          "Lorsque la continuité du bâti est assurée par la préexistence d'une construction principale ou d'un mur présentant une qualité patrimoniale en façade sur voie",
+          "Pour tenir compte de la configuration de la parcelle sous réserve de garantir une meilleure intégration du projet dans son environnement",
+          "Lorsqu'une construction préexiste sur la parcelle et empêche l'implantation à l'alignement"
+        ],
+        "Règles_concernant_les_extensions": "Les dispositions du présent article ne s'appliquent pas aux extensions des bâtiments existants qui ne respectent pas la règle, sans empiéter sur la marge de recul observée par l'existant.",
+        "Règles_concernant_les_annexes_et_garages": {
+          "annexes": "Les annexes à l'habitation s'implantent en recul par rapport à la voie, à l'arrière de la construction principale, de manière à limiter leur perception depuis l'espace public.",
+          "garages": "Les garages pourront s'implanter soit à l'alignement, soit en recul."
+        },
+        "Règles_concernant_les_constructions_et_installations": "Ces règles ne concernent pas les constructions et installations nécessaires aux services publics ou d'intérêt collectif.",
+        "Recul_par_rapport_aux_voies_express_et_routes_a_grande_circulation": {
+          "voies_concernées": [
+            "Routes nationales 10 et 141",
+            "Routes départementales 939 et 1000"
+          ],
+          "référence": "Se reporter au chapitre 6 du titre I « Dispositions relatives aux voies et infrastructures routières »."
+        },
+        "Implantation_par_rapport_aux_emprises_ferroviaires": {
+          "habitations_LGV_site_propre": "à moins de 50 m (hors section des embranchements vers la gare d'Angoulême)",
+          "habitations_autres_lignes": "à moins de 15 m",
+          "annexes_autres_lignes": "à moins de 5 m",
+          "autres_constructions_LGV": "à moins de 10 m pour la LGV en site propre, 5 m pour les autres sections et autres lignes"
+        }
+      },
+      "par_rapport_aux_limites_separatives": {
+        "Règle_générale": "Les nouvelles constructions principales s'implantent sur au moins une des limites séparatives latérales.",
+        "exception": "Cette règle peut ne pas être imposée en cas d'impossibilité technique liée notamment à la configuration de la parcelle."
+      },
+      "emprise_au_sol": {
+        "note": "Aucune règle d'emprise au sol maximale n'est définie dans cet article pour la zone UA."
+      },
+      "hauteur": {
+        "Règle_générale": {
+          "hauteur_maximale_point_le_plus_haut": "13 m (attique et faîtage pour les constructions pourvues d'une toiture à pans)",
+          "hauteur_maximale_acrotere_ou_egout": "10 m",
+          "mesure": "La hauteur est mesurée à partir du niveau du terrain naturel (niveau du sol existant avant les travaux de terrassement et d'exhaussement)."
+        },
+        "Autres_hauteurs_possibles": [
+          "En cas de forte déclivité : hauteur mesurée par rapport au point le plus haut de l'emprise de la construction",
+          "En cas d'adossement à une construction existante de plus grande hauteur",
+          "Pour les constructions et installations nécessaires aux services publics ou d'intérêt collectif"
+        ],
+        "exclusions_du_calcul": "Les ouvrages techniques de faible emprise (locaux techniques d'ascenseurs, cheminées, etc.) ne sont pas pris en compte dans le calcul de la hauteur maximale autorisée.",
+        "autorisations_en_surplomb_des_voies": [
+          "Isolation par l'extérieur pour amélioration des performances énergétiques et acoustiques, si la largeur du trottoir permet le déplacement de personnes à mobilité réduite (articles L152-1 et R152-1 et suivants du code de l'urbanisme)",
+          "Dispositifs de végétalisation des façades des constructions existantes"
+        ]
+      }
+    },
+    "art_2_2_qualite_architecturale": {
+      "Généralité": {
+        "energies_renouvelables": "Sont autorisées et encouragées les techniques d'architecture bioclimatiques ou d'écoconstructions, ainsi que celles favorisant l'installation de matériel utilisant les énergies renouvelables. Les équipements (capteurs solaires, pompe à chaleur) doivent être considérés comme des éléments de composition architecturale et implantés en cohérence avec la trame des ouvertures.",
+        "performances_energetiques": "Pour toutes les constructions, il sera privilégié un choix de matériaux intégrant des critères environnementaux : faible énergie grise, bois provenant de forêts durablement gérées, matériaux ayant un étiquetage environnemental.",
+        "intégration_architecturale": "Tout projet de construction doit s'intégrer à son environnement par : la simplicité et les proportions de ses volumes et une cohérence architecturale ; la qualité et la pérennité des matériaux ; l'harmonie des couleurs.",
+        "matériaux_nus_interdits": "Est interdit (en façade, clôture, toiture, etc.) l'emploi à nu des matériaux destinés à être recouverts (types briques creuses, carreaux de plâtre, parpaing, etc.). Ils devront être enduits et peints ou enduits teinté dans la masse.",
+        "caractéristiques_communes": "Lorsque des constructions existantes présentent des caractéristiques communes qualitatives (couleur de façade, forme ou couleur de toiture, clôture), elles seront à reprendre par la nouvelle construction."
+      },
+      "Constructions_principales_usage_habitation": {
+        "Adaptation_de_la_maison_au_terrain": {
+          "règle": "L'adaptation de la maison au terrain se fera en évitant tout tumulus, levée de terre et bouleversement excessif du terrain. Les constructions doivent suivre de près les dénivellations et mouvements du sol naturel existant.",
+          "dalle_RDC": "La dalle du rez-de-chaussée ne peut être à plus de 0,70 m au-dessus du terrain naturel sauf exceptions détaillées au chapitre 9 du titre I."
+        },
+        "Les_couvertures": {
+          "matériaux": "Les couvertures des constructions nouvelles doivent être réalisées en tuiles de couleur naturelle et claire (rose charentais ou plusieurs teintes brouillées). L'emploi d'ardoises est limité aux habitations existantes dont la couverture est déjà composée de cet élément.",
+          "pentes": "Les pentes des toits doivent être comprises entre 25 et 35 % pour les couvertures en tuiles et inférieures à 80 % pour les couvertures en ardoises.",
+          "capteurs_solaires": "Pour les toitures en pente, les capteurs solaires doivent s'intégrer harmonieusement, par une pose dans le plan de la toiture, sans débord ni saillie, sauf impossibilité technique.",
+          "lucarnes_et_chassis": "Les éléments de toitures, notamment les lucarnes et les châssis, sont admis sous réserve qu'ils correspondent et respectent la typologie architecturale de l'environnement urbain proche.",
+          "prescriptions_UApat": {
+            "tuiles": "Tuiles canal de terre cuite, à talon, de réemploi selon l'état de l'existant ou entièrement neuves si nécessaire. Trois tons vieillis choisis parmi l'ocre, le jaune, le brun ou le rouge.",
+            "réfection": "Les tuiles anciennes seront posées en chapeau sur des tuiles en courant neuves à talon.",
+            "zinc": "Les ouvrages en zinc seront révisés ou restaurés dans leurs dispositions et composition d'origine. L'usage de PVC est proscrit.",
+            "nouvelle_toiture": "Tuiles de terre cuites neuves à talon, modèle demi-rond de courant et de couvert posé séparément. Les tuiles de faîtage, rives, arêtiers ou égout, seront scellées au mortier de chaux teinté.",
+            "ouvertures_en_toiture": "Les ouvertures en toiture s'inscriront obligatoirement dans la pente du toit. Les châssis de toit seront encastrés à la couverture."
+          }
+        },
+        "Les_ouvertures": {
+          "règle": "Les ouvertures visibles du domaine public devront être plus hautes que larges sauf les portes de garage et baies vitrées.",
+          "prescriptions_UApat": {
+            "percements": "Les percements et ouvertures seront conservés dans leur état d'origine, ou effectués dans le respect de l'ordonnancement des ouvertures existantes.",
+            "encadrements": "Les encadrements des baies nouvellement créées dans les murs en moellons seront réalisés en pierre de taille. Les placages en pierre sont interdits.",
+            "menuiseries_anciennes": "Les menuiseries anciennes existantes seront conservées, restaurées ou remplacées strictement à l'identique, en bois peint.",
+            "menuiseries_nouvelles": "Seules des menuiseries en bois reprenant les dispositions traditionnelles seront autorisées. Les menuiseries seront peintes dans une tonalité de couleur claire, non vive. L'aspect des ouvrants ne doit pas présenter un aspect vif ou brillant."
+          }
+        },
+        "Les_volets": {
+          "volets_roulants_bâti_ancien": "Les volets roulants, lorsqu'ils sont visibles depuis les voies publiques ou privées, sont interdits sur le bâti ancien relevant de la destination habitation présentant une qualité architecturale et patrimoniale.",
+          "autres_constructions": "Ils peuvent être autorisés à condition que le coffre soit inclus dans la maçonnerie du linteau ou installé à l'intérieur de la construction, sur le linteau et non visible depuis l'extérieur."
+        },
+        "Les_facades": {
+          "teintes": "Les façades adopteront des teintes proches des enduits locaux traditionnels. Les teintes sont naturelles (terres, sables ou pierres locaux).",
+          "matériaux_nus_interdits": "Sur les murs en parement extérieur, l'emploi à nu de matériaux destinés à être recouverts (parpaing, brique creuse, béton cellulaire, etc.) est interdit.",
+          "isolation_extérieure": "Lors des opérations d'isolation par l'extérieur, les matériaux et revêtements utilisés doivent être traités selon les teintes naturelles des sables ou des sols locaux et ne pas présenter des couleurs foncées.",
+          "blanc_pur_interdit": "L'emploi du blanc pur est interdit.",
+          "brises_soleils": "Les dispositifs de protection contre le rayonnement solaire (brises soleils, débords de toit, auvents) en façade exposée Sud et Ouest sont recommandés sous réserve d'intégration harmonieuse.",
+          "prescriptions_UApat": {
+            "modénatures": "En cas de réfection des façades existantes, l'ensemble des éléments de modénatures existants doit être conservé. Les pierres de taille seront maintenues apparentes, et ne seront ni peintes, ni enduites.",
+            "rejointoiement": "Les joints des pierres de taille seront dégarnis. Le mortier de rejointoiement sera réalisé avec de la chaux naturelle et sable, ton sur ton avec celui de la pierre.",
+            "enduits": "Les murs seront entièrement enduits à base de chaux naturelle et sable, appliqué en retrait ou à fleur de parement des pierres de taille. La finition des enduits sera brossée, tête de moellons apparents.",
+            "interdictions": "L'application d'enduit formulé prêt à l'emploi ou de peinture est interdite. Le sablage à sec, le chemin de fer, le disque abrasif sont interdits.",
+            "remplacement_pierres": "Le remplacement d'éléments en pierre de taille dégradés sera réalisé par incrustation de pierre de même nature, d'une profondeur d'au moins 15 cm."
+          }
+        },
+        "Les_menuiseries": {
+          "couleur": "Les menuiseries (dormant et ouvrant des fenêtres, volets, porte de garage) doivent être de façon préférentielle de couleur gris clair et en tout état de cause de couleur claire, sauf projet d'apport architectural significatif ou démonstration d'une meilleure intégration."
+        }
+      },
+      "Les_annexes": {
+        "soin_particulier": "Les bâtiments annexes doivent faire l'objet d'un soin particulier dans leur implantation par rapport au bâtiment principal et au traitement paysager de la parcelle.",
+        "matériaux": "Les bâtiments annexes seront de préférence recouverts d'un matériau présentant une homogénéité de teinte et de matière avec la construction principale. L'utilisation du bois est préconisée pour les abris de jardins.",
+        "bardage_metallique_interdit": "L'emploi du bardage métallique est interdit."
+      },
+      "Les_clotures_sur_rue": {
+        "hauteur_maximale": "2 m, sauf dans le cas où des murs en pierre existants d'une hauteur supérieure à 2 m jouxtent le terrain.",
+        "types_autorisés": [
+          "Mur en pierres ou en matériaux recouverts de préférence du même enduit que le bâtiment principal, sur les deux faces, et chapeauté",
+          "Mur bahut enduit des deux faces, hauteur maximale 1 m, surmonté d'une grille simple à barreaudage vertical, doublé ou non d'une haie vive",
+          "Haie d'essences locales variées (se référer au chapitre 10 du titre I), doublée ou non d'un grillage"
+        ],
+        "prescriptions_UApat": "Les clôtures anciennes en pierre existantes seront conservées. Les clôtures maçonnées seront construites à l'aide de moellons en calcaire de réemploi. Elles devront être jointoyées à pierres vues, au mortier de chaux naturelle et de sable de pays."
+      },
+      "Les_clotures_en_limite_separative": {
+        "hauteur_maximale": "2 m",
+        "types_autorisés": [
+          "Mur plein en pierres ou en matériaux recouverts de préférence du même enduit que le bâtiment principal, sur les deux faces, et chapeauté",
+          "Grillage, doublé ou non d'une haie d'essences locales variées. Le grillage doit relever d'un vocabulaire urbain mais en aucun cas industriel à mailles étroites"
+        ],
+        "exception_hauteur": "Des hauteurs plus importantes peuvent être admises en cas d'impératifs de sécurité pour les équipements collectifs, les services publics ou les constructions abritant une activité économique.",
+        "clôture_contact_zone_naturelle": "Si la clôture est au contact d'une zone naturelle ou agricole, elle sera obligatoirement constituée de végétaux d'essences locales variées, doublée ou non d'un grillage à mailles permettant le passage de la petite faune."
+      },
+      "Les_dispositions_particulières_autres_constructions": {
+        "dérogations_possibles": [
+          "Pour l'accessibilité et la sécurité des équipements publics et tous les locaux recevant du public sur la composition des façades",
+          "Pour les constructions à usage d'activités et les équipements publics"
+        ],
+        "condition": "Ces autres dispositions peuvent être admises sous réserve que le projet, par son aspect extérieur, ne soit pas de nature à porter atteinte au caractère ou à l'intérêt des lieux avoisinants, aux sites, aux paysages naturels ou perspectives monumentales."
+      },
+      "Éléments_divers": {
+        "citernes": "Les citernes à eau, gaz ou à mazout sont soit enterrées, soit intégrées dans la parcelle à l'aide de végétaux ou autres éléments en harmonie avec le paysage bâti. Elles ne doivent pas être visibles depuis le domaine public.",
+        "coffrets_techniques": "Les coffrets techniques seront le moins visibles possible depuis le domaine public. L'emplacement des coffrets individuels sera déterminé en fonction de l'ordonnancement de la façade. Les coffrets seront placés en dehors de tout élément de modénature des façades."
+      },
+      "Disposition_elements_de_patrimoine": "Les dispositions applicables figurent au chapitre 3 du titre I du présent règlement (application de l'article L151-19 du code de l'urbanisme)."
+    },
+    "art_2_3_traitement_paysager": {
+      "Aires_de_stationnement": "Les aires de stationnement doivent faire l'objet d'un traitement paysager de qualité, et être plantées à raison d'un arbre au moins pour 4 emplacements.",
+      "Coefficient_de_pleine_terre": {
+        "valeur_minimale": "25 %",
+        "définition": "Espace libre hors emprise de la construction principale permettant l'infiltration des eaux pluviales, pouvant être aménagé en espace vert ou espace naturel (potager, pelouse, plantations)",
+        "seuil_application": "Sur toutes les unités foncières de plus de 200 m²"
+      },
+      "Les_arbres": {
+        "arbres_haute_tige_cœur_ilot": "Les arbres de haute tige présents en cœur d'îlot doivent être maintenus si cela est compatible avec la réhabilitation de l'ensemble immobilier.",
+        "replantation": "Au cas où une incompatibilité est démontrée, des arbres de haute tige doivent être replantés ou plantés sur l'emprise de l'opération.",
+        "surface_pied_arbre": "Les pieds des arbres de haute tige doivent comporter une surface non imperméabilisée de 4 m² ou correspondant à la taille du houppier.",
+        "applicabilité": "Ces dispositions s'imposent uniquement à l'occasion du traitement d'ensemble d'un îlot ou d'une opération de renouvellement urbain sur un terrain de plus de 5 000 m².",
+        "marges_de_recul": "Les marges de recul doivent être aménagées en espaces à dominante végétale."
+      }
+    },
+    "art_2_4_stationnement": {
+      "principe": "Le stationnement des véhicules, correspondant aux besoins des installations et constructions autorisées dans la zone, doit être assuré en dehors des voies publiques ou privées, par la réalisation d'aires de stationnement sur le terrain propre à l'opération.",
+      "alternative_mutualisation": "Le bénéficiaire du permis peut être tenu quitte de ses obligations en justifiant soit de l'obtention d'une concession à long terme dans un parc public de stationnement existant ou en cours de réalisation (situé à proximité, 300 m), soit de l'acquisition ou de la concession de places dans un parc privé de stationnement répondant aux mêmes conditions.",
+      "cycles": null,
+      "residences_personnes_agees": null,
+      "revetement_collectif": {
+        "règle": "Les aires de stationnement collectif ne doivent être ni imperméables ni de couleur foncée.",
+        "revêtements_autorisés": [
+          "Pleine terre",
+          "Mélange terre/pierre",
+          "Revêtements alvéolaires de couleur claire engazonnés",
+          "Pavés perméables de couleur claire",
+          "Pierres concassées, graviers de couleur claire",
+          "Bétons poreux",
+          "Dalles alvéolées avec gravillon sur structures drainantes",
+          "Tout autre procédé utilisant des matériaux naturels assurant une perméabilité et une bonne réfraction de la lumière"
+        ]
+      },
+      "plantations_collectif": {
+        "règle": "Les aires de stationnement collectif doivent comporter 25 % d'arbres de haute tige rapportés au nombre d'emplacements de stationnement.",
+        "disposition": "Les arbres de haute tige doivent être disposés de façon optimale pour protéger de l'ensoleillement les emplacements.",
+        "surface_pied_arbre": "4 m² non imperméabilisée",
+        "essences": "Essences locales variées (se référer au chapitre 10 du titre I et à l'OAP thématique Trames verte et bleue)"
+      },
+      "stationnement_individuel": {
+        "recommandation": "Il est recommandé que le stationnement individuel sur la parcelle privative ne soit ni imperméable ni de couleur foncée.",
+        "revêtements_préférentiels": [
+          "Pleine terre",
+          "Mélange terre/pierre",
+          "Revêtements alvéolaires de couleur claire engazonnés",
+          "Pavés perméables de couleur claire",
+          "Pierres concassées, graviers de couleur claire",
+          "Bétons poreux",
+          "Tout autre procédé utilisant des matériaux naturels assurant une perméabilité et une bonne réfraction de la lumière"
+        ]
+      },
+      "exceptions": {
+        "portance_insuffisante": "Les dispositions sur les revêtements ne s'appliquent pas quand il est démontré que la portance de la voie au regard des véhicules à stationner n'est pas compatible avec un revêtement perméable.",
+        "PMR": "Elles ne s'appliquent pas aux emplacements de stationnement obligatoires réalisés pour les véhicules des personnes à mobilité réduite."
+      },
+      "besoin_en_stationnement": "Les dispositions applicables figurent au chapitre 7 du titre I du présent règlement. La possibilité de stationnement des cycles est prévue."
+    }
+  },
+  "section_3_voirie_acces": {
+    "art_3_1_desserte_voies": {
+      "Disposition_generale": {
+        "constructibilité": "Pour être constructible, un terrain doit avoir accès à une voie publique ou privée ouverte à la circulation, soit directement, soit par l'intermédiaire d'un passage aménagé sur fonds voisin.",
+        "caractéristiques_voies": [
+          "Répondre à l'importance et à la destination des constructions projetées",
+          "Permettre la circulation et l'utilisation des moyens de secours et des engins de lutte contre l'incendie",
+          "Permettre d'assurer la sécurité des usagers au regard de la nature et de l'intensité de trafic"
+        ],
+        "matériaux_voies_privées": [
+          "Revêtements alvéolaires perméables",
+          "Pavés résines perméables",
+          "Graviers et pierres concassées",
+          "Tout autre procédé non imperméable et évitant les couleurs foncées"
+        ],
+        "trottoirs_voies_privées": [
+          "En pleine terre engazonnée lorsqu'il existe un autre cheminement possible aussi direct pour les personnes à mobilité réduite",
+          "En stabilisé clair",
+          "En béton poreux",
+          "En dalles alvéolées avec gravillons sur structures drainantes",
+          "Tout autre procédé non imperméable et évitant les couleurs foncées"
+        ]
+      },
+      "Voie_de_circulation": {
+        "règles_nouvelles_voies": [
+          "S'intégrer au maillage viaire environnant et participer à une bonne desserte du quartier",
+          "Éviter les effets d'impasse et être aménagée de manière à permettre de faire aisément demi-tour"
+        ],
+        "circulation_douces": "En cas de création ou de réhabilitation des voies publiques ou privées, la circulation et la sécurité des deux roues, des piétons et des personnes à mobilité réduite devront être prises en compte.",
+        "impasses": "Les nouvelles voies en impasse seront uniquement autorisées en l'absence de solution permettant les connexions. Dans ce cas, elles devront être aménagées de telle sorte que les véhicules puissent aisément faire demi-tour, notamment les véhicules de lutte contre l'incendie."
+      },
+      "Accès": {
+        "visibilité_sécurité": "Toutes dispositions permettant une bonne visibilité et assurant la sécurité des usagers des voies publiques et celle des personnes utilisant les accès créés doivent être prises en compte pour le débouché des véhicules sur voie publique ou privée.",
+        "limitation_accès": "Le nombre des accès sur les voies publiques pourra être limité dans l'intérêt de la sécurité. Lorsque le terrain est desservi par plusieurs voies, l'accès doit être établi sur la voie où la gêne pour la circulation est la moindre.",
+        "mutualisation": "La mutualisation des accès pourra être exigée afin d'éviter la multiplication des accès.",
+        "largeur_minimale": "3 m, sauf lorsque l'accès ne concerne qu'un nombre réduit de constructions nouvelles notamment dans le cadre d'opérations BIMBY et que le secours incendie est assuré.",
+        "nombre_accès_maximum": "Tout terrain ne peut avoir plus d'un accès automobile. Toutefois, un deuxième accès pourra être autorisé sur demande justifiée."
+      }
+    },
+    "art_3_2_desserte_reseaux": null
+  }
+}

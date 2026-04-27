@@ -1,0 +1,34 @@
+{
+  "TITRE": "TITRE I - DISPOSITIONS GÉNÉRALES ET SPÉCIFIQUES À DES PÉRIMÈTRES QUI NE CONSTITUENT PAS DES ZONES OU SECTEURS DU RÈGLEMENT GRAPHIQUE",
+  "CHAPITRE": "CHAPITRE 9 : ADAPTATION DES VOLUMES DES CONSTRUCTIONS AU TERRAIN",
+  "source": "Règlement écrit - Pièce n°5.2.a - PLUi valant Plan de Mobilité - Communauté d'agglomération de GrandAngoulême",
+  "pages": "30-31",
+
+  "principe_general": "Tous les projets de constructions doivent s'adapter au terrain et non l'inverse",
+
+  "CAS_TERRAIN_PLAT": {
+    "points_d_attention": [
+      "Adaptation des volumes de la construction au contexte de plaine : décaissement, mur de soutènement et remblai sont inadaptés",
+      "Prise en compte de la position du garage par rapport aux accès du terrain pour éviter que les voies carrossables ne soient trop importantes",
+      "Sens du faîtage (ou orientation principale du bâtiment) par rapport à la voie ou aux orientations des constructions voisines"
+    ],
+    "interdictions": "Pas de déplacement artificiel des terres : déblais et remblais à proscrire à partir de 70 cm"
+  },
+
+  "CAS_TERRAIN_EN_PENTE": {
+    "principe": "La nature de la pente et le positionnement des accès par rapport aux voies vont conditionner l'ensemble du projet",
+    "points_d_attention": [
+      "Adaptation des niveaux de la construction à la pente du terrain en évitant le plus possible les modifications de terrain (décaissements et murs de soutènement)",
+      "Prise en compte de la position du garage par rapport aux accès du terrain pour éviter que les voies carrossables ne défigurent le paysage et n'occupent tout le terrain",
+      "Sens du faîtage par rapport à la pente",
+      "Les garages doivent être au même niveau que la voie",
+      "Les accès voiture doivent être intégrés à la pente"
+    ],
+    "deblais_remblais": {
+      "hauteur_maximale_generale": "70 cm",
+      "exception": "Une hauteur supérieure à 0,70 m pourra être autorisée en cas de contraintes techniques, notamment si la pente du terrain est supérieure à 5 %",
+      "traitement_talus": "Les talus en déblais et remblais réalisés devront être traités afin de ne pas se distinguer dans le paysage et seront intégrés au projet architectural",
+      "hauteur_maximale_talus": "1,50 m, sauf pour les terrains cumulant des contraintes topographiques et techniques fortes"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "TITRE": "TITRE I - DISPOSITIONS GÉNÉRALES ET SPÉCIFIQUES À DES PÉRIMÈTRES QUI NE CONSTITUENT PAS DES ZONES OU SECTEURS DU RÈGLEMENT GRAPHIQUE",
+  "CHAPITRE": "CHAPITRE 5 : DISPOSITIONS RELATIVES AUX SECTEURS PROTÉGÉS EN RAISON DE LA RICHESSE DU SOL OU DU SOUS-SOL",
+  "source": "Règlement écrit - Pièce n°5.2.a - PLUi valant Plan de Mobilité - Communauté d'agglomération de GrandAngoulême",
+  "page": "23",
+  "reference_legislative": "R151-34 2° CU",
+
+  "principe_general": "Les documents graphiques font apparaître les secteurs protégés en raison de la richesse du sol ou du sous-sol dans lesquels les constructions et installations nécessaires à la mise en valeur de ses ressources naturelles sont autorisées.",
+
+  "interdictions": {
+    "principe": "Dans ces secteurs, toutes les installations et constructions sont interdites",
+    "exceptions": [
+      "Constructions et installations relevant de la destination « autres activités des secteurs primaire, secondaire ou tertiaire » nécessaires à l'exploitation extractive des matériaux présents dans le sol et le sous-sol",
+      "Constructions et installations liées et/ou nécessaires aux locaux techniques et industriels des administrations publiques et assimilées"
+    ]
+  }
+}

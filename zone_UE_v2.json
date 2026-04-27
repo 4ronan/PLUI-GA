@@ -1,0 +1,1030 @@
+{
+  "$schema": "https://schema.plu.fr/reglement/v1.0",
+  "meta": {
+    "type_document": "PLUi",
+    "commune": "Grand Angoulême",
+    "version": "1.0.0"
+  },
+  "zone": {
+    "code": "UE",
+    "famille": "U",
+    "libelle": "La zone UE correspond aux équipements d'intérêt collectifs (cimetières, équipements sportifs…).",
+    "description": "La zone UE correspond aux équipements d'intérêt collectifs (cimetières, équipements sportifs…).",
+    "note_generale": "Tout projet devra être compatible avec les OAP thématiques et notamment pour le secteur UEp avec l'OAP fleuve.",
+    "localisation": null,
+    "objectifs": [],
+    "secteurs": [
+      {
+        "code": "UEa",
+        "libelle": "Dédié à l'aéroport Angoulême-Cognac"
+      },
+      {
+        "code": "UEd",
+        "libelle": "Dédié à la déchetterie de Soyaux"
+      },
+      {
+        "code": "UEn",
+        "libelle": "Dédié aux énergies renouvelables"
+      },
+      {
+        "code": "UEp",
+        "libelle": "Dédié au développement de port L'Houmeau à Angoulême"
+      },
+      {
+        "code": "UEpat",
+        "libelle": "Secteur à enjeu patrimonial autour des monuments historiques"
+      },
+      {
+        "code": "UEs",
+        "libelle": "Dédié aux équipements publics sportifs et aménagements accessoires liés (stationnements…)"
+      }
+    ]
+  },
+  "section_1_destinations": {
+    "mode": "tableau",
+    "legende": {
+      "X": "Occupations et utilisations du sol interdites",
+      "V*": "Occupations et utilisations du sol autorisées sous conditions",
+      "V": "Autorisé (tout ce qui n'est pas X ou V*)"
+    },
+    "categories": [
+      {
+        "id": "HABITATION",
+        "usages": [
+          {
+            "libelle": "Logement de fonction uniquement",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UE",
+                "statut": "V*",
+                "conditions": [
+                  "Être nécessaire et directement lié à un équipement présent sur le site (gardiennage, etc.)",
+                  "Être intégré au bâtiment d'activité"
+                ]
+              },
+              {
+                "secteur": "UEa",
+                "statut": "V*",
+                "conditions": [
+                  "Être nécessaire et directement lié à un équipement présent sur le site (gardiennage, etc.)",
+                  "Être intégré au bâtiment d'activité"
+                ]
+              },
+              {
+                "secteur": "UEd",
+                "statut": "V*",
+                "conditions": [
+                  "Être nécessaire et directement lié à un équipement présent sur le site (gardiennage, etc.)",
+                  "Être intégré au bâtiment d'activité"
+                ]
+              },
+              {
+                "secteur": "UEp",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEs",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEn",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Hébergement",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UE",
+                "statut": "V"
+              },
+              {
+                "secteur": "UEa",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEd",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEp",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEs",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEn",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Résidences mobiles constituant l'habitat permanent des gens du voyage",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UE",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEa",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEd",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEp",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEs",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEn",
+                "statut": "X"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "COMMERCE_ET_ACTIVITE_DE_SERVICE",
+        "usages": [
+          {
+            "libelle": "Artisanat et commerce de détail",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UE",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEa",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEd",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEp",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEs",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEn",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Restauration",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UE",
+                "statut": "V*",
+                "conditions": [
+                  "Être lié à un équipement présent sur le site"
+                ]
+              },
+              {
+                "secteur": "UEa",
+                "statut": "V*",
+                "conditions": [
+                  "Être lié à un équipement présent sur le site"
+                ]
+              },
+              {
+                "secteur": "UEd",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEp",
+                "statut": "V"
+              },
+              {
+                "secteur": "UEs",
+                "statut": "V"
+              },
+              {
+                "secteur": "UEn",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Commerce de gros",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UE",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEa",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEd",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEp",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEs",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEn",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Activités de services où s'effectue l'accueil d'une clientèle",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UE",
+                "statut": "V*",
+                "conditions": [
+                  "Sous réserve de l'accueil d'activités médicales ou paramédicales ou d'activités accessoires à celles de l'aéroport en UEa"
+                ]
+              },
+              {
+                "secteur": "UEa",
+                "statut": "V*",
+                "conditions": [
+                  "Sous réserve de l'accueil d'activités médicales ou paramédicales ou d'activités accessoires à celles de l'aéroport en UEa"
+                ]
+              },
+              {
+                "secteur": "UEd",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEp",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEs",
+                "statut": "V"
+              },
+              {
+                "secteur": "UEn",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Hébergement hôtelier et touristique",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UE",
+                "statut": "V"
+              },
+              {
+                "secteur": "UEa",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEd",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEp",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEs",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEn",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Cinéma",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UE",
+                "statut": "V"
+              },
+              {
+                "secteur": "UEa",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEd",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEp",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEs",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEn",
+                "statut": "X"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "EQUIPEMENTS_INTERET_COLLECTIF_ET_SERVICES_PUBLICS",
+        "usages": [
+          {
+            "libelle": "Locaux et bureaux accueillant du public des administrations publiques et assimilés",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UE",
+                "statut": "V"
+              },
+              {
+                "secteur": "UEa",
+                "statut": "V"
+              },
+              {
+                "secteur": "UEd",
+                "statut": "V"
+              },
+              {
+                "secteur": "UEp",
+                "statut": "V"
+              },
+              {
+                "secteur": "UEs",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEn",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Locaux techniques et industriels des administrations publiques et assimilés (dont ENR, installations portuaires)",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UE",
+                "statut": "V"
+              },
+              {
+                "secteur": "UEa",
+                "statut": "V"
+              },
+              {
+                "secteur": "UEd",
+                "statut": "V"
+              },
+              {
+                "secteur": "UEp",
+                "statut": "V"
+              },
+              {
+                "secteur": "UEs",
+                "statut": "X* (uniquement antennes de communication autorisées)"
+              },
+              {
+                "secteur": "UEn",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Etablissements d'enseignement, de santé et d'action sociale",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UE",
+                "statut": "V"
+              },
+              {
+                "secteur": "UEa",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEd",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEp",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEs",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEn",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Salles d'art et de spectacles",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UE",
+                "statut": "V"
+              },
+              {
+                "secteur": "UEa",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEd",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEp",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEs",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEn",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Equipements sportifs",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UE",
+                "statut": "V"
+              },
+              {
+                "secteur": "UEa",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEd",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEp",
+                "statut": "V"
+              },
+              {
+                "secteur": "UEs",
+                "statut": "V",
+                "conditions": [
+                  "Les aménagements accessoires (stationnements, constructions liés aux réseaux publics…) nécessaires aux équipements sportifs seront autorisés"
+                ]
+              },
+              {
+                "secteur": "UEn",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Autres équipements recevant du public",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UE",
+                "statut": "V"
+              },
+              {
+                "secteur": "UEa",
+                "statut": "V"
+              },
+              {
+                "secteur": "UEd",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEp",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEs",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEn",
+                "statut": "X"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "AUTRES_ACTIVITES_SECONDAIRE_OU_TERTIAIRE",
+        "usages": [
+          {
+            "libelle": "Industrie",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UE",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEa",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEd",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEp",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEs",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEn",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Entrepôts",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UE",
+                "statut": "V*",
+                "conditions": [
+                  "Être nécessaire et directement lié à un équipement présent sur le site"
+                ]
+              },
+              {
+                "secteur": "UEa",
+                "statut": "V*",
+                "conditions": [
+                  "Être nécessaire et directement lié à un équipement présent sur le site"
+                ]
+              },
+              {
+                "secteur": "UEd",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEp",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEs",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEn",
+                "statut": "V*",
+                "conditions": [
+                  "Être nécessaire et directement lié à un équipement présent sur le site"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Bureau",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UE",
+                "statut": "V*",
+                "conditions": [
+                  "Être nécessaire et directement lié à un équipement présent sur le site"
+                ]
+              },
+              {
+                "secteur": "UEa",
+                "statut": "V*",
+                "conditions": [
+                  "Être nécessaire et directement lié à un équipement présent sur le site"
+                ]
+              },
+              {
+                "secteur": "UEd",
+                "statut": "V*",
+                "conditions": [
+                  "Être nécessaire et directement lié à un équipement présent sur le site"
+                ]
+              },
+              {
+                "secteur": "UEp",
+                "statut": "V*",
+                "conditions": [
+                  "Être nécessaire et directement lié à un équipement présent sur le site"
+                ]
+              },
+              {
+                "secteur": "UEs",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEn",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Centre de congrès et d'exposition",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UE",
+                "statut": "V"
+              },
+              {
+                "secteur": "UEa",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEd",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEp",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEs",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEn",
+                "statut": "X"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "EXPLOITATION_AGRICOLE_ET_FORESTIERE",
+        "usages": [
+          {
+            "libelle": "Exploitation agricole",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UE",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEa",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEd",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEp",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEs",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEn",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Exploitation forestière",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UE",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEa",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEd",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEp",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEs",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEn",
+                "statut": "X"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "AUTRES_OCCUPATIONS_ET_UTILISATIONS_DU_SOL",
+        "usages": [
+          {
+            "libelle": "Affouillements et exhaussements de sol",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UE",
+                "statut": "V*",
+                "conditions": [
+                  "Ils sont directement liés, soit aux travaux de constructions autorisées, soit aux travaux nécessaires pour la recherche archéologique"
+                ]
+              },
+              {
+                "secteur": "UEa",
+                "statut": "V*",
+                "conditions": [
+                  "Ils sont directement liés, soit aux travaux de constructions autorisées, soit aux travaux nécessaires pour la recherche archéologique"
+                ]
+              },
+              {
+                "secteur": "UEd",
+                "statut": "V*",
+                "conditions": [
+                  "Ils sont directement liés, soit aux travaux de constructions autorisées, soit aux travaux nécessaires pour la recherche archéologique"
+                ]
+              },
+              {
+                "secteur": "UEp",
+                "statut": "V*",
+                "conditions": [
+                  "Ils sont directement liés, soit aux travaux de constructions autorisées, soit aux travaux nécessaires pour la recherche archéologique"
+                ]
+              },
+              {
+                "secteur": "UEs",
+                "statut": "V*",
+                "conditions": [
+                  "Ils sont directement liés, soit aux travaux de constructions autorisées, soit aux travaux nécessaires pour la recherche archéologique"
+                ]
+              },
+              {
+                "secteur": "UEn",
+                "statut": "V*",
+                "conditions": [
+                  "Ils sont directement liés, soit aux travaux de constructions autorisées, soit aux travaux nécessaires pour la recherche archéologique"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Carrières",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UE",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEa",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEd",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEp",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEs",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEn",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Déchets, stockage de ferrailles et matériaux de démolition ou de récupération",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UE",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEa",
+                "statut": "V"
+              },
+              {
+                "secteur": "UEd",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEp",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEs",
+                "statut": "X"
+              },
+              {
+                "secteur": "UEn",
+                "statut": "X"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "section_2_caracteristiques": {
+    "art_2_1_implantation": {
+      "note": null,
+      "par_rapport_aux_voies": {
+        "Règle_générale": "Non réglementé.",
+        "Autres_implantations_possibles": null,
+        "Règles_concernant_les_extensions": null,
+        "Règles_concernant_les_annexes_et_garages": null,
+        "Règles_concernant_les_constructions_et_installations": null,
+        "Recul_par_rapport_aux_voies_express_et_routes_a_grande_circulation": {
+          "voies_concernées": [
+            "Routes nationales 10 et 141",
+            "Routes départementales 939 et 1000"
+          ],
+          "référence": "Se reporter au chapitre 6 du titre I « Dispositions relatives aux voies et infrastructures routières »."
+        }
+      },
+      "par_rapport_aux_limites_separatives": {
+        "Règle_générale": "Les nouvelles constructions s'implantent soit en limite séparative, soit en retrait d'au moins 3 m.",
+        "Linéaire_maximum": null,
+        "Dérogation": null,
+        "Hauteur_maximale_en_limite_séparative": null,
+        "Toitures_terrasses_en_limite": null
+      },
+      "emprise_au_sol": {
+        "note": "Non réglementée."
+      },
+      "hauteur": {
+        "note_mesure": "La hauteur des constructions, en tout point, est mesurée à partir du niveau du terrain naturel (niveau du sol existant avant la construction initiale et les éventuels travaux de terrassement et d'exhaussement).",
+        "Règle_générale": "Non réglementée.",
+        "Autres_hauteurs_possibles": null,
+        "exclusions_du_calcul": null
+      }
+    },
+    "art_2_2_qualite_architecturale": {
+      "Généralité": {
+        "intégration_architecturale": "Tout projet de construction doit s'intégrer à son environnement par : la simplicité et les proportions de ses volumes ; la qualité et la pérennité des matériaux ; l'harmonie des couleurs ; sa tenue générale : les annexes autorisées doivent s'harmoniser avec l'ensemble des constructions existantes.",
+        "refus_possible": "Le projet peut être refusé ou n'être accepté que sous réserve de prescriptions spéciales si les constructions, par leur situation, leur architecture, leurs dimensions ou l'aspect extérieur, sont de nature à porter atteinte au caractère ou à l'intérêt des lieux avoisinants, aux sites, aux paysages naturels ou urbains ainsi qu'à la conservation des perspectives monumentales.",
+        "matériaux_interdits": [
+          "L'emploi à nu des matériaux destinés à être enduits (types briques creuses, carreaux de plâtre, parpaing, etc.)",
+          "L'emploi de matériaux constituant une imitation d'un autre (type PVC imitant le bois, fausses pierres, décors de moellons traités en enduits, toutes formes de pastiche, etc.)",
+          "L'emploi de matériaux à caractère provisoire (type fibrociment, tôle ondulée, carton ou feutre asphalté, etc.)"
+        ]
+      },
+      "Constructions_principales_usage_habitation": {
+        "Adaptation_de_la_maison_au_terrain": null,
+        "Les_couvertures": {
+          "matériaux": null,
+          "pentes": null,
+          "toiture_terrasse": null,
+          "capteurs_solaires": null,
+          "lucarnes_et_chassis": null,
+          "prescriptions_UEpat": {
+            "tuiles": "Tuiles canal de terre cuite, à talon, de réemploi selon l'état de l'existant ou entièrement neuves si nécessaire. Trois tons vieillis choisis parmi l'ocre, le jaune, le brun ou le rouge.",
+            "réfection": "Les tuiles anciennes seront posées en chapeau sur des tuiles en courant neuves à talon. Des tuiles neuves de teintes mêlées pourront être mélangées aux tuiles anciennes.",
+            "nouvelle_toiture": "Tuiles de terre cuites neuves à talon, modèle demi-rond de courant et de couvert posé séparément. Les tuiles de faîtage, rives, arêtiers ou égout, seront scellées au mortier de chaux teinté.",
+            "zinc": "Les ouvrages en zinc seront révisés ou restaurés dans leurs dispositions et composition d'origine. L'usage de PVC est proscrit.",
+            "ouvertures_en_toiture": "Les ouvertures en toiture s'inscriront obligatoirement dans la pente du toit, à l'exception des constructions présentant une toiture d'aspect initialement différent. Les châssis de toit seront encastrés à la couverture."
+          }
+        },
+        "Les_ouvertures": {
+          "règle": null,
+          "prescriptions_UEpat": {
+            "percements": "Les percements et ouvertures seront conservés dans leur état d'origine, ou effectués dans le respect de l'ordonnancement des ouvertures existantes. Les ouvertures nouvelles visibles du domaine public devront respecter les proportions, le rythme ainsi que l'alignement des ouvertures existantes, sauf contraintes justifiées.",
+            "encadrements": "Les encadrements des baies nouvellement créées dans les murs en moellons seront réalisés en pierre de taille. Les placages en pierre sont interdits.",
+            "menuiseries_anciennes": "Les menuiseries anciennes existantes seront conservées, restaurées ou remplacées strictement à l'identique, en bois peint.",
+            "menuiseries_nouvelles": "Seules des menuiseries en bois reprenant les dispositions traditionnelles seront autorisées. Les menuiseries seront peintes dans une tonalité de couleur claire, non vive. L'aspect des ouvrants ne doit pas présenter un aspect vif ou brillant."
+          }
+        },
+        "Les_volets": null,
+        "Les_facades": {
+          "teintes": null,
+          "matériaux_nus_interdits": null,
+          "isolation_extérieure": null,
+          "blanc_pur_interdit": null,
+          "brises_soleils": null,
+          "prescriptions_UEpat": {
+            "modénatures": "En cas de réfection des façades existantes, l'ensemble des éléments de modénatures existants doit être conservé. Les pierres de taille (chaînages d'angle et entourages de baies ou autres éléments appareillés en pierre de taille) seront maintenus apparents, et ne seront ni peints, ni enduits.",
+            "rejointoiement": "Les joints des pierres de taille seront dégarnis. Le mortier de rejointoiement sera réalisé avec de la chaux naturelle et sable, ton sur ton avec celui de la pierre au nu du parement.",
+            "enduits": "Les murs seront entièrement enduits à base de chaux naturelle et sable, appliqué en retrait ou à fleur de parement des pierres de taille. La finition des enduits sera brossée, tête de moellons apparents, et non à « pierre vue ».",
+            "interdictions": "L'application d'enduit formulé prêt à l'emploi ou de peinture est interdite. Le sablage à sec, le chemin de fer, le disque abrasif sont interdits. Le rebouchage des trous avec un mortier est interdit.",
+            "remplacement_pierres": "Le remplacement d'éléments en pierre de taille dégradés sera réalisé par incrustation de pierre de même nature, d'une profondeur d'au moins 15 cm. Les coupes des joints et des assises seront respectées. La reprise de pierres de gonds est interdite.",
+            "reprises_murs": "La reprise, la surélévation ou le prolongement de murs existants devront être réalisés dans le respect des règles ci-dessus."
+          }
+        },
+        "Les_menuiseries": null
+      },
+      "Les_annexes": null,
+      "Les_clotures_sur_rue": {
+        "visibilité": "Afin de ne pas dégrader les conditions de visibilité, notamment des accès existants, toute réalisation de clôture en bordure de route départementale peut être interdite, reculée ou limitée en hauteur.",
+        "hauteur_maximale": null,
+        "matériaux_interdits": null,
+        "matériaux": null,
+        "prescriptions_UEpat": "Les clôtures anciennes en pierre existantes seront conservées. Les clôtures maçonnées seront construites à l'aide de moellons en calcaire de réemploi. Elles devront être jointoyées à pierres vues, au mortier de chaux naturelle et de sable de pays dans les tons en rapport avec les enduits d'origine des murs anciens."
+      },
+      "Les_clotures_en_limite_separative": null,
+      "Les_dispositions_particulières_autres_constructions": null,
+      "Éléments_divers": null,
+      "Disposition_elements_de_patrimoine": null
+    },
+    "art_2_3_traitement_paysager": {
+      "Aires_de_stationnement": null,
+      "Coefficient_de_pleine_terre": null,
+      "Les_arbres": null,
+      "Espaces_de_stockage": "Les espaces de stockage devront comporter un écran visuel."
+    },
+    "art_2_4_stationnement": {
+      "principe": "Le stationnement des véhicules de toute nature, correspondant aux besoins des installations et constructions autorisées dans la zone, doit être assuré en dehors des voies publiques ou privées, par la réalisation d'aires de stationnement sur le terrain propre à l'opération. L'entreprise doit assurer, sur le domaine privé, le stationnement des véhicules liés à son activité.",
+      "alternative_mutualisation": null,
+      "cycles": "Le stationnement des cycles devra être prévu selon les besoins générés par l'activité.",
+      "residences_personnes_agees": null,
+      "revetement_collectif": {
+        "règle": "Les aires de stationnement collectif ne doivent être ni imperméables ni de couleur foncée.",
+        "revêtements_autorisés": [
+          "Pleine terre",
+          "Mélange terre/pierre",
+          "Revêtements alvéolaires de couleur claire engazonnés",
+          "Pavés perméables de couleur claire",
+          "Pierres concassées, graviers de couleur claire",
+          "Bétons poreux",
+          "Dalles alvéolées avec gravillon sur structures drainantes",
+          "Tout autre procédé utilisant des matériaux naturels assurant une perméabilité et une bonne réfraction de la lumière"
+        ]
+      },
+      "plantations_collectif": {
+        "règle": "Les aires de stationnement collectif doivent comporter 25 % d'arbres de haute tige rapportés au nombre d'emplacements de stationnement.",
+        "disposition": "Les arbres de haute tige doivent être disposés de façon optimale pour protéger de l'ensoleillement les emplacements.",
+        "surface_pied_arbre": "4 m² non imperméabilisée",
+        "essences": "Essences locales variées (se référer au chapitre 10 du titre I et à l'OAP thématique Trames verte et bleue)"
+      },
+      "stationnement_individuel": {
+        "recommandation": "Il est recommandé que le stationnement individuel sur la parcelle privative ne soit ni imperméable ni de couleur foncée.",
+        "revêtements_préférentiels": [
+          "Pleine terre",
+          "Mélange terre/pierre",
+          "Revêtements alvéolaires de couleur claire engazonnés",
+          "Pavés perméables de couleur claire",
+          "Pierres concassées, graviers de couleur claire",
+          "Bétons poreux",
+          "Tout autre procédé utilisant des matériaux naturels assurant une perméabilité et une bonne réfraction de la lumière"
+        ]
+      },
+      "exceptions": {
+        "portance_insuffisante": "Les dispositions sur les revêtements ne s'appliquent pas quand il est démontré que la portance de la voie au regard des véhicules à stationner n'est pas compatible avec un revêtement perméable.",
+        "PMR": "Elles ne s'appliquent pas aux emplacements de stationnement obligatoires réalisés pour les véhicules des personnes à mobilité réduite."
+      },
+      "besoin_en_stationnement": "Les dispositions applicables figurent au chapitre 7 du titre I du présent règlement."
+    }
+  },
+  "section_3_voirie_acces": {
+    "art_3_1_desserte_voies": {
+      "Disposition_generale": {
+        "constructibilité": null,
+        "caractéristiques_voies": null,
+        "matériaux_voies_privées": [
+          "Revêtements alvéolaires perméables",
+          "Pavés résines perméables",
+          "Graviers et pierres concassées",
+          "Tout autre procédé non imperméable et évitant les couleurs foncées"
+        ],
+        "trottoirs_voies_privées": [
+          "En pleine terre engazonnée lorsqu'il existe un autre cheminement possible aussi direct pour les personnes à mobilité réduite",
+          "En stabilisé clair",
+          "En béton poreux",
+          "En dalles alvéolées avec gravillons sur structures drainantes",
+          "Tout autre procédé non imperméable et évitant les couleurs foncées"
+        ]
+      },
+      "Voie_de_circulation": {
+        "règles_nouvelles_voies": "Les terrains doivent être desservis par des voies répondant à l'importance et à la destination de la construction ou de l'ensemble des constructions qui y sont édifiés. Les caractéristiques des voies créées doivent répondre aux critères d'accessibilité de la défense incendie et protection civile.",
+        "circulation_douces": null,
+        "impasses": null,
+        "largeur_minimale": null
+      },
+      "Accès": {
+        "visibilité_sécurité": "Toutes dispositions permettant une bonne visibilité et assurant la sécurité des usagers des voies publiques et celle des personnes utilisant les accès créés doivent être prises en compte pour le débouché des véhicules sur voie publique ou privée.",
+        "limitation_accès": "Le nombre des accès sur les voies publiques pourra être limité dans l'intérêt de la sécurité. Lorsque le terrain est desservi par plusieurs voies, l'accès doit être établi sur la voie où la gêne pour la circulation sera la moindre.",
+        "refus_possible": "Un projet pourra être refusé lorsque l'augmentation des entrées et sorties qu'il engendre sur la voie qui le dessert est incompatible avec la fréquentation ou la configuration de celle-ci.",
+        "mutualisation": "Dans la mesure du possible, il est recommandé de mutualiser les accès.",
+        "largeur_minimale": null,
+        "nombre_accès_maximum": null
+      }
+    },
+    "art_3_2_desserte_reseaux": null
+  }
+}

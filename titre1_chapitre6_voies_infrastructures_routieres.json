@@ -1,0 +1,54 @@
+{
+  "TITRE": "TITRE I - DISPOSITIONS GÉNÉRALES ET SPÉCIFIQUES À DES PÉRIMÈTRES QUI NE CONSTITUENT PAS DES ZONES OU SECTEURS DU RÈGLEMENT GRAPHIQUE",
+  "CHAPITRE": "CHAPITRE 6 : DISPOSITIONS RELATIVES AUX VOIES ET INFRASTRUCTURES ROUTIÈRES",
+  "source": "Règlement écrit - Pièce n°5.2.a - PLUi valant Plan de Mobilité - Communauté d'agglomération de GrandAngoulême",
+  "pages": "23-24",
+
+  "RECUL_HORS_ESPACES_URBANISES": {
+    "reference_legislative": "L111-6 CU",
+    "principe": "En dehors des espaces urbanisés des communes, les constructions ou installations sont interdites dans les bandes de recul suivantes",
+    "bandes_recul": {
+      "autoroutes_routes_express_deviations": "100 m de part et d'autre de l'axe",
+      "autres_routes_grande_circulation": "75 m de part et d'autre de l'axe"
+    },
+    "exceptions_interdiction": [
+      "Constructions ou installations liées ou nécessaires aux infrastructures routières",
+      "Services publics exigeant la proximité immédiate des infrastructures routières",
+      "Bâtiments d'exploitation agricole",
+      "Réseaux d'intérêt public",
+      "Infrastructures de production d'énergie solaire, photovoltaïque ou thermique",
+      "Adaptation, changement de destination, réfection ou extension des constructions existantes"
+    ]
+  },
+
+  "ROUTES_CLASSEES_GRANDE_CIRCULATION": {
+    "reference_decret": "Décret n°2010-578 du 31 mai 2010",
+    "reculs_imposes": {
+      "RN_10_et_RN_141": {
+        "type": "Voies express",
+        "recul": "100 m de recul par rapport à l'axe"
+      },
+      "RD_1000": {
+        "type": "Route à grande circulation à valeur de déviation",
+        "recul": "100 m de recul par rapport à l'axe"
+      },
+      "RD_939_Soyaux_Garat_Dirac_Dignac": {
+        "type": "Route à grande circulation",
+        "recul": "75 m de recul par rapport à l'axe"
+      }
+    },
+    "exceptions": {
+      "principe": "D'autres reculs peuvent être autorisés sous réserve de respecter les études réalisées conformément à l'article L111-8 du code de l'urbanisme",
+      "report": "Les exceptions sont reportées dans les documents graphiques"
+    },
+    "RD_23": "La RD 23 étant en secteur urbanisé, les dispositions de l'article L111-6 du code de l'urbanisme ne s'appliquent pas"
+  },
+
+  "VOIES_ET_CHEMINS_A_PRESERVER": {
+    "reference_legislative": "L151-38 CU",
+    "description": "Certains chemins et sentiers présentant un intérêt à être conservé, modifié ou à créer, bénéficient d'une mesure de protection particulière et sont identifiés sur le règlement graphique comme tracés indicatifs de voirie",
+    "abords_proteges": "Les abords des chemins et sentiers sont également protégés, comprenant les éléments participant à leur intégration paysagère et environnementale tels que les haies et talus",
+    "interdictions": "Les occupations et utilisations du sol portant atteinte à l'objectif de conservation, modification ou création des chemins et sentiers identifiés et de leurs abords pourront être interdites",
+    "obligation_projet": "Lorsque le terrain est traversé par un tracé indicatif de voirie identifié au règlement graphique, le projet ne doit pas remettre en cause l'objectif pour lequel le tracé a été repéré, ou offrir une solution alternative équivalente"
+  }
+}

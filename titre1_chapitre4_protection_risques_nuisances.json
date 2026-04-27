@@ -1,0 +1,23 @@
+{
+  "TITRE": "TITRE I - DISPOSITIONS GÉNÉRALES ET SPÉCIFIQUES À DES PÉRIMÈTRES QUI NE CONSTITUENT PAS DES ZONES OU SECTEURS DU RÈGLEMENT GRAPHIQUE",
+  "CHAPITRE": "CHAPITRE 4 : DISPOSITIONS RELATIVES AUX SECTEURS IDENTIFIÉS POUR LA PROTECTION CONTRE LES RISQUES ET LES NUISANCES",
+  "source": "Règlement écrit - Pièce n°5.2.a - PLUi valant Plan de Mobilité - Communauté d'agglomération de GrandAngoulême",
+  "page": "23",
+  "reference_legislative": "R151-34 1° CU",
+
+  "principe_general": "Le règlement graphique fait apparaître les secteurs où la protection contre les nuisances ou l'existence de risques naturels justifie que soient soumises à des conditions spéciales les constructions et installations de toute nature, permanentes ou non, les plantations, dépôts, affouillements, forages et exhaussements des sols.",
+
+  "interdictions": {
+    "principe": "Dans ces secteurs, toutes les constructions et installations sont interdites",
+    "exception": "Constructions et installations liées et/ou nécessaires aux locaux techniques et industriels des administrations publiques et assimilées"
+  },
+
+  "sols_presumes_pollues": {
+    "levee_interdiction": "L'interdiction peut être levée lorsqu'une étude a démontré une absence de pollution ou un niveau de pollution compatible avec l'usage proposé du terrain"
+  },
+
+  "bruit_aeroport": {
+    "perimetre": "Périmètres concernés par les courbes de bruit autour de l'aéroport Angoulême-Cognac",
+    "regle": "Les dispositions du plan d'exposition au bruit sont applicables"
+  }
+}

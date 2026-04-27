@@ -1,0 +1,481 @@
+{
+  "$schema": "https://schema.plu.fr/reglement/v1.0",
+  "meta": {
+    "type_document": "PLUi",
+    "commune": "Grand Angoulême",
+    "version": "1.0.0"
+  },
+  "zone": {
+    "code": "A",
+    "famille": "A",
+    "libelle": "La zone A est constituée par les secteurs de la commune, équipés ou non, à protéger en raison du potentiel agronomique, biologique ou économique des terres agricoles. Elle est destinée à la préservation et au développement de l'agriculture. Seules y sont admises les constructions et installations nécessaires à l'exploitation agricole, ainsi que celles nécessaires à des équipements publics ou d'intérêt collectif.",
+    "description": "La zone A est constituée par les secteurs de la commune, équipés ou non, à protéger en raison du potentiel agronomique, biologique ou économique des terres agricoles. Elle est destinée à la préservation et au développement de l'agriculture. Seules y sont admises les constructions et installations nécessaires à l'exploitation agricole, ainsi que celles nécessaires à des équipements publics ou d'intérêt collectif.",
+    "note_generale": "Une partie de la zone A est concernée par le PPRi de la Charente. En cas de divergence entre les règles du PLUi et du PPRi, c'est la règle la plus contraignante qui doit être appliquée. Les STECAL sont les Secteurs de Taille et de Capacité d'Accueil Limitées permettant d'accepter des installations ne correspondant pas avec la vocation générale de la zone mais compatibles avec elle. Les bâtiments anciens d'architecture traditionnelle ou de pays sont distingués des bâtiments contemporains de par leur construction antérieure au 1er janvier 1948 et leur composition à dominante de matériaux poreux.",
+    "localisation": null,
+    "objectifs": "Pérenniser les exploitations dans une plus grande diversité, en privilégiant l'agriculture raisonnée, bio et la mise en place de circuits courts de distribution",
+    "secteurs": [
+      {
+        "code": "Aeq",
+        "libelle": "STECAL - Secteur agricole accueillant les activités équestres et d'élevage"
+      },
+      {
+        "code": "Am",
+        "libelle": "Secteur accueillant des installations liées et nécessaires à l'activité de maraîchage"
+      },
+      {
+        "code": "Ap",
+        "libelle": "Secteur agricole protégé au regard de la qualité des sites et des paysages, pouvant concerner des espaces non bâtis autour de monuments historiques"
+      },
+      {
+        "code": "Appat",
+        "libelle": "Sous-secteur de Ap traduisant les dispositions répondant à des enjeux paysagers et patrimoniaux autour de monuments historiques"
+      },
+      {
+        "code": "Api",
+        "libelle": "Secteur dédié à la pisciculture"
+      },
+      {
+        "code": "At",
+        "libelle": "STECAL - Secteur dédié à des équipements touristiques"
+      },
+      {
+        "code": "Ax",
+        "libelle": "STECAL - Secteur dédié à l'activité économique préexistante en zone agricole"
+      }
+    ]
+  },
+  "section_1_destinations": {
+    "mode": "liste_interdictions",
+    "legende": {
+      "V": "Autorisé sans condition particulière",
+      "V*": "Autorisé sous conditions",
+      "X": "Interdit"
+    },
+    "principe_general": "Dans l'ensemble de la zone A, sont interdits tous les modes d'occupation du sol et notamment les constructions quelle que soit leur destination à l'exception de ceux autorisés ou autorisés sous conditions",
+    "structures_specifiques": {
+      "ZONE_A_HORS_SECTEURS": {
+        "CONSTRUCTIONS_LIEES_AUX_ACTIVITES_AGRICOLES": {
+          "Constructions ou installations liées et nécessaires aux activités agricoles (y compris transformation et conditionnement)": {
+            "statut": "V*",
+            "condition": "Respect de celles énoncées à l'article L151-11 du code de l'urbanisme"
+          },
+          "Coopératives d'utilisation de matériel agricole (CUMA) agréées": {
+            "statut": "V"
+          },
+          "Locaux et installations de diversification de l'activité agricole (méthanisation, vente directe, hébergement, camping à la ferme, etc.)": {
+            "statut": "V*",
+            "conditions": [
+              "Être liés aux activités agricoles",
+              "Être réalisés en priorité dans les bâtiments existants ou, le cas échéant, implantés (construction neuve) au cœur du siège d'exploitation",
+              "Dans le cas de vente directe, les produits commercialisés proviennent principalement de l'exploitation"
+            ]
+          },
+          "Locaux de permanence (bureau, pièce de repos, sanitaires, etc.)": {
+            "statut": "V*",
+            "conditions": [
+              "Être liés et nécessaires aux activités agricoles en place",
+              "Dans la limite de 35 m² d'emprise au sol"
+            ]
+          },
+          "Nouvelles habitations": {
+            "statut": "V*",
+            "conditions": [
+              "Être destinées au logement des personnes dont la présence permanente est nécessaire au fonctionnement de l'exploitation agricole sous réserve qu'il n'existe pas déjà un logement intégré à l'exploitation",
+              "L'implantation devra se faire en priorité au cœur de l'exploitation et en cas d'impossibilité, les nouvelles constructions devront être incluses entièrement dans un rayon de 50 m du siège d'exploitation",
+              "Des installations de production d'électricité en autoconsommation sont possibles dans une limite de 50 m² d'emprise au sol y compris dans le cas où l'habitation préexiste"
+            ]
+          }
+        },
+        "CONSTRUCTIONS_LIEES_AUX_SERVICES_PUBLICS": {
+          "Locaux techniques et industriels des administrations publiques et assimilés": {
+            "statut": "V*",
+            "conditions": [
+              "Avoir pour objet la satisfaction de besoins d'intérêt général",
+              "Sous réserve d'être compatible avec l'activité agricole",
+              "Sous réserve d'une bonne intégration dans le site"
+            ]
+          },
+          "Installations de production de l'énergie solaire photovoltaïque relevant de l'agrivoltaïsme": {
+            "statut": "V*",
+            "condition": "Installations ne constituant pas de la consommation d'espace et de l'artificialisation des sols correspondant aux caractéristiques définies par le décret et l'arrêté du 29 décembre 2023"
+          }
+        },
+        "GESTION_DES_HABITATIONS_EXISTANTES": {
+          "Extension mesurée des logements": {
+            "statut": "V*",
+            "conditions": [
+              "Ne pas créer de nouveaux logements",
+              "Dans la limite de 50 m² d'emprise au sol à la date d'approbation du PLUi",
+              "Sous réserve d'une bonne intégration paysagère à l'environnement bâti existant et de ne pas compromettre l'activité agricole"
+            ]
+          },
+          "Annexes": {
+            "statut": "V*",
+            "conditions": [
+              "Être liées à un logement existant dans la zone ou dans la zone urbaine ou naturelle contiguë",
+              "La superficie de l'ensemble des annexes existantes (en excluant les surfaces du bâti ancien) ne doit pas dépasser 40 m² d'emprise au sol (hors piscine) pour la durée d'application du PLUi-M",
+              "Être incluses entièrement dans un rayon de 25 m de l'habitation à l'exception des abris pour animaux",
+              "Ne pas créer de nouveau logement"
+            ]
+          },
+          "Piscines": {
+            "statut": "V*",
+            "conditions": [
+              "Être liées à un logement existant",
+              "Être incluses entièrement dans un rayon de 25 m de l'habitation",
+              "Ne pas excéder 2 m de haut pour les piscines hors sol"
+            ]
+          }
+        },
+        "AUTRES_OCCUPATIONS_ET_UTILISATIONS_DU_SOL": {
+          "Affouillements et exhaussements de sol": {
+            "statut": "V*",
+            "condition": "Être liés et nécessaires soit à l'activité de la zone, soit aux travaux de constructions autorisés, soit aux travaux nécessaires pour la recherche archéologique"
+          },
+          "Stationnement des caravanes sur le terrain de la résidence principale": {
+            "statut": "V*",
+            "condition": "Implantation dans un rayon de 25 m autour de la résidence principale"
+          },
+          "Changement de destination des bâtiments identifiés aux documents graphiques": {
+            "statut": "V*",
+            "condition": "Ne compromettent pas l'activité agricole ou la qualité paysagère du site. Se référer au chapitre 8 du titre I"
+          }
+        }
+      },
+      "SECTEUR_Aeq_STECAL": {
+        "description": "Sont uniquement autorisés :",
+        "autorisations": [
+          "Les constructions et installations liées et nécessaires aux activités équestres",
+          "Les nouvelles habitations à condition d'être destinées au logement des personnes dont la présence permanente est nécessaire et sous réserve d'être incluses entièrement dans un rayon de 50 m des bâtiments existants",
+          "Les constructions et installations liées et nécessaires aux services publics et équipements d'intérêt collectif sous réserve d'une bonne intégration dans le site",
+          "Les affouillements et exhaussements liés à l'activité de la zone ou aux travaux autorisés",
+          "L'extension des logements existants dans la limite de 50 m² d'emprise au sol sans création de nouveau logement",
+          "Les annexes liées à un logement existant dans la limite de 40 m² d'emprise au sol (surface cumulée hors bâti ancien, hors piscine) incluses dans un rayon de 25 m",
+          "Les piscines liées à un logement existant incluses dans un rayon de 25 m",
+          "Les installations de production d'électricité en autoconsommation dans la limite de 50 m² d'emprise au sol"
+        ]
+      },
+      "SECTEUR_Am": {
+        "description": "Sont uniquement autorisés sous réserve de ne pas porter atteinte à la sauvegarde des espaces naturels et des paysages :",
+        "autorisations": [
+          "Les constructions d'exploitations agricoles de types serres démontables, tunnels plastiques…",
+          "Les installations nécessaires à l'irrigation des terres agricoles",
+          "Les constructions agricoles à usage de commerce en vente directe et de stockage",
+          "La reconstruction d'abris de jardin vétustes avec utilisation de matériaux renouvelables dans la limite de 10 m² de surface de plancher",
+          "Les constructions et installations liées aux services publics sous réserve d'une bonne intégration dans le site, à l'exception des équipements de production renouvelable qui ne relèvent pas de l'autoconsommation",
+          "Les affouillements et exhaussements liés à l'activité de la zone ou aux travaux autorisés",
+          "L'extension des logements existants dans la limite de 50 m² d'emprise au sol sans création de nouveau logement",
+          "Les annexes liées à un logement existant dans la limite de 40 m² d'emprise au sol (hors bâti ancien, hors piscine) dans un rayon de 25 m sauf abris pour animaux",
+          "Les piscines liées à un logement existant dans un rayon de 25 m",
+          "Les locaux techniques et industriels des administrations publiques et assimilés",
+          "Les installations de production d'électricité en autoconsommation dans la limite de 50 m² d'emprise au sol"
+        ]
+      },
+      "SECTEUR_Ap_hors_Api": {
+        "description": "Sont uniquement autorisés :",
+        "autorisations": [
+          "Les bâtiments d'exploitation agricole d'une surface de plancher limitée à 150 m² par unité foncière, à condition que leur caractère impératif sur le site soit démontré et qu'ils s'intègrent au paysage",
+          "Les locaux techniques et industriels des administrations publiques et assimilés d'une surface de plancher limitée à 50 m²",
+          "Les extensions limitées des habitations existantes sous réserve de ne pas dépasser 25 m² de surface de plancher",
+          "Les annexes des constructions principales existantes : liées à un logement existant dans la zone ou zone contiguë, dans la limite de 20 m² d'emprise au sol (hors piscine) dans un rayon de 25 m, sans créer de nouveaux logements"
+        ]
+      },
+      "SECTEUR_Api": {
+        "description": "Sont uniquement autorisés :",
+        "autorisations": [
+          "Les constructions et installations liées et nécessaires aux activités de pisciculture",
+          "Les constructions et installations liées aux services publics sous réserve d'une bonne intégration dans le site",
+          "Les affouillements et exhaussements liés à l'activité de la zone ou aux travaux autorisés",
+          "L'extension des logements existants dans la limite de 30 % et de 50 m² d'emprise au sol sans création de nouveau logement",
+          "Les annexes liées à un logement existant incluses dans un rayon de 25 m sans créer de nouveau logement",
+          "Les piscines liées à un logement existant incluses dans un rayon de 25 m",
+          "Les installations de production d'électricité en autoconsommation dans la limite de 50 m² d'emprise au sol"
+        ],
+        "note_sources_Touvre": "Dans le secteur Api du site des sources de la Touvre, une attention particulière devra être apportée à tout aménagement et construction afin qu'ils tiennent compte des covisibilités avec l'église Sainte-Madeleine"
+      },
+      "SECTEUR_At_STECAL": {
+        "description": "Sont uniquement autorisés :",
+        "autorisations": [
+          "Les gîtes, chambres d'hôtes et meublés de tourisme qui ne sont pas nécessairement l'accessoire d'une exploitation agricole",
+          "Les habitats alternatifs (tiny house, yourte…) uniquement liés à une occupation non permanente et touristique, non visibles depuis les voies publiques et bien intégrés aux espaces bâtis et naturels environnants",
+          "L'extension des logements existants dans la limite de 50 m² d'emprise au sol sans création de nouveau logement",
+          "Les annexes liées à un logement existant dans la limite de 40 m² d'emprise au sol (hors bâti ancien, hors piscine) dans un rayon de 25 m sauf abris pour animaux",
+          "Les piscines liées à un logement existant incluses dans un rayon de 25 m",
+          "Les constructions et installations liées aux services publics sous réserve d'une bonne intégration dans le site",
+          "Les affouillements et exhaussements liés à l'activité de la zone ou aux travaux autorisés",
+          "Les installations de production d'électricité en autoconsommation dans la limite de 50 m² d'emprise au sol"
+        ]
+      },
+      "SECTEUR_Ax_STECAL": {
+        "description": "Sont uniquement autorisés sous réserve d'une bonne intégration paysagère dans le site :",
+        "autorisations": [
+          "L'augmentation de l'emprise au sol des bâtiments d'activités existants (extension et/ou nouvelle construction)",
+          "Les aires de stationnements nécessairement paysagées et non imperméabilisées",
+          "Le changement de destination des bâtiments d'activité économique à condition que la nouvelle activité ne relève pas des sous-destinations logement ou industrie, soit conforme aux dispositions de l'article 11 des dispositions générales sur le commerce et soit compatible avec la protection des paysages et l'activité agricole environnante"
+        ]
+      }
+    }
+  },
+  "section_2_caracteristiques": {
+    "art_2_1_implantation": {
+      "note": "Les constructions et installations liées et nécessaires aux services publics et d'intérêt collectif ne sont pas réglementées",
+      "par_rapport_aux_voies": {
+        "TABLEAU_RETRAITS": {
+          "RN_10_141_et_RD_1000": {
+            "habitations_et_annexes": "Retrait de 100 m minimum par rapport à l'axe",
+            "batiments_agricoles": "Retrait de 50 m minimum par rapport à l'axe"
+          },
+          "RD_939_echangeur_Effamiers_a_Dignac": {
+            "habitations_et_annexes": "Retrait de 75 m minimum par rapport à l'axe",
+            "batiments_agricoles": "Retrait de 50 m minimum par rapport à l'axe"
+          },
+          "autres_RD_1ere_categorie_RD939_RD674_RD941": {
+            "habitations_et_annexes": "Retrait de 10 m par rapport à l'alignement",
+            "batiments_agricoles": "Retrait de 10 m minimum par rapport à l'alignement"
+          },
+          "autres_RD_ou_sections": {
+            "habitations_et_annexes": "Retrait de 5 m minimum par rapport à l'alignement",
+            "batiments_agricoles": "Retrait de 10 m minimum par rapport à l'alignement"
+          },
+          "autres_voies": {
+            "habitations_et_annexes": "Retrait de 3 m minimum par rapport à l'alignement",
+            "batiments_agricoles": "Retrait de 10 m minimum par rapport à l'alignement"
+          }
+        },
+        "exceptions_retraits": [
+          "Les règles de recul s'appliquent sauf dans le cas où une étude vient justifier la dérogation",
+          "Les règles de recul ne s'appliquent pas aux bâtiments agricoles dans le cas de leur mise aux normes",
+          "Ces règles ne s'appliquent pas dès lors qu'il s'agit de l'extension d'une construction existante ne respectant pas ces marges, sous réserve que l'extension ne contribue pas à réduire la marge de recul initiale",
+          "En cas de problème de sécurité liée notamment à la visibilité, une distance supérieure pourra être exigée après avis du gestionnaire de la voirie"
+        ],
+        "plusieurs_voies": "Lorsque la parcelle est bordée par plusieurs voies, les règles de cette section s'appliquent par rapport à toutes les voies",
+        "IMPLANTATION_PAR_RAPPORT_AUX_EMPRISES_FERROVIAIRES": {
+          "habitations_LGV_site_propre": "50 m minimum (hors secteur des embranchements vers la gare d'Angoulême)",
+          "habitations_autres_lignes": "15 m minimum",
+          "annexes_autres_lignes": "5 m minimum",
+          "autres_constructions_LGV": "10 m minimum",
+          "autres_constructions_autres_sections_LGV_et_autres_lignes": "5 m minimum"
+        }
+      },
+      "par_rapport_aux_limites_separatives": {
+        "habitations": "Les nouvelles constructions à usage d'habitation s'implantent soit en limite séparative, soit en retrait d'au moins 3 m",
+        "retrait_reduit": {
+          "cas": [
+            "Pour les annexes de moins de 20 m² (sans être inférieur à 1 m) et les piscines",
+            "Pour l'amélioration des performances énergétiques des constructions existantes",
+            "Pour les constructions et installations nécessaires aux services publics ou d'intérêt collectif",
+            "Lorsque le projet jouxte une construction existante ayant une implantation différente",
+            "Lorsqu'un retrait est nécessaire pour améliorer la visibilité et la sécurité routière",
+            "Pour tenir compte de la configuration de la parcelle sous réserve de garantir une meilleure intégration",
+            "Pour respecter la dominante du paysage urbain sur la façade de l'îlot"
+          ]
+        },
+        "autres_constructions": "La marge de recul devra au moins être égale à la hauteur de la construction"
+      },
+      "emprise_au_sol": {
+        "Aeq_STECAL": "L'emprise au sol des nouvelles constructions est limitée à 30 % des bâtiments existants au moment de l'entrée en vigueur du PLUi",
+        "Am": {
+          "serres_et_tunnels": "L'emprise au sol des constructions de serres et tunnels sera limitée à 50 % des surfaces exploitées dans le cadre de l'activité de maraîchage",
+          "commerce_stockage": "Ne pourra excéder 100 m², avec un maximum de 50 m² pour la vente directe au sein de ces 100 m²"
+        },
+        "At_STECAL": "L'emprise au sol des constructions nouvelles est limitée à 200 m²",
+        "Ax_STECAL": "L'emprise au sol des constructions est limitée à 30 % de l'emprise au sol du volume existant à la date d'approbation du PLUi"
+      },
+      "hauteur": {
+        "mesure": "La hauteur des constructions, en tout point, est mesurée à partir du niveau du terrain naturel (niveau du sol existant avant les éventuels travaux de terrassement et d'exhaussement)",
+        "logements": "Hauteur maximale R+1 + comble aménageable, soit 7 m à l'égout du toit et 10 m au faîtage maximum",
+        "extensions": "La hauteur des extensions ne doit pas dépasser celle du logement existant",
+        "annexes": "La hauteur des annexes ne doit pas excéder 4 m à l'égout du toit",
+        "piscines": "La hauteur des piscines ne doit pas dépasser 2 m",
+        "autres_batiments": "La hauteur maximale est fixée à 12 m (hors silo)",
+        "Aeq_STECAL": "Toutes les constructions seront limitées à 10 m au point le plus haut",
+        "Am": "Les constructions à l'exception de l'extension du bâtiment principal d'habitation seront limitées à 4 m au point le plus haut",
+        "At_STECAL": "La hauteur des nouvelles constructions est limitée à 6 m à l'égout du toit ou à 10 m hors tout. La hauteur des piscines ne peut dépasser 2 m",
+        "Ax_STECAL": "La hauteur des extensions ou des constructions nouvelles ne dépassera pas la hauteur du bâtiment existant"
+      }
+    },
+    "art_2_2_qualite_architecturale": {
+      "ENERGIES_RENOUVELABLES": {
+        "regle_generale": "Sont autorisées et encouragées les techniques d'architecture bioclimatiques ou d'écoconstructions, ainsi que celles favorisant l'installation de matériel utilisant les énergies renouvelables",
+        "equipements_exterieurs": "Les équipements basés sur l'usage d'énergies alternatives (capteurs solaires, pompe à chaleur) devront être considérés comme des éléments de composition architecturale à part entière et implantés en cohérence avec la trame des ouvertures des façades",
+        "materiaux_environnementaux": "Pour toutes les constructions, il sera privilégié un choix de matériaux intégrant des critères environnementaux : faible énergie grise, bois provenant de forêts durablement gérées, matériaux ayant un étiquetage environnemental. Le bois et tous les matériaux concourant à de meilleures performances thermiques sont recommandés",
+        "derogation": "Pour les projets mettant en œuvre ces principes, il pourra être dérogé aux règles de l'article 2.2, sous réserve de ne pas porter atteinte aux lieux avoisinants"
+      },
+      "PANNEAUX_PHOTOVOLTAIQUES_BATIMENTS_AGRICOLES": {
+        "implantation": "Les nouveaux bâtiments agricoles devront, dans le respect de la charte Chambre d'agriculture/CAUE, être implantés de façon cohérente et harmonisée par rapport au bâti existant",
+        "toitures_monopente": "Les toitures monopente qui sont étrangères à l'architecture charentaise sont interdites"
+      },
+      "GENERALITES": {
+        "integration": "Tout projet de construction doit s'intégrer à son environnement par la simplicité et les proportions de ses volumes et une cohérence architecturale, la qualité et la pérennité des matériaux, l'harmonie des couleurs, et une harmonisation des annexes avec les constructions existantes",
+        "adaptation_terrain": "Les constructions, leurs annexes et extensions s'adapteront au mieux au relief du terrain et non l'inverse",
+        "refus_possible": "Le projet peut être refusé ou n'être accepté que sous réserve de prescriptions si la construction est de nature à porter atteinte au caractère ou à l'intérêt des lieux environnant, aux sites, aux paysages naturels ou urbains ainsi qu'à la conservation des perspectives monumentales",
+        "derogation_equipements": "Les constructions et équipements d'intérêt collectif peuvent déroger aux règles du présent article sous réserve d'un apport architectural significatif et/ou une conception bioclimatique",
+        "constructions_voisines": "Lorsque des constructions existantes présentent des caractéristiques communes qualitatives (couleur de façade, forme ou couleur de toiture, clôture), elles seront à reprendre par la nouvelle construction",
+        "materiaux_interdits": "Est interdit en façade, clôture, toiture, etc. l'emploi à nu des matériaux destinés à être recouverts (briques creuses, carreaux de plâtre, parpaing, etc.). Ils devront être enduits et peints ou enduits teintés dans la masse"
+      },
+      "CONSTRUCTIONS_PRINCIPALES_HABITATION": {
+        "adaptation_terrain": "L'adaptation de la maison au terrain se fera en évitant tout tumulus, levée de terre et bouleversement excessif. La dalle du rez-de-chaussée ne peut être sauf exceptions à plus de 0,70 m au-dessus du terrain naturel",
+        "architecture_locale": "Les constructions ne doivent pas faire référence à des architectures typiques d'autres régions et doivent tenir compte de l'ordonnance architecturale des constructions voisines",
+        "COUVERTURES": {
+          "regle_generale": "Les constructions doivent reprendre les éléments de composition des constructions voisines (forme de toiture, couleur)",
+          "prescriptions_Appat": {
+            "nouvelles_toitures": "Réalisées en tuiles canal de terre cuite à talon, de réemploi ou entièrement neuves si nécessaire. Trois tons vieillis choisis parmi l'ocre, le jaune, le brun ou le rouge",
+            "refection": "Les tuiles anciennes seront posées en chapeau sur des tuiles en courant neuves à talon",
+            "zinc": "Les ouvrages en zinc seront révisés ou restaurés dans leurs dispositions d'origine. L'usage de PVC pour les bandeaux de rives ou l'habillage de l'égout est proscrit",
+            "nouvelle_toiture": "Les tuiles de terre cuite seront neuves à talon, modèle demi-rond de courant et de couvert posé séparément. Les tuiles de faîtage, rives, arêtiers ou égout seront scellées au mortier de chaux teinté",
+            "ouvertures": "Les ouvertures en toiture s'inscriront obligatoirement dans la pente du toit. Les châssis de toit seront encastrés à la couverture"
+          }
+        },
+        "FACADES": {
+          "isolation_exterieure": "Les matériaux et revêtements utilisés doivent être traités selon les teintes naturelles des sables ou des sols locaux et ne pas présenter des couleurs foncées",
+          "blanc_pur": "L'emploi du blanc pur est interdit",
+          "protections_solaires": "Les dispositifs de protection contre le rayonnement solaire en façade exposée Sud et Ouest sont recommandés à condition que le traitement de la façade permette son intégration harmonieuse",
+          "integration": "Tous les bâtiments doivent s'intégrer parfaitement à leur environnement par la grande simplicité de leur volume, l'unité et la qualité des matériaux, la couleur, et une implantation soignée en fonction de la topographie, de la végétation et des bâtiments voisins",
+          "prescriptions_Appat_facades": {
+            "modelatures": "En cas de réfection des façades existantes, l'ensemble des éléments de modénatures existants doit être conservé. Les pierres de taille (chaînages d'angle et entourages de baies) seront maintenus apparents, non peints ni enduits",
+            "joints": "En cas de réfection, les joints des pierres de taille seront dégarnis. Le mortier de rejointoiement sera réalisé avec de la chaux naturelle et sable, ton sur ton avec la pierre",
+            "enduits": "Les murs seront entièrement enduits à base de chaux naturelle et sable, appliqué en retrait ou à fleur de parement des pierres de taille. La finition sera brossée, tête de moellons apparents, et non à « pierre vue »",
+            "interdits": "L'application d'enduit formulé prêt à l'emploi ou de peinture est interdite. Le sablage à sec, le chemin de fer, le disque abrasif, sont interdits. Le rebouchage des trous avec un mortier est interdit",
+            "remplacement_pierres": "Le remplacement d'éléments en pierre de taille dégradés sera réalisé par incrustation de pierre de même nature, d'une profondeur d'au moins 15 cm"
+          }
+        },
+        "MENUISERIES": {
+          "regle_generale": "Les menuiseries doivent être de couleur claire sauf projet d'un apport architectural significatif",
+          "volets_roulants": "Les volets roulants visibles depuis les voies publiques ou privées sont interdits sur le bâti ancien présentant une qualité architecturale et patrimoniale. Sur les autres constructions, ils peuvent être autorisés si le coffre est inclus dans la maçonnerie du linteau ou installé à l'intérieur",
+          "prescriptions_Appat_menuiseries": {
+            "percements": "Les percements et ouvertures seront conservés dans leur état d'origine. Les ouvertures nouvelles visibles du domaine public devront respecter les proportions, le rythme et l'alignement des ouvertures existantes",
+            "encadrements": "Les encadrements des baies nouvellement créées dans les murs en moellons seront réalisés en pierre de taille. Les placages en pierre sont interdits",
+            "menuiseries_anciennes": "Les menuiseries anciennes existantes seront conservées, restaurées ou remplacées strictement à l'identique, en bois peint",
+            "menuiseries_nouvelles": "Seules des menuiseries en bois reprenant les dispositions traditionnelles seront autorisées, peintes dans une tonalité de couleur claire, non vive. L'aspect des ouvrants ne doit pas présenter un aspect vif ou brillant"
+          }
+        },
+        "BATIMENTS_AGRICOLES": {
+          "regle_A_et_Am": "Les matériaux de finition brillante sont interdits, tant en bardage vertical qu'en toiture (hors serres). Les couleurs seront mates et choisies pour se fondre avec l'environnement. Pour les nouveaux bâtiments, des teintes foncées de préférence brun et vert seront admises. Les matériaux naturels (bois, pierre) ne seront pas altérés. La toiture pourra être réalisée avec des plaques ondulées teintées dans la masse"
+        }
+      },
+      "CLOTURES": {
+        "regle_generale": "Les clôtures doivent présenter une cohérence d'aspect avec la construction principale et s'intégrer dans leur environnement bâti et paysager. Toute réalisation en bordure d'emprise publique ou de voie peut être interdite, reculée ou limitée en hauteur afin de ne pas dégrader les conditions de visibilité",
+        "VILLAGES_ET_HAMEAUX_ANCIENS": {
+          "clotures_sur_rue": {
+            "hauteur_maximale": "2 m sauf si des murs en pierre existants d'une hauteur supérieure jouxtent le terrain",
+            "types_autorises": [
+              "Mur en pierres ou en matériaux recouverts de préférence du même enduit que le bâtiment principal, sur les deux faces, et chapeauté",
+              "Mur bahut enduit des deux faces (hauteur max 1 m) surmonté d'une grille simple à barreaudage vertical ou d'un grillage, doublé ou non d'une haie vive",
+              "Ganivelles bois",
+              "Haie d'essences locales variées doublée ou non d'un grillage à vocabulaire urbain ou rural (non industriel à mailles étroites)"
+            ],
+            "elements_techniques": "Les éléments techniques seront autant que possible intégrés aux clôtures"
+          },
+          "clotures_limite_separative": {
+            "hauteur_maximale": "2 m",
+            "types_autorises": [
+              "Mur plein en pierres ou en matériaux recouverts de préférence du même enduit que le bâtiment principal, sur les deux faces, et chapeauté",
+              "Ganivelles bois",
+              "Grillage doublé ou non d'une haie végétale à vocabulaire urbain ou rural (non industriel à mailles étroites)"
+            ],
+            "contact_zone_naturelle_ou_agricole": "La clôture sera obligatoirement constituée de végétaux d'essences locales variées doublée ou non d'un grillage à mailles permettant le passage de la petite faune"
+          },
+          "prescriptions_Appat": "Les clôtures anciennes en pierre existantes seront conservées. Les clôtures des habitations anciennes seront réalisées dans un dialogue harmonieux avec l'environnement bâti et paysager traditionnels existants. Les clôtures maçonnées seront construites à l'aide de moellons en calcaire de réemploi, jointoyées à pierres vues au mortier de chaux naturelle et de sable de pays"
+        },
+        "AUTRES_TYPES_DE_BATI": {
+          "clotures_sur_rue": {
+            "transparences": "Les transparences entre la rue et les espaces libres des fonds de parcelle ou des cœurs d'îlots doivent être privilégiées",
+            "interdits": "Ne pourront comporter des éléments composites tels que plaques de ciment ou de tôle, bâches, et ne pourront avoir un aspect brillant",
+            "murs_materiaux": "Les murs en matériaux devront être crépis avec des enduits de la couleur des pierres locales utilisées pour la construction"
+          },
+          "clotures_fond_de_parcelle": "La clôture de fond de parcelle non bordée par une autre propriété bâtie doit nécessairement être végétale constituée d'essences locales variées doublée ou non d'un grillage"
+        },
+        "hauteurs_superieures": "Des hauteurs plus importantes peuvent être admises, sur rue ou en limite séparative, en cas d'impératifs de sécurité pour les équipements collectifs, les services publics ou les constructions abritant une activité économique"
+      }
+    },
+    "art_2_3_traitement_paysager": {
+      "ESPACES_NON_BATIS": {
+        "arbres": "Tout abattage d'arbres doit être compensé",
+        "stockage": "Les aires de stockage à l'air libre et les aires de propreté doivent être dissimulées",
+        "stationnement": "Les parcs de stationnement publics ou privés doivent faire l'objet d'un traitement paysager de qualité"
+      }
+    },
+    "art_2_4_stationnement": {
+      "principe": "Le stationnement des véhicules de toute nature, correspondant aux besoins des installations et constructions autorisées dans la zone, doit être assuré en dehors des voies publiques ou privées, par la réalisation d'aires de stationnement sur le terrain propre à l'opération. Les dispositions applicables figurent au chapitre 7 du titre I du présent règlement",
+      "alternative_mutualisation": null,
+      "cycles": null,
+      "residences_personnes_agees": null,
+      "revetement_collectif": {
+        "principe": "Les aires de stationnement collectif ne doivent être ni imperméables ni de couleur foncée",
+        "materiaux_autorises": [
+          "Pleine terre",
+          "Mélange terre/pierre",
+          "Revêtements alvéolaires de couleur claire engazonnés",
+          "Pavés perméables de couleur claire",
+          "Pierres concassées, graviers de couleur claire",
+          "Bétons poreux",
+          "Dalles alvéolées avec gravillon sur structures drainantes",
+          "Tout autre procédé utilisant des matériaux naturels assurant une perméabilité et une bonne réfraction de la lumière"
+        ]
+      },
+      "plantations_collectif": {
+        "regle": "Les aires de stationnement collectif doivent comporter 25 % d'arbres de haute tige rapportés au nombre d'emplacements de stationnement",
+        "disposition_arbres": "Les arbres de haute tige doivent être disposés de façon optimale pour protéger de l'ensoleillement ces emplacements",
+        "pieds_arbres": "Les pieds des arbres de haute tige doivent comporter une surface de 4 m² non imperméabilisée",
+        "essences": "Ces arbres de haute tige devront être d'essences locales variées (se référer au chapitre 10 du titre I et à l'OAP thématique Trames verte et bleue)",
+        "applicabilite": "Les dispositions sont également applicables aux places de stationnement réalisées dans les espaces communs des opérations d'aménagement en zones urbaines et en zone 1AUa, 1AUb, 1AUX et 1AUY"
+      },
+      "stationnement_individuel": {
+        "recommandation": "Il est recommandé que le stationnement individuel sur la parcelle privative ne soit ni imperméable ni de couleur foncée",
+        "surfaces_preferentielles": [
+          "Pleine terre",
+          "Mélange terre/pierre",
+          "Revêtements alvéolaires de couleur claire engazonnés",
+          "Pavés perméables de couleur claire",
+          "Pierres concassées, graviers de couleur claire",
+          "Bétons poreux",
+          "Tout autre procédé utilisant des matériaux naturels assurant une perméabilité et une bonne réfraction de la lumière"
+        ]
+      },
+      "exceptions": {
+        "portance_voie": "Les dispositions sur les revêtements ne s'appliquent pas quand il est démontré que la portance de la voie au regard des véhicules à stationner n'est pas compatible avec un revêtement perméable",
+        "PMR": "Les dispositions ne s'appliquent pas aux emplacements de stationnement obligatoires réalisés pour les véhicules des personnes à mobilité réduite"
+      },
+      "besoin_en_stationnement": "Voir chapitre 7 du titre I du présent règlement",
+      "dispositions_specifiques": {
+        "Am_vente_directe": "Dans le cas d'une activité de vente directe, le stationnement devra être réalisé sur l'unité foncière. L'aire de stationnement ne devra pas excéder 150 m²"
+      }
+    }
+  },
+  "section_3_voirie_acces": {
+    "art_3_1_desserte_voies": {
+      "DISPOSITION_GENERALE": {
+        "voies_acces_privees": {
+          "recommandation": "Il est recommandé de traiter les voies d'accès privées secondaires peu passantes avec des matériaux clairs non imperméables",
+          "materiaux_recommandes": [
+            "Revêtements alvéolaires perméables",
+            "Pavés résines perméables",
+            "Graviers et pierres concassées",
+            "Tout autre procédé non imperméable et évitant les couleurs foncées"
+          ],
+          "exception": "Ces dispositions ne s'appliquent pas quand il est démontré que la portance de la voie d'accès au regard des véhicules qui doivent l'emprunter n'est pas compatible avec un revêtement perméable"
+        },
+        "trottoirs_voies_privees": {
+          "materiaux_autorises": [
+            "Pleine terre engazonnée lorsqu'il existe un autre cheminement possible aussi direct pour les personnes à mobilité réduite",
+            "Stabilisé clair",
+            "Béton poreux",
+            "Dalles alvéolées avec gravillons sur structures drainantes",
+            "Tout autre procédé non imperméable et évitant les couleurs foncées"
+          ]
+        }
+      },
+      "ACCES": {
+        "visibilite_et_securite": "Toutes dispositions permettant une bonne visibilité et assurant la sécurité des usagers des voies publiques et celle des personnes utilisant les accès créés doivent être prises en compte pour le débouché des véhicules sur voie publique ou privée : position, configuration, nombre, etc.",
+        "limitation_acces": "Le nombre des accès sur les voies publiques pourra notamment être limité dans l'intérêt de la sécurité. Lorsque le terrain est desservi par plusieurs voies, les constructions peuvent n'être autorisées que sous réserve que l'accès soit établi sur la voie où la gêne pour la circulation sera la moindre",
+        "refus_projet": "Un projet pourra être refusé lorsque l'augmentation des entrées et sorties qu'il engendre sur la voie qui le dessert est incompatible avec la fréquentation ou la configuration de celle-ci",
+        "mutualisation": "Dans la mesure du possible, il est recommandé de mutualiser les accès"
+      },
+      "VOIE_DE_CIRCULATION": {
+        "regle": "Les terrains doivent être desservis par des voies répondant à l'importance et à la destination de la construction ou de l'ensemble des constructions qui y sont édifiés",
+        "defense_incendie": "Les caractéristiques des voies créées doivent répondre aux critères d'accessibilité de la défense incendie et protection civile"
+      }
+    },
+    "art_3_2_desserte_reseaux": null
+  }
+}

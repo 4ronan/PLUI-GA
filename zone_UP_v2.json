@@ -1,0 +1,618 @@
+{
+  "$schema": "https://schema.plu.fr/reglement/v1.0",
+  "meta": {
+    "type_document": "PLUi",
+    "commune": "Grand Angoulême",
+    "version": "1.0.0"
+  },
+  "zone": {
+    "code": "UP",
+    "famille": "U",
+    "libelle": "La zone UP correspond aux secteurs de mutation et de projets. Ils bénéficient d'un règlement plus souple afin d'ouvrir le champ des possibles et de concevoir un projet de reconquête des lieux.",
+    "description": "La zone UP correspond aux secteurs de mutation et de projets. Ils bénéficient d'un règlement plus souple afin d'ouvrir le champ des possibles et de concevoir un projet de reconquête des lieux.",
+    "note_generale": "Une partie de la zone UP est concernée par le Plan de prévention des risques d'inondation (PPRi) de la Charente. En cas de divergence entre les règles du PLUi et du PPRi, c'est la règle la plus contraignante qui doit être appliquée. Le cas échéant, le règlement graphique précise les éléments réglementaires et se substitue au règlement écrit.",
+    "localisation": null,
+    "objectifs": "Permettre la reconversion des sites en mutation dans le cadre d'un urbanisme de projet. Les mutations à venir sur ces secteurs seront moins strictement encadrées et bénéficieront d'un règlement souple de façon à pouvoir aisément être adaptable en fonction de l'avancée des études.",
+    "secteurs": [
+      {
+        "code": "UP",
+        "libelle": "Secteur de projet au bord de la Touvre à Gond-Pontouvre"
+      },
+      {
+        "code": "UPa",
+        "libelle": "Site de projet pour la protection d'un site pollué rue Jules Durandeau à Angoulême"
+      },
+      {
+        "code": "UPab",
+        "libelle": "Pour la requalification et le développement du site autour de l'abbaye Notre-Dame à La Couronne"
+      },
+      {
+        "code": "UPal",
+        "libelle": "Site de projet en bord de Touvre de reconquête d'une friche de papèteries à Ruelle-sur-Touvre"
+      },
+      {
+        "code": "UPb",
+        "libelle": "Pour le secteur de Broche à Angoulême"
+      },
+      {
+        "code": "UPc",
+        "libelle": "Pour le site de renouvellement urbain de Bel Air Grand Font à Angoulême"
+      },
+      {
+        "code": "UPcd",
+        "libelle": "Pour la reconquête de friches dans le centre bourg de Dirac"
+      },
+      {
+        "code": "UPco",
+        "libelle": "Pour la reconversion du site des Courtis à Dirac"
+      },
+      {
+        "code": "UPfd",
+        "libelle": "Pour la reconquête de la friche de l'ancienne maison de retraite de Dirac"
+      },
+      {
+        "code": "UPg",
+        "libelle": "Sur l'emprise de l'îlot Renaudin dans le quartier gare à Angoulême"
+      },
+      {
+        "code": "UPgd",
+        "libelle": "Sur l'emprise de l'îlot Didelon dans le quartier de L'Houmeau à Angoulême"
+      },
+      {
+        "code": "UPl",
+        "libelle": "Sur le site de l'ancienne clinique Sainte-Marie à l'Isle d'Espagnac"
+      },
+      {
+        "code": "UPlc",
+        "libelle": "Sur le site de l'ancienne cartonnerie de la Boëme à La Couronne"
+      },
+      {
+        "code": "UPm",
+        "libelle": "Pour le réaménagement des chais Montaigne à Angoulême"
+      },
+      {
+        "code": "UPp",
+        "libelle": "Pour le réaménagement de l'îlot du Port à Angoulême"
+      },
+      {
+        "code": "UPr",
+        "libelle": "Pour l'aménagement de l'ancienne ZAC de Rochine à Gond-Pontouvre"
+      },
+      {
+        "code": "UPs",
+        "libelle": "Pour l'aménagement de l'ancien stade des Seguins à Ruelle-sur-Touvre"
+      },
+      {
+        "code": "UPse",
+        "libelle": "Pour la reconversion du site de la SERMAT à Puymoyen"
+      },
+      {
+        "code": "UPth",
+        "libelle": "Pour la reconversion des papèteries Thiollet à Saint-Michel"
+      },
+      {
+        "code": "UPv",
+        "libelle": "Pour la reconquête du site des anciennes papèteries de Veuze à Magnac-sur-Touvre"
+      }
+    ]
+  },
+  "section_1_destinations": {
+    "mode": "tableau",
+    "legende": {
+      "X": "Occupations et utilisations du sol interdites",
+      "V*": "Occupations et utilisations du sol autorisées sous conditions",
+      "V": "Autorisé (tout ce qui n'est pas X ou V*)"
+    },
+    "categories": [
+      {
+        "id": "HABITATION",
+        "usages": [
+          {
+            "libelle": "Logement",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UP",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Hébergement",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UP",
+                "statut": "V"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "COMMERCE_ET_ACTIVITE_DE_SERVICE",
+        "usages": [
+          {
+            "libelle": "Artisanat et commerce de détail",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UP",
+                "statut": "V*",
+                "conditions": [
+                  "L'activité ne doit pas générer des nuisances incompatibles avec l'habitat",
+                  "Se reporter au volet commerce du règlement"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Restauration",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UP",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Commerce de gros",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UP",
+                "statut": "V*",
+                "conditions": [
+                  "Seule l'extension mesurée des constructions existantes sera autorisée dans la limite de 30 % de l'emprise au sol existante à la date d'approbation du PLUi"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Activités de services où s'effectue l'accueil d'une clientèle",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UP",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Hébergement hôtelier",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UP",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Camping et hôtellerie de plein-air",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UP",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Cinéma",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UP",
+                "statut": "V"
+              }
+            ]
+          }
+        ],
+        "note": "Se référer au chapitre 11 du titre I sur le commerce pour les activités entrant dans son champ d'application"
+      },
+      {
+        "id": "EQUIPEMENTS_INTERET_COLLECTIF_ET_SERVICES_PUBLICS",
+        "usages": [
+          {
+            "libelle": "Locaux et bureaux accueillant du public des administrations publiques et assimilés",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UP",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Locaux techniques et industriels des administrations publiques et assimilés",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UP",
+                "statut": "V*",
+                "conditions": [
+                  "Les constructions techniques et industrielles concourant à la production d'énergie sont autorisées sous réserve d'absence de nuisances et de leur intégration dans le site"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Etablissements d'enseignement, de santé et d'action sociale",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UP",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Salles d'art et de spectacles",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UP",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Equipements sportifs",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UP",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Autres équipements recevant du public",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UP",
+                "statut": "V"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "AUTRES_ACTIVITES_SECONDAIRE_OU_TERTIAIRE",
+        "usages": [
+          {
+            "libelle": "Industrie",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UP",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Entrepôts",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UP",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Bureau",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UP",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Centre de congrès et d'exposition",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UP",
+                "statut": "V"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "EXPLOITATION_AGRICOLE_ET_FORESTIERE",
+        "usages": [
+          {
+            "libelle": "Exploitation agricole",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UP",
+                "statut": "V*",
+                "conditions": [
+                  "Les bâtiments d'élevage n'entraînant aucune nuisance pour l'habitat environnant tels que ceux nécessaires à l'héliciculture notamment"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Exploitation forestière",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UP",
+                "statut": "X"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "AUTRES_OCCUPATIONS_ET_UTILISATIONS_DU_SOL",
+        "usages": [
+          {
+            "libelle": "Habitat Léger Permanent",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UP",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Stationnement isolé de caravanes / Habitations Légères de Loisirs (HLL) / Résidences Mobiles de Loisirs (RML)",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UP",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Terrains familiaux et résidences mobiles constituant l'habitat permanent des gens du voyage",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UP",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Coopératives d'utilisation de matériel agricole agréées",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UP",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Locaux et installations de diversification de l'activité agricole",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UP",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Camping à la ferme",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UP",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Affouillements et exhaussements de sol",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UP",
+                "statut": "V*",
+                "conditions": [
+                  "Ils sont directement liés aux travaux de constructions autorisées ou nécessaires pour la recherche archéologique"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Carrières",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UP",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Déchets de toute nature, stockage de ferrailles et matériaux de démolition ou de récupération",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UP",
+                "statut": "X"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "dispositions_specifiques": [
+      {
+        "id": "DISPOSITIONS_PARTICULIERES_ET_CONDITIONS_GENERALES",
+        "contenu": {
+          "Constructions nouvelles": "Autorisées en compatibilité avec les orientations d'aménagement quand elles existent",
+          "Nouvelles installations classées pour la protection de l'environnement": "Autorisées à condition qu'elles correspondent à des besoins nécessaires à la vie et à la commodité des habitants et autres usagers de la zone, que soient mises en œuvre toutes dispositions pour les rendre compatibles avec l'habitat environnant et qu'il n'en résulte pas pour le voisinage de nuisances ou risques",
+          "Extension ou transformation des installations classées et constructions à destination d'industrie": "Autorisées à condition qu'il n'en résulte pas pour le voisinage une aggravation des dangers et nuisances et que toutes les dispositions utiles soient mises en œuvre pour l'intégration dans le milieu environnant",
+          "Exhaussements et affouillements du sol": "Autorisés à condition qu'ils contribuent à l'amélioration de l'environnement et de l'aspect paysager, ou qu'ils soient rendus nécessaires pour la recherche ou la mise en valeur d'un site ou de ses vestiges archéologiques, ou pour des raisons fonctionnelles ou de raccordement aux réseaux"
+        }
+      },
+      {
+        "id": "DISPOSITIONS_PAR_SECTEUR",
+        "contenu": {
+          "UPab": "Concerné par une Orientation d'Aménagement et de Programmation sectorielle à laquelle tout projet devra se conformer",
+          "UPcd": "Le bâti ancien présent devra faire l'objet d'une hiérarchisation au regard de son intérêt patrimonial afin de déterminer ce qui doit être protégé (proche de l'église Saint-Martial)",
+          "UPse": {
+            "servitude": "En application de l'article L151-41 5 du code de l'urbanisme, une servitude est instituée pour un délai maximum de 5 ans à compter de l'entrée en vigueur du PLUi",
+            "constructions_nouvelles": "Les constructions nouvelles de plus 50 m² sont interdites",
+            "autorisations": "Seuls sont autorisés l'adaptation, le changement de destination, la réfection ou l'extension limitée des constructions existantes"
+          },
+          "UPlc": "Toute extension d'une construction existante et toute construction nouvelle sont interdites dans la zone inondable de l'atlas de la Boëme et dans le périmètre NATURA 2000 associé au cours d'eau"
+        }
+      },
+      {
+        "id": "MIXITE_SOCIALE_ET_FONCTIONNELLE",
+        "contenu": {
+          "UPr": {
+            "logements_sociaux": "Une proportion de 20 % de logements sociaux sera respectée, comme indiqué dans l'orientation d'aménagement et de programmation"
+          }
+        }
+      }
+    ]
+  },
+  "section_2_caracteristiques": {
+    "art_2_1_implantation": {
+      "note": "Les constructions et installations liées et nécessaires aux services publics et d'intérêt collectif ne sont pas réglementées",
+      "par_rapport_aux_voies": {
+        "secteur_UP": "Non réglementé",
+        "autres_secteurs": "Non précisé (règlement souple)",
+        "IMPLANTATION_PAR_RAPPORT_AUX_EMPRISES_FERROVIAIRES": {
+          "habitations_LGV_site_propre": "50 m minimum (hors secteur des embranchements vers la gare d'Angoulême)",
+          "habitations_autres_lignes": "15 m minimum",
+          "annexes_autres_lignes": "5 m minimum",
+          "autres_constructions_LGV": "10 m minimum",
+          "autres_constructions_autres_sections_LGV_et_autres_lignes": "5 m minimum"
+        }
+      },
+      "par_rapport_aux_limites_separatives": {
+        "regle_generale": "Non réglementé"
+      },
+      "emprise_au_sol": {
+        "UPab_parc_Sud": "L'emprise au sol des constructions sera limitée à 50 % de la superficie constructible du terrain (= 4 453,50 m²)"
+      },
+      "hauteur": {
+        "mesure": "La hauteur des constructions, en tout point, est mesurée à partir du niveau du terrain naturel (niveau du sol existant avant la construction initiale et les éventuels travaux de terrassement et d'exhaussement)",
+        "UPab_parc_Sud": "Le gabarit des bâtiments sera limité à un R+1 + combles, ou ne pourra pas dépasser la frondaison des arbres environnants, sous réserve de démontrer leur insertion dans le site",
+        "UPc": "Non réglementé",
+        "UPg": "Hauteur maximale limitée à 18 m",
+        "UPgd": "Hauteur maximale limitée à 24 m",
+        "UPr": "Hauteur maximale limitée à R+3 : 13 m à l'égout ou à l'acrotère et 16 m au faîtage",
+        "tous_autres_secteurs": {
+          "regle_generale": "Hauteur maximale limitée à 18 m",
+          "services_publics_ou_interet_collectif": "Hauteur maximale limitée à 21 m",
+          "derogation_grands_ensembles": "Pour les ensembles de constructions dont le terrain d'assiette ou la surface de plancher créée sont supérieurs à 3 000 m², il peut être admis un niveau supplémentaire de 3 m sur une partie de la surface bâtie qui ne peut excéder 50 % de l'emprise des bâtiments existants, s'il s'agit de favoriser une meilleure composition architecturale et sous réserve que l'aménagement proposé ne soit pas de nature à porter atteinte au caractère des lieux avoisinants, au paysage urbain et à la conservation des perspectives monumentales"
+        },
+        "DISPOSITIONS_PARTICULIERES": {
+          "description": "Dans les secteurs identifiés dans le document graphique, la hauteur maximale est indiquée en niveaux sur rez-de-chaussée le long des voies",
+          "immeubles_R+2": "Hauteur ne peut excéder 13 m au faîte du toit et 10 m au sommet de l'acrotère",
+          "immeubles_R+3": "Hauteur ne peut excéder 16 m au faîtage du toit et 13 m au sommet de l'acrotère",
+          "niveau_supplementaire": "Un niveau supplémentaire peut être admis sous réserve que la hauteur absolue référencée soit respectée et que la construction s'intègre harmonieusement dans l'épannelage des glacis du plateau",
+          "exceptions": "Des règles de hauteur différentes peuvent être appliquées pour les constructions et installations nécessaires aux services publics ou d'intérêt collectif"
+        }
+      }
+    },
+    "art_2_2_qualite_architecturale": {
+      "GENERALITES": {
+        "regle_generale": "Tout projet de construction doit s'intégrer à son environnement par leur situation, leur architecture, leur hauteur, leur proportion, leur toiture, le traitement et la couleur de leurs façades, la disposition et la proportion des ouvertures, leur adaptation au sol",
+        "paysage_et_perspectives": "Le caractère et l'intérêt des lieux avoisinants, les sites, paysages naturels ou urbains et la conservation des perspectives monumentales doivent être respectés",
+        "architecture_contemporaine": "L'architecture contemporaine et/ou bioclimatique est autorisée dans la mesure où elle s'intègre à l'environnement bâti (par sa volumétrie, ses types de matériaux, sa couleur…)"
+      },
+      "DISPOSITIONS_PAR_SECTEUR": {
+        "UPab_parc_Sud": {
+          "qualite_espaces": "Hiérarchisation de la qualité des espaces et préservation des vues depuis le monument historique (code du patrimoine)",
+          "espace_tampon": "Maintien d'un espace tampon au Nord pour mise à distance de la ripisylve"
+        },
+        "UPab_vestiges_abbaye": "Un projet de création contemporaine sur la base de l'emplacement des anciens bâtiments conventuels pourrait être envisagé en récupérant les emprises des bâtiments aujourd'hui disparus, dans le cadre d'une requalification qui consisterait à reconstruire l'ensemble monastique en recréant une fermeture de l'espace autour du cloître",
+        "UPab_enjeux_environnementaux": "Les enjeux environnementaux représentés en prescription surfacique doivent être préservés (maintien des zones humides avérées, protection des boisements et alignements d'arbres…)",
+        "UPab_stationnement": "Le stationnement devra être perméable et limité à une place logement"
+      },
+      "DISPOSITIONS_POUR_ELEMENTS_DE_PATRIMOINE": {
+        "UPlc": "L'ancien moulin des Beauvais, identifié en tant qu'élément de patrimoine bâti et qui revêt un caractère architectural et patrimonial fort, devra être conservé en l'état (article L151-19 du code de l'urbanisme)"
+      }
+    },
+    "art_2_3_traitement_paysager": {
+      "ESPACES_LIBRES": {
+        "arbres_haute_tige": "Les espaces libres de construction doivent comporter un minimum de 1 arbre de haute tige d'essence locale par 60 m² de surface de terrain non bâti (le nombre d'arbres sera arrondi à l'unité supérieure)",
+        "plantations_existantes": "Les plantations existantes doivent être maintenues ou remplacées par des plantations équivalentes en cas de nécessité démontrée de leur arrachage pour la réalisation des constructions ou des réseaux"
+      },
+      "AIRES_DE_STATIONNEMENT": {
+        "regle_generale": "Les aires de stationnement doivent faire l'objet d'un traitement paysager de qualité, et être plantées à raison d'un arbre au moins pour 2 emplacements. Ces arbres peuvent être groupés en bosquets. Ils doivent être d'essence locale conformément au chapitre 10 du titre I du présent règlement",
+        "UPr": {
+          "stationnement_4_places_et_plus": "Les aires de stationnement de 4 places et plus doivent être végétalisées et arborées",
+          "dalles_non_baties": "Les dalles non bâties en surface, générées par la création d'aires de stationnement en souterrain doivent être végétalisées sur au moins 10 % de la surface de la dalle"
+        }
+      },
+      "TOITURES_TERRASSES": {
+        "UPr": "Pour toute construction neuve et dans le cas de travaux d'extension générant une augmentation de plus de 70 m² de surface de plancher, les toitures terrasses non accessibles doivent être végétalisées et présenter au minimum 10 cm d'épaisseur de terre végétale"
+      },
+      "MARGES_DE_RECUL": {
+        "UPr": "Les marges de recul doivent être aménagées en espaces à dominante végétale"
+      }
+    },
+    "art_2_4_stationnement": {
+      "principe": "Le stationnement des véhicules de toute nature, correspondant aux besoins des installations et constructions autorisées dans la zone, doit être assuré en dehors des voies publiques ou privées, par la réalisation d'aires de stationnement sur le terrain propre à l'opération",
+      "alternative_mutualisation": null,
+      "cycles": "Le stationnement des cycles devra être prévu selon les besoins générés par l'activité. Les dispositions applicables figurent au chapitre 7 du titre I du présent règlement",
+      "residences_personnes_agees": "Une place de stationnement doit être réalisée pour trois places d'hébergement d'un établissement d'hébergement pour personnes âgées dépendantes ou d'une résidence universitaire équivalent à un logement (article R151-46 du code de l'urbanisme, décret du 23 juillet 2015)",
+      "revetement_collectif": {
+        "principe": "Les aires de stationnement collectif ne doivent être ni imperméables ni de couleur foncée",
+        "materiaux_autorises": [
+          "Pleine terre",
+          "Mélange terre/pierre",
+          "Revêtements alvéolaires de couleur claire engazonnés",
+          "Pavés perméables de couleur claire",
+          "Pierres concassées, graviers de couleur claire",
+          "Bétons poreux",
+          "Dalles alvéolées avec gravillon sur structures drainantes",
+          "Tout autre procédé utilisant des matériaux naturels assurant une perméabilité et une bonne réfraction de la lumière"
+        ]
+      },
+      "plantations_collectif": {
+        "regle": "Les aires de stationnement collectif doivent comporter 25 % d'arbres de haute tige rapportés au nombre d'emplacements de stationnement",
+        "disposition_arbres": "Les arbres de haute tige doivent être disposés de façon optimale pour protéger de l'ensoleillement ces emplacements",
+        "pieds_arbres": "Les pieds des arbres de haute tige doivent comporter une surface de 4 m² non imperméabilisée",
+        "essences": "Ces arbres de haute tige devront être d'essences locales variées (se référer au chapitre 10 du titre I et à l'OAP thématique Trames verte et bleue)",
+        "applicabilite": "Les dispositions sont également applicables aux places de stationnement réalisées dans les espaces communs des opérations d'aménagement en zones urbaines et en zone 1AUa, 1AUb, 1AUX et 1AUY"
+      },
+      "stationnement_individuel": {
+        "recommandation": "Il est recommandé que le stationnement individuel sur la parcelle privative ne soit ni imperméable ni de couleur foncée",
+        "surfaces_preferentielles": [
+          "Pleine terre",
+          "Mélange terre/pierre",
+          "Revêtements alvéolaires de couleur claire engazonnés",
+          "Pavés perméables de couleur claire",
+          "Pierres concassées, graviers de couleur claire",
+          "Bétons poreux",
+          "Tout autre procédé utilisant des matériaux naturels assurant une perméabilité et une bonne réfraction de la lumière"
+        ]
+      },
+      "exceptions": {
+        "portance_voie": "Les dispositions sur les revêtements ne s'appliquent pas quand il est démontré que la portance de la voie au regard des véhicules à stationner n'est pas compatible avec un revêtement perméable",
+        "PMR": "Les dispositions ne s'appliquent pas aux emplacements de stationnement obligatoires réalisés pour les véhicules des personnes à mobilité réduite",
+        "parking_silo": "Les dispositions ne s'appliquent pas en cas de construction d'un parking silo"
+      },
+      "besoin_en_stationnement": "Voir chapitre 7 du titre I du présent règlement"
+    }
+  },
+  "section_3_voirie_acces": {
+    "art_3_1_desserte_voies": {
+      "DISPOSITION_GENERALE": {
+        "voies_acces_privees": {
+          "recommandation": "Il est recommandé de traiter les voies d'accès privées secondaires peu passantes avec des matériaux clairs non imperméables",
+          "materiaux_recommandes": [
+            "Revêtements alvéolaires perméables",
+            "Pavés résines perméables",
+            "Graviers et pierres concassées",
+            "Tout autre procédé non imperméable et évitant les couleurs foncées"
+          ],
+          "exception": "Ces dispositions ne s'appliquent pas quand il est démontré que la portance de la voie d'accès au regard des véhicules qui doivent l'emprunter n'est pas compatible avec un revêtement perméable"
+        },
+        "trottoirs_voies_privees": {
+          "materiaux_autorises": [
+            "Pleine terre engazonnée lorsqu'il existe un autre cheminement possible aussi direct pour les personnes à mobilité réduite",
+            "Stabilisé clair",
+            "Béton poreux",
+            "Dalles alvéolées avec gravillons sur structures drainantes",
+            "Tout autre procédé non imperméable et évitant les couleurs foncées"
+          ]
+        }
+      },
+      "ACCES": {
+        "visibilite_et_securite": "Toutes dispositions permettant une bonne visibilité et assurant la sécurité des usagers des voies publiques et celle des personnes utilisant les accès créés doivent être prises en compte pour le débouché des véhicules sur voie publique ou privée : position, configuration, nombre, etc.",
+        "limitation_acces": "Le nombre des accès sur les voies publiques pourra notamment être limité dans l'intérêt de la sécurité. Lorsque le terrain est desservi par plusieurs voies, les constructions peuvent n'être autorisées que sous réserve que l'accès soit établi sur la voie où la gêne pour la circulation sera la moindre",
+        "refus_projet": "Un projet pourra être refusé lorsque l'augmentation des entrées et sorties qu'il engendre sur la voie qui le dessert est incompatible avec la fréquentation ou la configuration de celle-ci",
+        "mutualisation": "Dans la mesure du possible, il est recommandé de mutualiser les accès"
+      },
+      "VOIE_DE_CIRCULATION": {
+        "regle": "Les terrains doivent être desservis par des voies répondant à l'importance et à la destination de la construction ou de l'ensemble des constructions qui y sont édifiés et dont l'édification est demandée",
+        "defense_incendie": "Les caractéristiques des voies créées doivent répondre aux critères d'accessibilité de la défense incendie et protection civile"
+      }
+    },
+    "art_3_2_desserte_reseaux": null
+  }
+}

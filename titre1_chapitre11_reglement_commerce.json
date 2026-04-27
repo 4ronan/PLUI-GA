@@ -1,0 +1,129 @@
+{
+  "TITRE": "TITRE I - DISPOSITIONS GÉNÉRALES ET SPÉCIFIQUES À DES PÉRIMÈTRES QUI NE CONSTITUENT PAS DES ZONES OU SECTEURS DU RÈGLEMENT GRAPHIQUE",
+  "CHAPITRE": "CHAPITRE 11 : LE RÈGLEMENT DU COMMERCE",
+  "source": "Règlement écrit - Pièce n°5.2.a - PLUi valant Plan de Mobilité - Communauté d'agglomération de GrandAngoulême",
+  "pages": "36-39",
+  "references": {
+    "document_cadre": "Document d'aménagement artisanal, commercial et logistique (DAACL) du SCoT-AEC",
+    "schema_directeur": "Schéma directeur du commerce et de l'artisanat de proximité de l'agglomération (2018)",
+    "references_legislatives": ["L151-16 CU", "L151-47 CU", "R151-28 CU", "Arrêté ministériel du 10 novembre 2016 modifié par l'arrêté du 22 mars 2023"]
+  },
+
+  "ARTICLE_11_1_CHAMP_APPLICATION": {
+
+    "definition_commerce": "Toute activité de vente de biens ou services dans des conditionnements adaptés à une clientèle de particuliers générant des flux de véhicules particuliers ou de transport en commun, que la transaction soit réalisée sur place ou par voie dématérialisée",
+
+    "sous_destination_CU": "Les dispositions du règlement portent sur la seule sous-destination « artisanat et commerce de détail » (à l'exception des règles sur la préservation des linéaires commerciaux). Cette sous-destination recouvre : les constructions commerciales destinées à la présentation et la vente de biens directe à une clientèle ; les constructions abritant un artisanat avec activité commerciale de vente de biens (boulangerie, charcuterie, poissonnerie…) ; les constructions abritant un artisanat avec activité commerciale de vente de services (cordonnerie, salon de coiffure…)",
+
+    "11_1_1_activites_concernees": {
+      "description": "Activités de commerce de détail impliquant un acte final d'achat d'un service ou d'un bien avec transaction financière directe ou dématérialisée (incluant les drives)",
+      "filieres": {
+        "Alimentaire": "Commerces d'alimentation générale, épicerie, fruits et légumes, vins et spiritueux, crémerie, fromagerie, cafés, bonbons, poissonneries, boucheries, charcuteries, traiteurs, boulangeries",
+        "Culture_loisirs": "Fleurs, tabac, presse, librairie, jardinerie, informatique, sport, cinéma",
+        "Hygiene_sante_beaute": "Coiffeur, institut de beauté, parfumerie, opticien, pharmacie et parapharmacie",
+        "Equipement_maison": "Électroménager, tv-hifi, décoration, art de la table, linge de maison, bricolage, quincaillerie, meubles",
+        "Equipement_personne": "Vêtements, chaussures, bijouterie, maroquinerie, horlogerie, mercerie, dépôt vente, matériel de télécommunication",
+        "Services_aux_particuliers": "Pressing, cordonnerie, toilettage pour chien, tatouage"
+      }
+    },
+
+    "11_1_2_activites_non_concernees": [
+      "Hôtel-restaurant y compris les campings",
+      "Activités exercées à domicile ne disposant pas d'une vitrine (enseigne et espace laissant voir l'intérieur du local)",
+      "Commerce de gros ayant principalement comme clientèle des professionnels",
+      "Vente directe de produits agricoles domiciliée sur le lieu de production dont la surface de vente n'excède pas 50 m²",
+      "Stations de distribution de carburants",
+      "Concessionnaires automobiles, camping-car, centres de contrôle technique, garages, nautisme, accastillage, motocycles et motoculture de plaisance, location de véhicule et de matériel, locations et réparations diverses, brocantes, pompes funèbres",
+      "Bowlings, parc de loisirs, salle de fitness, photographes",
+      "Pépinières avec espace de production",
+      "Show-rooms, magasins d'usines sous réserve que leur surface ne dépasse pas 15 % de la surface de l'unité bâtie"
+    ]
+  },
+
+  "ARTICLE_11_2_REGLES_CONDITIONS_IMPLANTATION": {
+
+    "localisations_preferentielles": {
+      "centralites": "Centres des villes, bourgs, villages et quartiers identifiés au PLUi",
+      "zones_peripheriques": [
+        "Croix blanche à Soyaux",
+        "Avenauds, Savis et Montagnes à Gond-Pontouvre et Champniers",
+        "Chantemerle à La Couronne",
+        "Lunesse et Grand Girac à Angoulême"
+      ]
+    },
+
+    "11_2_1_centralites": {
+      "definition": "Secteurs caractérisés par une mixité des fonctions et la présence d'un tissu bâti dense et continu. Lieux exclusifs des commerces de proximité et d'accueil de toutes formes de commerces participant à leur identité, diversification et renforcement",
+      "objectif": "Rapprocher le commerce de l'habitat, limiter les flux de véhicules particuliers et promouvoir un développement minimisant la consommation foncière",
+
+      "centralites_futures": "Les mêmes règles que les centralités existantes s'appliquent aux centralités futures (projets urbains mixtes)",
+      "centralite_specifique_La_Couronne": "Autour du monument de l'abbaye, seuls les commerces liés à la valorisation touristique de ce monument sont autorisés",
+
+      "11_2_1_1_lineaires_commerciaux": {
+        "reference_legislative": "L151-16 CU",
+        "principe": "Le document graphique délimite des voies le long desquelles est préservée la diversité commerciale",
+        "reperage_graphique": "Linéaires commerciaux matérialisés en violet sur le document graphique des prescriptions",
+        "interdiction": "Le changement de destination des commerces et des locaux artisanaux dans lesquels s'effectue une activité commerciale de vente de biens ou de services est interdit sur ces linéaires"
+      },
+
+      "11_2_1_2_constructions_autorisees": {
+        "seuil_exclusif_commerces_proximite": "Moins de 300 m² de surface de vente, ou moins de 300 m² de surface de plancher pour les constructions abritant une activité artisanale avec vente de services",
+        "interdiction": "Les commerces alimentaires de plus de 2 000 m² de surface de vente sont interdits"
+      },
+
+      "11_2_1_3_acces_etages": "Les opérations de restructuration d'immeuble, d'agrandissement de surface de vente ou de fusion de cellules commerciales devront prévoir un accès différencié aux étages"
+    },
+
+    "11_2_2_espaces_peripherie": {
+      "definition": "Secteurs commerciaux extérieurs aux centralités, organisés historiquement autour des mobilités motorisées. Vocation à accueillir uniquement du commerce dont le fonctionnement et la dimension sont incompatibles avec les centralités",
+      "seuil_entree": "Formats de plus de 300 m² de surface de vente ou de surface de plancher, sous réserve que ces implantations ne puissent pas être effectuées dans les périmètres de centralités et n'aient aucun impact négatif sur l'équilibre commercial",
+
+      "11_2_2_1_constructions_interdites": [
+        "Création de tout nouvel ensemble de galerie marchande ou centre commercial",
+        "Tout projet d'équipement commercial pouvant s'implanter dans les centralités du territoire (le porteur de projet doit démontrer l'absence d'emplacement disponible en centralité)",
+        "Équipement commercial de moins de 300 m² de surface de vente",
+        "Équipement commercial de moins de 300 m² de surface de plancher pour les constructions abritant une activité artisanale avec vente de services",
+        "Équipement commercial de moins de 300 m² de surface de plancher pour les constructions abritant une activité artisanale avec vente de biens"
+      ],
+
+      "11_2_2_2_constructions_autorisees": [
+        "Nouveaux équipements commerciaux relevant d'activités commerciales d'achats lourds : équipements de la maison, bricolage, électroménagers et jardinage notamment"
+      ],
+
+      "11_2_2_3_constructions_autorisees_sous_conditions": [
+        "Extensions d'un équipement commercial existant à condition soit de la requalification de tout ou partie du bâtiment, soit de l'amélioration des espaces de stationnement et de la végétalisation de la parcelle (quand ces aménagements sont nécessaires à une amélioration de la qualité architecturale, paysagère et environnementale du bâti existant et de ses abords)",
+        "Sur terrains déjà artificialisés : création d'un nouveau commerce dans le secteur de l'équipement de la personne, la culture, les loisirs et le sport, soit par transfert de commerce déjà présent dans la zone, soit en raison de contraintes de formats ou d'absence de locaux disponibles et adaptés en centralité",
+        "Sur terrains déjà artificialisés : activités de seconde main, de réemploi, de vente d'invendus alimentaires"
+      ]
+    },
+
+    "11_2_3_espaces_hors_localisations_preferentielles": {
+      "definition": "Activités commerciales isolées extérieures aux centralités et aux pôles de périphérie, caractérisées par une dispersion forte des magasins, l'absence de logique d'ensemble et de circuit marchand identifié",
+      "disposition_specifique_Uft": "Dans le secteur Uft délimité sur la commune d'Angoulême, les commerces en lien avec les activités du fleuve et les mobilités douces sont autorisés même hors centralité",
+
+      "11_2_3_1_constructions_interdites": [
+        "Tout projet d'équipement commercial nouveau créant de la surface de vente",
+        "Tout projet destiné à une activité artisanale avec vente de services",
+        "Tout projet destiné à une activité artisanale avec vente de biens"
+      ],
+
+      "11_2_3_2_constructions_autorisees_sous_conditions": [
+        "Extension d'un équipement commercial dans la limite de 20 % de la surface de vente à la date d'approbation du SCoT-AEC, à condition soit de la requalification de tout ou partie du bâtiment, soit de l'amélioration des espaces de stationnement et de la végétalisation de la parcelle",
+        "Reprise d'un local commercial au sens de l'article 11.1 n'ayant pas été vacant depuis plus de 2 ans à la date d'approbation du présent PLUi",
+        "Activités hygiène, santé, beauté (citées à l'article 11.1) effectuées au domicile du commerçant et celles à domicile ne disposant pas d'une vitrine",
+        "Points de vente de producteurs de fruits et légumes implantés sur le lieu d'exploitation à condition que leur surface de vente n'excède pas 50 m²"
+      ],
+
+      "definition_vitrine": "Espace visible de l'extérieur d'un point de vente, doté d'une vitre et spécialement aménagé pour la présentation de produits de manière à inciter les passants lors d'une déambulation sur la rue ou un espace public à pénétrer dans le magasin"
+    },
+
+    "11_2_4_activites_logistiques": {
+      "description": "Équipements de stockage permettant la livraison des commerces et/ou la livraison des consommateurs finaux du territoire",
+      "drives": {
+        "drives_pietons": "Doivent uniquement s'implanter en centralité ou être attenants à une locomotive alimentaire",
+        "drives_casiers": "Doivent uniquement s'implanter en centralité. Des exceptions pourront avoir lieu notamment pour les drives casiers hors activités alimentaires s'ils sont situés sur les pôles de mobilité structurants",
+        "drives_voiture": "Doivent être attenants à leur magasin de référence"
+      }
+    }
+  }
+}

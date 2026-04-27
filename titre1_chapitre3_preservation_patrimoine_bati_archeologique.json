@@ -1,0 +1,104 @@
+{
+  "TITRE": "TITRE I - DISPOSITIONS GÉNÉRALES ET SPÉCIFIQUES À DES PÉRIMÈTRES QUI NE CONSTITUENT PAS DES ZONES OU SECTEURS DU RÈGLEMENT GRAPHIQUE",
+  "CHAPITRE": "CHAPITRE 3 : DISPOSITIONS RELATIVES À LA PRÉSERVATION DU PATRIMOINE BÂTI ET ARCHÉOLOGIQUE",
+  "source": "Règlement écrit - Pièce n°5.2.a - PLUi valant Plan de Mobilité - Communauté d'agglomération de GrandAngoulême",
+  "pages": "21-22",
+
+  "BATIMENTS_ET_ILOTS_REPERES_L151_19": {
+    "reference_legislative": "L151-19 CU",
+    "description": "Bâtiments présentant un intérêt architectural et/ou patrimonial bénéficiant d'une mesure de protection particulière par le PLUi, repérés sur le règlement graphique",
+
+    "prescriptions_generales": [
+      "Tous travaux ayant pour effet de modifier ou de supprimer des constructions existantes repérées doivent être précédés d'une déclaration préalable de travaux",
+      "Tous travaux effectués sur un bâtiment ou un ensemble de bâtiments repérés doivent contribuer à une sauvegarde de leurs caractéristiques culturelles, historiques et architecturales et à leur mise en valeur",
+      "La démolition totale ou partielle est interdite, sauf exception pour les parties présentant un intérêt architectural et patrimonial moindre",
+      "Les extensions ou constructions nouvelles sur l'unité foncière doivent être implantées de façon à mettre en valeur l'ordonnancement architectural du bâti existant. Elles pourront être refusées si leur ampleur, leur nombre ou leur différenciation avec le bâtiment repéré conduisent à une altération significative de ce dernier"
+    ],
+
+    "restauration": "Les travaux viseront à restituer l'état initial connu (respect de la forme et des matériaux d'origine)",
+    "changement_destination": "Les travaux respecteront les principales caractéristiques du bâti traditionnel",
+
+    "COUVERTURES": {
+      "regles": [
+        "Le volume et la pente d'origine seront conservés",
+        "La réfection de toiture sera réalisée avec le matériau originel, y compris pour les accessoires de couverture",
+        "En cas d'extension ou modification, le projet devra prendre en compte la volumétrie initiale du bâtiment et ses matériaux"
+      ]
+    },
+
+    "MACONNERIES_FACADES": {
+      "pierres_de_taille": [
+        "Les pierres de taille seront conservées apparentes, sans être enduites, ni peintes, ni sablées, afin de conserver leur aspect de surface",
+        "Le rejointoiement doit affleurer le nu de la pierre, sans creux ni saillie",
+        "Les remplacements ou compléments se feront en pierre de taille de pays"
+      ],
+      "murs_en_moellons": [
+        "Resteront soit en pierres apparentes, soit enduits lorsqu'ils l'étaient",
+        "L'enduit sera d'une couleur proche de celle des pierres de pays, affleurant, sans surépaisseur"
+      ],
+      "percements": "En cas d'extension, de modification ou de création de percements, le projet devra prendre en compte la volumétrie initiale du bâtiment et ses matériaux",
+      "modelature": {
+        "regle": "Les détails et modénatures seront conservés",
+        "definition": "Éléments décoratifs de la façade pouvant également avoir une fonction de protection contre le ruissellement et l'érosion"
+      }
+    },
+
+    "CLOTURES": {
+      "regles": [
+        "Les murets de clôtures en pierres existants doivent être préservés et restaurés avec les techniques et matériaux d'origine",
+        "Les travaux à leur contact immédiat ou touchant leurs abords viseront à respecter l'intégrité des éléments repérés",
+        "Les abords immédiats recevront un simple traitement d'entretien (tontes, tailles…)"
+      ]
+    }
+  },
+
+  "ILOTS_URBAINS": {
+    "localisation": "Îlots identifiés notamment à Claix et à Saint-Michel",
+    "constructions_extensions_surelevations": {
+      "statut": "Autorisées sous conditions",
+      "conditions": [
+        "Ne pas porter atteinte à la forme urbaine et à la typologie caractéristique des îlots",
+        "Ne pas être implantées dans la bande de recul comprise entre la construction principale et les voies et emprises publiques",
+        "Respecter les retraits des constructions principales d'origine par rapport au domaine public et aux limites séparatives",
+        "Reprendre le rythme des ouvertures des façades des constructions principales d'origine",
+        "Préserver la même hauteur à l'égout et au faîtage que celles des constructions avoisinantes",
+        "Respecter les pentes de toiture des volumes principaux avoisinants",
+        "Harmoniser les proportions, échelle, couleurs et matériaux employés aux immeubles répertoriés voisins",
+        "Proscrire toute imitation de matériaux telle que fausses briques, fausses pierres, faux bois et les matériaux de constructions précaires de type fibrociment, tôles ondulées, plastiques ondulés"
+      ]
+    }
+  },
+
+  "ILOTS_OUVRIERS_XIXe_XXe_SIECLES": {
+    "localisation": "Rue Léo Lagrange et route de Gond-Pontouvre à Ruelle-sur-Touvre",
+
+    "IMPLANTATION_ET_VOLUMETRIE": {
+      "regles": [
+        "La volumétrie initiale du bâtiment et ses matériaux devront être pris en compte pour tout projet",
+        "La façade principale des constructions devra impérativement être implantée à l'alignement des voies pour assurer la continuité du bâti patrimonial de l'îlot",
+        "Les constructions pourront s'implanter en recul uniquement lorsque le projet jouxte une construction existante sur un fonds voisin présentant une qualité patrimoniale, en respectant la même marge de recul",
+        "Les constructions principales s'implantent sur les limites séparatives latérales",
+        "Les hauteurs des constructions ne doivent pas excéder celles des constructions voisines identifiées dans l'îlot patrimonial"
+      ]
+    },
+
+    "ASPECT_EXTERIEUR": {
+      "couvertures_maconneries_facades": "Se référer aux dispositions générales des bâtiments repérés au titre du L151-19 du code de l'urbanisme",
+      "regles_specifiques": [
+        "Les détails et modénatures seront conservés. Tout remplacement ou complément se fera dans les matériaux d'origine",
+        "Le rythme et la volumétrie des percements devront être maintenus",
+        "Tout nouveau percement en façade principale est interdit",
+        "Les volets à battants en bois devront être maintenus"
+      ]
+    }
+  },
+
+  "ZONES_PRESOMPTION_PRESCRIPTIONS_ARCHEOLOGIQUES": {
+    "description": "Secteurs identifiés sur le règlement graphique comme zones de présomption de prescriptions archéologiques",
+    "regle": "Les opérations d'aménagement affectant le sous-sol peuvent faire l'objet de prescriptions archéologiques préalables"
+  },
+
+  "SITE_PATRIMONIAL_REMARQUABLE": {
+    "regle": "Le règlement s'applique à l'intérieur du site patrimonial remarquable"
+  }
+}

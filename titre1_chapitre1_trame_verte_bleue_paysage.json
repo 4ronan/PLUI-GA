@@ -1,0 +1,183 @@
+{
+  "TITRE": "TITRE I - DISPOSITIONS GÉNÉRALES ET SPÉCIFIQUES À DES PÉRIMÈTRES QUI NE CONSTITUENT PAS DES ZONES OU SECTEURS DU RÈGLEMENT GRAPHIQUE",
+  "CHAPITRE": "CHAPITRE 1 : DISPOSITIONS RELATIVES À LA TRAME VERTE ET BLEUE ET AU PAYSAGE",
+  "source": "Règlement écrit - Pièce n°5.2.a - PLUi valant Plan de Mobilité - Communauté d'agglomération de GrandAngoulême",
+  "pages": "15-18",
+
+  "ESPACES_BOISES_CLASSES": {
+    "references_legislatives": ["L113-1 CU", "L113-2 CU", "L341-3 CF", "R341-1 CF"],
+    "description": "Les espaces boisés, arbres isolés et ripisylves identifiés au règlement graphique comme espaces boisés à conserver, à protéger ou à créer.",
+    "effets_du_classement": [
+      "Interdit tout changement d'affectation ou tout mode d'occupation du sol de nature à compromettre la conservation, la protection ou la création des boisements",
+      "Entraîne le rejet de plein droit de la demande d'autorisation de défrichement"
+    ],
+    "definition_defrichement": "Opération volontaire entraînant directement ou indirectement la destruction de l'état boisé d'un terrain et mettant fin à sa destination forestière"
+  },
+
+  "ELEMENTS_DE_PAYSAGE_ET_SECTEURS_A_PROTEGER": {
+    "reference_legislative": "L151-23 CU",
+    "description": "Éléments de paysage et sites et secteurs à protéger pour des motifs d'ordre écologique et/ou paysager (boisements, parcs et jardins, pelouses, arbres isolés).",
+    "principe_general": "L'entité paysagère identifiée doit être absolument maintenue au sein des éléments de paysage délimités par le règlement graphique.",
+
+    "PARCS_ET_JARDINS": {
+      "travaux_admis": [
+        "Travaux d'entretien, de restauration, de renaturation du milieu",
+        "Annexes d'une construction principale existante à moins de 25 m de son site de construction, dans la limite cumulée de 20 m² d'emprise au sol sur la totalité du périmètre de l'élément de paysage, à condition que les constructions n'entrainent l'abattage d'aucun arbre et ne portent pas atteinte au milieu qui a justifié la protection",
+        "Piscines avec le même critère de distance (25 m) et sous réserve d'absence d'abattage d'arbre ou d'atteinte au milieu protégé"
+      ],
+      "prescriptions": "Les caractéristiques patrimoniales (cheminements, perspectives, arbres et haies remarquables, ambiance générale) doivent être préservées"
+    },
+
+    "ARBRES_ISOLES": {
+      "principe": "Les arbres isolés identifiés sont protégés",
+      "destructions_autorisees": [
+        "Mauvais état sanitaire des plantations",
+        "Raisons de sécurité",
+        "Besoins techniques d'intérêt collectif justifiés (réseaux, voirie)"
+      ],
+      "obligation_remplacement": "Tout arbre abattu doit être remplacé par un autre de la même essence au même emplacement ou à proximité. Si impossible pour raisons sanitaires ou techniques, une autre essence au gabarit adulte équivalent devra la remplacer.",
+      "interdiction": "Il est interdit de porter atteinte aux caractéristiques esthétiques des arbres protégés"
+    },
+
+    "PELOUSES_CALCICOLES": {
+      "travaux_admis": [
+        "Travaux d'entretien, de renaturation, de restauration du milieu",
+        "Aménagements légers ne compromettant pas l'existence et la pérennité du milieu"
+      ],
+      "prescriptions": [
+        "Maintien de l'ouverture du milieu et des fonctionnalités écologiques",
+        "Préservation de la faune et de la flore inféodées"
+      ],
+      "interdictions": [
+        "Plantations (forêt, truffière…)",
+        "Introduction d'espèces exotiques envahissantes (se référer au chapitre 10 du titre I)",
+        "Toute pratique pouvant conduire à l'enfrichement et à la fermeture du milieu"
+      ],
+      "projet_interet_general": "En cas de projet d'intérêt général majeur portant atteinte à tout ou partie d'une pelouse calcicole, la séquence éviter, réduire, compenser devra être mise en œuvre"
+    }
+  },
+
+  "ELEMENTS_DE_PAYSAGE_SPECIFIQUES_ANGOULEME": {
+    "champ_application": "Espaces urbanisés de la ville d'Angoulême hors périmètre du plan de sauvegarde et de mise en valeur",
+
+    "SECTEURS_PARCS_EXISTANTS": {
+      "description": "Secteurs publics ou privés présentant un intérêt paysager et une fonction d'espace de nature relais permettant le maintien de la biodiversité au sein de l'enveloppe urbaine.",
+      "regles": {
+        "espaces_libres_minimum": "95 % de la partie de la parcelle couverte par cette inscription doit être maintenue en espaces libres, espaces verts ou aires de loisirs non imperméabilisées (incluant allées et aires de jeux)",
+        "constructions_autorisees": "Aménagements et constructions en lien avec l'usage du site et sa mise en valeur touristique (terrains de sport, constructions de service public ou d'intérêt collectif) dans la limite de 5 % de la surface protégée et d'une hauteur maximale de 3,50 m au faîtage"
+      },
+      "abattage_arbres": "Tout abattage doit être justifié (implantation d'équipements, état phytosanitaire dégradé, menace pour la sécurité des biens et personnes) et compensé par la plantation d'un arbre de qualité égale ou supérieure au sein de la zone"
+    },
+
+    "SECTEURS_PAYSAGERS_EXISTANTS_OU_A_CREER": {
+      "description": "Secteurs publics ou privés présentant un intérêt paysager en raison de leurs plantations et/ou constituant des espaces de respiration ou de transition au sein de l'enveloppe urbaine.",
+      "regles": {
+        "espaces_libres_minimum": "80 % de la partie de la parcelle couverte par cette inscription doit être maintenue en espaces libres, espaces verts ou aires de loisirs non imperméabilisées (incluant allées et aires de jeux)",
+        "constructions_autorisees": "Aménagements et constructions en lien avec l'usage du site et sa mise en valeur touristique (terrains de sport, constructions de service public ou d'intérêt collectif) dans la limite de 20 % de la surface protégée et d'une hauteur maximale de 3,50 m au faîtage"
+      },
+      "abattage_arbres": "Tout abattage doit être justifié (implantation d'équipements, état phytosanitaire dégradé, menace pour la sécurité des biens et personnes)"
+    },
+
+    "SECTEURS_JARDINS": {
+      "SECTEUR_JARDIN_TYPE_1": {
+        "principe": "Toute construction à l'intérieur des espaces identifiés est interdite, à l'exception des terrasses",
+        "conditions_terrasses": [
+          "Être démontables",
+          "Être fabriquées en matériaux non artificiels",
+          "Être implantées en continu du bâti dans la limite d'une bande de 4 m à partir du bâti"
+        ]
+      },
+      "SECTEUR_JARDIN_TYPE_2": {
+        "principe": "Toute construction hors sol naturel est interdite, à l'exception des abris de jardin et des terrasses",
+        "conditions_abris_de_jardin": [
+          "Être démontables",
+          "Être fabriqués en matériaux non artificiels",
+          "Surface de plancher inférieure à 6 m²",
+          "Hauteur inférieure ou égale à 2,50 m",
+          "Implantés en limites séparatives de fond de parcelle ou en retrait maximum de 2 m"
+        ],
+        "conditions_terrasses": [
+          "Être démontables",
+          "Être fabriquées en matériaux non artificiels",
+          "Être implantées en continu du bâti dans la limite d'une bande de 4 m à partir du bâti"
+        ]
+      },
+      "SECTEUR_JARDIN_TYPE_3": {
+        "description": "Secteurs privés, non bâtis, cultivés ou plantés d'essences ornementales, constituant des espaces de respiration en cœur d'îlot ou dans le tissu urbain dense, perceptibles depuis l'espace public et les grandes voies de communication.",
+        "principe": "Les parcelles doivent conserver leur aspect végétalisé prédominant",
+        "regles": {
+          "espaces_libres_minimum": "90 % de la partie de la parcelle couverte par cette inscription doit être maintenue en espace libre et végétalisé",
+          "emprise_constructible_maximum": "10 % de la superficie peut faire l'objet d'une emprise au sol par une construction légère dans une limite de 2,50 m de hauteur au faîtage"
+        },
+        "conditions_terrasses": [
+          "Être démontable",
+          "Être fabriquée en matériaux non artificiels",
+          "Être implantée en continu du bâti dans la limite d'une bande de 4 m à partir du bâti"
+        ],
+        "piscines": "Autorisées sous réserve d'une intégration paysagère de qualité"
+      }
+    }
+  },
+
+  "HAIES_ET_ALIGNEMENTS_ARBRES": {
+    "reference_legislative": "L151-23 CU",
+    "principe": "Les haies et alignements d'arbres identifiés au règlement graphique doivent être maintenus",
+    "formalites": "Les travaux autres que ceux nécessaires à l'entretien courant ayant pour effet de détruire ou de porter atteinte à ces éléments doivent faire l'objet d'une déclaration préalable",
+    "criteres_refus_ou_conditions": [
+      "État sanitaire des arbres",
+      "Fonctionnalité de la haie ou de l'alignement",
+      "Sécurité",
+      "Fonctionnalité agricole",
+      "Fonctionnalité des accès (inférieurs à 10 m)"
+    ],
+    "compensation_haies": "En cas d'arrachage d'un certain linéaire de haie, une haie devra être plantée dans les mêmes proportions (linéaire supérieur ou équivalent) et présenter une fonctionnalité identique ou supérieure",
+    "remplacement_arbres_alignements": "Tout arbre abattu doit être remplacé par un autre de la même essence au même emplacement, sauf impossibilité technique. Si impossible pour raisons sanitaires ou techniques, une autre essence au gabarit adulte équivalent pourra la remplacer.",
+    "renouvellement_vegetation": "Obligatoire si la pérennité de la haie ou de l'alignement est en jeu. Doit exclure les essences interdites et, pour les haies, utiliser des essences végétales locales (se référer au chapitre 10 du titre I)"
+  },
+
+  "ZONES_HUMIDES": {
+    "reperage": "Les zones humides sont repérées sur le document graphique. Les zones humides probables sont identifiées à titre d'information sans caractère réglementaire.",
+    "definition_en_cours": "Les zones humides seront définies avec précision au terme de l'étude de Charente Eaux et du SyBRA",
+    "interdictions_par_defaut": [
+      "Toutes les constructions et installations dans les zones humides avérées",
+      "Les affouillements et exhaussements du sol de nature à altérer une zone humide avérée"
+    ],
+    "obligation_etude_proximite": "En cas de projets à proximité immédiate ou chevauchant une zone humide identifiée au règlement graphique, délimitation précise de la zone humide dégradée et estimation de la perte en termes de biodiversité requises",
+    "mesures_compensatoires": {
+      "principe": "Pour les secteurs de zone humide placés en zone constructible, tout projet de construction fait l'objet de mesures compensatoires équivalentes en termes de biodiversité et de fonctionnalités",
+      "taux_compensation_defaut": "150 % de la surface perdue en l'absence de démonstration d'une contribution équivalente (taux fondé sur l'analyse et le retour d'expérience de la communauté scientifique)",
+      "localisation_compensation": "En priorité dans le bassin versant de la masse d'eau impactée ou son unité hydrographique de référence (UHR). En cas d'impossibilité technique, une justification devra être produite (conformément au SDAGE Adour-Garonne)"
+    },
+    "zones_hors_reperage": "Les zones humides situées en dehors de celles repérées au règlement graphique restent soumises aux dispositions de la loi sur l'eau et aux mesures compensatoires éventuelles"
+  },
+
+  "COURS_EAU_ET_FOSSES": {
+    "recul_cours_eau": {
+      "distance_minimale": "10 m par rapport aux berges des cours d'eau",
+      "condition_exception_topographique": "Sauf en cas de rupture topographique importante qui met le terrain hors d'eau en l'absence de zone inondable identifiée limitant déjà la constructibilité",
+      "exceptions_non_soumises": [
+        "Quais et berges maçonnées",
+        "Constructions et aménagements nécessitant la proximité de l'eau",
+        "Constructions à usage d'habitation flottantes",
+        "Équipements et aménagements publics ou d'intérêt collectif"
+      ]
+    },
+    "recul_fosses": {
+      "distance_minimale": "5 m par rapport à l'emprise des fossés",
+      "reserve": "Sauf impossibilité technique"
+    }
+  },
+
+  "PLAN_PREVENTION_RISQUE_INONDATION": {
+    "statut": "Servitude d'utilité publique s'imposant au PLUi",
+    "ppri_concernes": [
+      "PPRi du fleuve Charente",
+      "PPRi de la vallée de l'Anguienne"
+    ]
+  },
+
+  "ATLAS_ZONES_INONDABLES": {
+    "principe": "Les futures constructions et/ou extensions devront respecter la côte NGF inscrite à l'atlas des zones inondables (AZI) quand elle est précisée",
+    "base_reglementaire_refus": "Article R111-2 du code de l'urbanisme, au regard des informations contenues dans les atlas éclairés par la doctrine régionale de l'État"
+  }
+}

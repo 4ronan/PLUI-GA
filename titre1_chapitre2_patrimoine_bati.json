@@ -1,0 +1,77 @@
+{
+  "TITRE": "TITRE I - DISPOSITIONS GÉNÉRALES ET SPÉCIFIQUES À DES PÉRIMÈTRES QUI NE CONSTITUENT PAS DES ZONES OU SECTEURS DU RÈGLEMENT GRAPHIQUE",
+  "CHAPITRE": "CHAPITRE 2 : DISPOSITIONS RELATIVES AU PATRIMOINE BÂTI",
+  "source": "Règlement écrit - Pièce n°5.2.a - PLUi valant Plan de Mobilité - Communauté d'agglomération de GrandAngoulême",
+  "pages": "19-20",
+
+  "ANGOULEME_IMMEUBLE_REMARQUABLE": {
+    "definition": "Immeuble ou partie d'immeuble remarquable à conserver dont la démolition ou la modification est interdite, repéré sur le règlement graphique",
+
+    "1_DEMOLITION": {
+      "principe": "La démolition des immeubles repérés comme remarquables est interdite",
+      "exceptions": [
+        "Démolitions partielles justifiées par la restauration ou la restitution des caractéristiques de la composition originelle de l'édifice ou de son état le plus ancien documenté"
+      ],
+      "constructions_annexes": "La démolition de constructions annexes, corps de bâtiment secondaire ou de clôtures situés aux abords et accompagnant de façon cohérente les constructions identifiées est également interdite"
+    },
+
+    "2_ENTRETIEN_ET_RESTAURATION": {
+      "entretien": "Doit être effectué en maintenant l'authenticité d'origine des éléments patrimoniaux structurels et décoratifs",
+      "restauration": "Doit être effectuée à l'identique de leur composition originelle",
+      "restitution": "La restitution d'éléments structurels ou décoratifs disparus ou gommés peut être exigée lors des demandes d'autorisation d'urbanisme"
+    },
+
+    "3_MODIFICATION_TOITURE": {
+      "interdictions": [
+        "Surélévations ou modifications du volume, de la forme, des matériaux ou de l'aspect de la toiture",
+        "Tous travaux de transformation ou de division d'une même unité foncière ou immobilière portant atteinte à l'unité ou l'homogénéité architecturale de ces constructions"
+      ]
+    },
+
+    "4_MODIFICATION_FACADES": {
+      "principe": "Les modifications de la composition, de l'aspect ou du décor des façades sont interdites",
+      "exceptions": [
+        "Interventions qui tendent à restituer l'homogénéité patrimoniale du bâti",
+        "Interventions qui ne portent pas atteinte aux éléments patrimoniaux existants"
+      ],
+      "note": "Ces dispositions ne concernent pas les devantures traitées aux articles 2.2 des zones concernées"
+    }
+  },
+
+  "ANGOULEME_IMMEUBLE_INTERESSANT": {
+    "definition": "Immeuble ou partie d'immeuble intéressant à conserver, repéré sur le règlement graphique",
+
+    "1_DEMOLITION": {
+      "principe": "La démolition des immeubles repérés comme intéressants est interdite",
+      "exceptions": [
+        "La démolition peut exceptionnellement être autorisée si l'état de la construction rend techniquement ou économiquement trop difficile sa restauration ou la restitution de son homogénéité architecturale originelle"
+      ],
+      "constructions_annexes": {
+        "principe": "La démolition de constructions annexes, corps de bâtiment secondaire ou de clôtures situés aux abords et accompagnant de façon cohérente les constructions identifiées est interdite",
+        "exception": "Sauf si leur état rend techniquement ou économiquement trop difficile leur restauration ou la restitution de leur homogénéité architecturale originelle"
+      }
+    },
+
+    "2_ENTRETIEN_ET_RESTAURATION": {
+      "entretien": "Doit être effectué en maintenant de préférence l'authenticité d'origine des éléments patrimoniaux structurels et décoratifs",
+      "restauration": "Doit employer des matériaux analogues à ceux d'origine",
+      "restitution": "La restitution d'éléments structurels ou décoratifs disparus ou gommés peut être exigée lors des demandes d'autorisation d'urbanisme"
+    },
+
+    "3_MODIFICATION_TOITURE": {
+      "principe": "Les surélévations ou modifications du volume, de la forme, des matériaux ou de l'aspect de la toiture sont interdites dès lors qu'elles porteraient atteinte à l'unité ou l'homogénéité de leur architecture",
+      "reference": "Sont de l'état le plus ancien documenté"
+    },
+
+    "4_MODIFICATION_FACADES": {
+      "principe": "Les modifications de la composition, de l'aspect ou du décor des façades sont interdites dès lors qu'elles porteraient atteinte à l'unité ou l'homogénéité de leur architecture",
+      "percements_nouveaux": "Autorisés dès lors qu'ils s'inscrivent en continuité des caractéristiques de la composition originelle de l'édifice ou de l'état le plus ancien documenté",
+      "note": "Ces dispositions ne concernent pas les devantures traitées aux articles 11 des zones concernées"
+    }
+  },
+
+  "CLOTURES": {
+    "principe": "Les clôtures identifiées sur le règlement graphique doivent être conservées",
+    "entretien_restauration": "Leur restauration ou leur entretien devra respecter les caractéristiques d'origine de la clôture"
+  }
+}

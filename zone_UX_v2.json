@@ -1,0 +1,1115 @@
+{
+  "$schema": "https://schema.plu.fr/reglement/v1.0",
+  "meta": {
+    "type_document": "PLUi",
+    "commune": "Grand Angoulême",
+    "version": "1.0.0"
+  },
+  "zone": {
+    "code": "UX",
+    "famille": "U",
+    "libelle": "La zone UX est une zone spécialisée c'est-à-dire qu'elle n'autorise que des destinations directement liées à sa vocation : le maintien et le développement des activités économiques.",
+    "description": "La zone UX est une zone spécialisée c'est-à-dire qu'elle n'autorise que des destinations directement liées à sa vocation : le maintien et le développement des activités économiques.",
+    "note_generale": "Une partie de la zone UX est concernée par le Plan de prévention des risques d'inondation (PPRi) de la Charente. En cas de divergence entre les règles du PLUi et du PPRi, c'est la règle la plus contraignante qui doit être appliquée. En zone UXb, le dispositif dérogatoire prévu à l'article R151-21 3° du code de l'urbanisme s'applique : les dispositions du règlement s'appliquent à chaque parcelle issue de divisions dans le cas d'un lotissement ou de la construction de plusieurs bâtiments sur un même terrain faisant l'objet d'une division en propriété ou en jouissance.",
+    "localisation": null,
+    "objectifs": [
+      "Permettre l'évolution ou la création d'activités économiques en fonction des secteurs",
+      "Rechercher une optimisation du foncier",
+      "Rechercher une bonne transition avec les espaces urbains et parfois agricoles ou naturels limitrophes",
+      "Ouvrir la voie à une diversification en termes de fonctions urbaines des zones commerciales et des zones d'activités en permettant notamment des services aux salariés"
+    ],
+    "secteurs": [
+      {
+        "code": "UX",
+        "libelle": "Secteur à vocation artisanale et industrielle, qui comprend un sous-secteur UXp destiné à des aires de stationnement paysagées et non imperméabilisées"
+      },
+      {
+        "code": "UXa",
+        "libelle": "Secteur à vocation artisanale"
+      },
+      {
+        "code": "UXb",
+        "libelle": "Secteur économique de Bel Air à l'Isle d'Espagnac ; les occupations du sol autorisées tiennent compte d'enjeux environnementaux recensés en 2023"
+      },
+      {
+        "code": "UXc",
+        "libelle": "Secteur à vocation commerciale : sites de Chantemerle à La Couronne, de la Croix Blanche à Soyaux, des Avenauds à Gond Pontouvre, des Montagnes à Champniers, de Lunesse et du Grand Girac à Angoulême, où est autorisée l'implantation de nouveaux commerces"
+      },
+      {
+        "code": "UXd",
+        "libelle": "Secteur où s'appliquent des dispositions spécifiques dans la bande de recul de la RD 939 au Bois des Fayes à Dirac"
+      },
+      {
+        "code": "UXe",
+        "libelle": "Secteur à vocation artisanale ne permettant que le développement d'activités sur les lots contigus sur le secteur de La Penotte à Garat"
+      },
+      {
+        "code": "UXia",
+        "libelle": "Secteur dédié à des fonctions mixtes dont la formation et l'hébergement lié à des formations"
+      },
+      {
+        "code": "UXp",
+        "libelle": "Secteur qui n'autorise que les aires de stationnement paysager accessoires à une activité économique"
+      },
+      {
+        "code": "UXr",
+        "libelle": "Site Rousselot à Angoulême"
+      },
+      {
+        "code": "UXrb",
+        "libelle": "Sous-secteur destiné uniquement aux ouvrages liés au traitement des eaux usées de l'entreprise Rousselot"
+      }
+    ]
+  },
+  "section_1_destinations": {
+    "mode": "tableau",
+    "legende": {
+      "X": "Occupations et utilisations du sol interdites",
+      "V*": "Occupations et utilisations du sol autorisées sous conditions",
+      "V": "Autorisé (tout ce qui n'est pas X ou V*)"
+    },
+    "categories": [
+      {
+        "id": "HABITATION",
+        "usages": [
+          {
+            "libelle": "Logement de fonction",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UX_UXa",
+                "statut": "V*",
+                "conditions": [
+                  "Il est nécessaire et directement lié à l'activité présente sur le site (gardiennage, etc.)",
+                  "Il est intégré dans l'enveloppe du bâtiment d'activité"
+                ]
+              },
+              {
+                "secteur": "UXc",
+                "statut": "V*",
+                "conditions": [
+                  "Il est nécessaire et directement lié à l'activité présente sur le site (gardiennage, etc.)",
+                  "Il est intégré dans l'enveloppe du bâtiment d'activité"
+                ]
+              },
+              {
+                "secteur": "UXr",
+                "statut": "V*",
+                "conditions": [
+                  "Il est nécessaire et directement lié à l'activité présente sur le site (gardiennage, etc.)",
+                  "Il est intégré dans l'enveloppe du bâtiment d'activité"
+                ]
+              },
+              {
+                "secteur": "UXb",
+                "statut": "V*",
+                "conditions": [
+                  "Il est nécessaire et directement lié à l'activité présente sur le site (gardiennage, etc.)",
+                  "Il est intégré dans l'enveloppe du bâtiment d'activité"
+                ]
+              },
+              {
+                "secteur": "UXia",
+                "statut": "V*",
+                "conditions": [
+                  "Il est nécessaire et directement lié à l'activité présente sur le site (gardiennage, etc.)",
+                  "Il est intégré dans l'enveloppe du bâtiment d'activité"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Extension des logements existants dans la zone et annexes",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UX_UXa",
+                "statut": "V*",
+                "conditions": [
+                  "Dans la limite de 30 % de la surface de plancher",
+                  "Sans création de nouveau logement",
+                  "La création d'annexes dans la limite de 40 m² d'emprise au sol"
+                ]
+              },
+              {
+                "secteur": "UXc",
+                "statut": "V*",
+                "conditions": [
+                  "Dans la limite de 30 % de la surface de plancher",
+                  "Sans création de nouveau logement",
+                  "La création d'annexes dans la limite de 40 m² d'emprise au sol"
+                ]
+              },
+              {
+                "secteur": "UXr",
+                "statut": "V*",
+                "conditions": [
+                  "Dans la limite de 30 % de la surface de plancher",
+                  "Sans création de nouveau logement",
+                  "La création d'annexes dans la limite de 40 m² d'emprise au sol"
+                ]
+              },
+              {
+                "secteur": "UXb",
+                "statut": "V*",
+                "conditions": [
+                  "Dans la limite de 30 % de la surface de plancher",
+                  "Sans création de nouveau logement",
+                  "La création d'annexes dans la limite de 40 m² d'emprise au sol"
+                ]
+              },
+              {
+                "secteur": "UXia",
+                "statut": "V*",
+                "conditions": [
+                  "Dans la limite de 30 % de la surface de plancher",
+                  "Sans création de nouveau logement",
+                  "La création d'annexes dans la limite de 40 m² d'emprise au sol"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Hébergement",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UX_UXa",
+                "statut": "X"
+              },
+              {
+                "secteur": "UXc",
+                "statut": "V*",
+                "conditions": [
+                  "En UXia : être lié à une activité de formation",
+                  "En UXc : être lié à une diversification des fonctions urbaines dans la zone de Chantemerle"
+                ]
+              },
+              {
+                "secteur": "UXr",
+                "statut": "X"
+              },
+              {
+                "secteur": "UXb",
+                "statut": "X"
+              },
+              {
+                "secteur": "UXia",
+                "statut": "V*",
+                "conditions": [
+                  "En UXia : être lié à une activité de formation",
+                  "En UXc : être lié à une diversification des fonctions urbaines dans la zone de Chantemerle"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Habitat",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UX_UXa",
+                "statut": "X"
+              },
+              {
+                "secteur": "UXc",
+                "statut": "V*",
+                "conditions": [
+                  "En diversification des fonctions urbaines sur la zone de Chantemerle"
+                ]
+              },
+              {
+                "secteur": "UXr",
+                "statut": "X"
+              },
+              {
+                "secteur": "UXb",
+                "statut": "X"
+              },
+              {
+                "secteur": "UXia",
+                "statut": "X"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "COMMERCE_ET_ACTIVITE_DE_SERVICE",
+        "usages": [
+          {
+            "libelle": "Artisanat sans activité commerciale",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UX_UXa",
+                "statut": "V*",
+                "conditions": [
+                  "Uniquement dans les secteurs UXa et UXia"
+                ]
+              },
+              {
+                "secteur": "UXc",
+                "statut": "X"
+              },
+              {
+                "secteur": "UXr",
+                "statut": "X"
+              },
+              {
+                "secteur": "UXb",
+                "statut": "X"
+              },
+              {
+                "secteur": "UXia",
+                "statut": "V*",
+                "conditions": [
+                  "Uniquement dans les secteurs UXa et UXia"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Artisanat et commerce de détail",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UX_UXa",
+                "statut": "V*"
+              },
+              {
+                "secteur": "UXc",
+                "statut": "V*"
+              },
+              {
+                "secteur": "UXr",
+                "statut": "X"
+              },
+              {
+                "secteur": "UXb",
+                "statut": "X"
+              },
+              {
+                "secteur": "UXia",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Restauration",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UX_UXa",
+                "statut": "V"
+              },
+              {
+                "secteur": "UXc",
+                "statut": "V"
+              },
+              {
+                "secteur": "UXr",
+                "statut": "V"
+              },
+              {
+                "secteur": "UXb",
+                "statut": "V"
+              },
+              {
+                "secteur": "UXia",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Commerce de gros",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UX_UXa",
+                "statut": "V"
+              },
+              {
+                "secteur": "UXc",
+                "statut": "V"
+              },
+              {
+                "secteur": "UXr",
+                "statut": "X"
+              },
+              {
+                "secteur": "UXb",
+                "statut": "V"
+              },
+              {
+                "secteur": "UXia",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Activités de services où s'effectue l'accueil d'une clientèle",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UX_UXa",
+                "statut": "V"
+              },
+              {
+                "secteur": "UXc",
+                "statut": "V"
+              },
+              {
+                "secteur": "UXr",
+                "statut": "X"
+              },
+              {
+                "secteur": "UXb",
+                "statut": "V"
+              },
+              {
+                "secteur": "UXia",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Hébergement hôtelier",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UX_UXa",
+                "statut": "X"
+              },
+              {
+                "secteur": "UXc",
+                "statut": "X"
+              },
+              {
+                "secteur": "UXr",
+                "statut": "V*",
+                "conditions": [
+                  "En UXc : uniquement sur le site de Chantemerle à La Couronne"
+                ]
+              },
+              {
+                "secteur": "UXb",
+                "statut": "V"
+              },
+              {
+                "secteur": "UXia",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Cinéma",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UX_UXa",
+                "statut": "X"
+              },
+              {
+                "secteur": "UXc",
+                "statut": "X"
+              },
+              {
+                "secteur": "UXr",
+                "statut": "X"
+              },
+              {
+                "secteur": "UXb",
+                "statut": "X"
+              },
+              {
+                "secteur": "UXia",
+                "statut": "X"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "EQUIPEMENTS_INTERET_COLLECTIF_ET_SERVICES_PUBLICS",
+        "usages": [
+          {
+            "libelle": "Locaux et bureaux accueillant du public des administrations publiques et assimilés",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UX_UXa",
+                "statut": "V"
+              },
+              {
+                "secteur": "UXc",
+                "statut": "V"
+              },
+              {
+                "secteur": "UXr",
+                "statut": "V"
+              },
+              {
+                "secteur": "UXb",
+                "statut": "V"
+              },
+              {
+                "secteur": "UXia",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Locaux techniques et industriels des administrations publiques et assimilés (dont ENR)",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UX_UXa",
+                "statut": "V*",
+                "conditions": [
+                  "La production en énergie renouvelable est possible en toiture, au sol et sur les parcs de stationnement. En toiture et au sol, elle ne peut être destinée qu'à l'autoconsommation des activités présentes dans la zone et les installations doivent faire l'objet d'une bonne intégration urbaine et paysagère"
+                ]
+              },
+              {
+                "secteur": "UXc",
+                "statut": "V*",
+                "conditions": [
+                  "La production en énergie renouvelable est possible en toiture, au sol et sur les parcs de stationnement. En toiture et au sol, elle ne peut être destinée qu'à l'autoconsommation des activités présentes dans la zone et les installations doivent faire l'objet d'une bonne intégration urbaine et paysagère"
+                ]
+              },
+              {
+                "secteur": "UXr",
+                "statut": "V*",
+                "conditions": [
+                  "La production en énergie renouvelable est possible en toiture, au sol et sur les parcs de stationnement. En toiture et au sol, elle ne peut être destinée qu'à l'autoconsommation des activités présentes dans la zone et les installations doivent faire l'objet d'une bonne intégration urbaine et paysagère"
+                ]
+              },
+              {
+                "secteur": "UXb",
+                "statut": "V*",
+                "conditions": [
+                  "La production en énergie renouvelable est possible en toiture, au sol et sur les parcs de stationnement. En toiture et au sol, elle ne peut être destinée qu'à l'autoconsommation des activités présentes dans la zone et les installations doivent faire l'objet d'une bonne intégration urbaine et paysagère"
+                ]
+              },
+              {
+                "secteur": "UXia",
+                "statut": "V*",
+                "conditions": [
+                  "La production en énergie renouvelable est possible en toiture, au sol et sur les parcs de stationnement. En toiture et au sol, elle ne peut être destinée qu'à l'autoconsommation des activités présentes dans la zone et les installations doivent faire l'objet d'une bonne intégration urbaine et paysagère"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Etablissements d'enseignement, de santé et d'action sociale",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UX_UXa",
+                "statut": "V*",
+                "conditions": [
+                  "Pour les établissements d'enseignement : être directement liés et nécessaires à l'activité de l'entreprise dans la zone, sauf dans le secteur UXia",
+                  "Pour les établissements de santé et d'action sociale : être une possibilité de diversification urbaine en zone commerciale"
+                ]
+              },
+              {
+                "secteur": "UXc",
+                "statut": "V*",
+                "conditions": [
+                  "Pour les établissements d'enseignement : être directement liés et nécessaires à l'activité de l'entreprise dans la zone, sauf dans le secteur UXia",
+                  "Pour les établissements de santé et d'action sociale : être une possibilité de diversification urbaine en zone commerciale"
+                ]
+              },
+              {
+                "secteur": "UXr",
+                "statut": "X"
+              },
+              {
+                "secteur": "UXb",
+                "statut": "V*",
+                "conditions": [
+                  "Pour les établissements d'enseignement : être directement liés et nécessaires à l'activité de l'entreprise dans la zone, sauf dans le secteur UXia",
+                  "Pour les établissements de santé et d'action sociale : être une possibilité de diversification urbaine en zone commerciale"
+                ]
+              },
+              {
+                "secteur": "UXia",
+                "statut": "V*",
+                "conditions": [
+                  "Pour les établissements d'enseignement : être directement liés et nécessaires à l'activité de l'entreprise dans la zone, sauf dans le secteur UXia",
+                  "Pour les établissements de santé et d'action sociale : être une possibilité de diversification urbaine en zone commerciale"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Salles d'art et de spectacles",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UX_UXa",
+                "statut": "X"
+              },
+              {
+                "secteur": "UXc",
+                "statut": "V"
+              },
+              {
+                "secteur": "UXr",
+                "statut": "X"
+              },
+              {
+                "secteur": "UXb",
+                "statut": "V"
+              },
+              {
+                "secteur": "UXia",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Equipements sportifs",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UX_UXa",
+                "statut": "V"
+              },
+              {
+                "secteur": "UXc",
+                "statut": "V"
+              },
+              {
+                "secteur": "UXr",
+                "statut": "X"
+              },
+              {
+                "secteur": "UXb",
+                "statut": "V"
+              },
+              {
+                "secteur": "UXia",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Autres équipements recevant du public",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UX_UXa",
+                "statut": "V*",
+                "conditions": [
+                  "Est autorisée uniquement l'extension des bâtiments existants"
+                ]
+              },
+              {
+                "secteur": "UXc",
+                "statut": "V*",
+                "conditions": [
+                  "Est autorisée uniquement l'extension des bâtiments existants"
+                ]
+              },
+              {
+                "secteur": "UXr",
+                "statut": "X"
+              },
+              {
+                "secteur": "UXb",
+                "statut": "V"
+              },
+              {
+                "secteur": "UXia",
+                "statut": "V"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "AUTRES_ACTIVITES_SECONDAIRE_OU_TERTIAIRE",
+        "usages": [
+          {
+            "libelle": "Industrie",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UX_UXa",
+                "statut": "V*"
+              },
+              {
+                "secteur": "UXc",
+                "statut": "X"
+              },
+              {
+                "secteur": "UXr",
+                "statut": "V*"
+              },
+              {
+                "secteur": "UXb",
+                "statut": "V*"
+              },
+              {
+                "secteur": "UXia",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Entrepôts",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UX_UXa",
+                "statut": "V"
+              },
+              {
+                "secteur": "UXc",
+                "statut": "V"
+              },
+              {
+                "secteur": "UXr",
+                "statut": "V"
+              },
+              {
+                "secteur": "UXb",
+                "statut": "V*",
+                "conditions": [
+                  "Accessoire et indispensable à une activité tertiaire dans le secteur UXb"
+                ]
+              },
+              {
+                "secteur": "UXia",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Bureau",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UX_UXa",
+                "statut": "V"
+              },
+              {
+                "secteur": "UXc",
+                "statut": "V"
+              },
+              {
+                "secteur": "UXr",
+                "statut": "V"
+              },
+              {
+                "secteur": "UXb",
+                "statut": "V"
+              },
+              {
+                "secteur": "UXia",
+                "statut": "V"
+              }
+            ]
+          },
+          {
+            "libelle": "Centre de congrès et d'exposition",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UX_UXa",
+                "statut": "X"
+              },
+              {
+                "secteur": "UXc",
+                "statut": "X"
+              },
+              {
+                "secteur": "UXr",
+                "statut": "X"
+              },
+              {
+                "secteur": "UXb",
+                "statut": "V"
+              },
+              {
+                "secteur": "UXia",
+                "statut": "X"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "EXPLOITATION_AGRICOLE_ET_FORESTIERE",
+        "usages": [
+          {
+            "libelle": "Exploitation agricole",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "tous_secteurs",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Exploitation forestière",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "tous_secteurs",
+                "statut": "X"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "AUTRES_OCCUPATIONS_ET_UTILISATIONS_DU_SOL",
+        "usages": [
+          {
+            "libelle": "Affouillements et exhaussements de sol",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UX_UXa",
+                "statut": "V*",
+                "conditions": [
+                  "Directement liés soit aux travaux de constructions autorisées, soit aux travaux nécessaires pour la recherche archéologique"
+                ]
+              },
+              {
+                "secteur": "UXc",
+                "statut": "V*",
+                "conditions": [
+                  "Directement liés soit aux travaux de constructions autorisées, soit aux travaux nécessaires pour la recherche archéologique"
+                ]
+              },
+              {
+                "secteur": "UXr",
+                "statut": "V*",
+                "conditions": [
+                  "Directement liés soit aux travaux de constructions autorisées, soit aux travaux nécessaires pour la recherche archéologique"
+                ]
+              },
+              {
+                "secteur": "UXb",
+                "statut": "V*",
+                "conditions": [
+                  "Directement liés soit aux travaux de constructions autorisées, soit aux travaux nécessaires pour la recherche archéologique"
+                ]
+              },
+              {
+                "secteur": "UXia",
+                "statut": "V*",
+                "conditions": [
+                  "Directement liés soit aux travaux de constructions autorisées, soit aux travaux nécessaires pour la recherche archéologique"
+                ]
+              }
+            ]
+          },
+          {
+            "libelle": "Carrières",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "tous_secteurs",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Déchets de toute nature, stockage de ferrailles et matériaux de démolition ou de récupération",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UX_UXa",
+                "statut": "V*",
+                "conditions": [
+                  "Directement liés à une activité autorisée et ne doivent pas être incompatibles avec les activités environnantes",
+                  "En secteur UXa : ils doivent être entreposés temporairement et ne pas engendrer de nuisances pour le voisinage"
+                ]
+              },
+              {
+                "secteur": "UXc",
+                "statut": "X"
+              },
+              {
+                "secteur": "UXr",
+                "statut": "V*",
+                "conditions": [
+                  "Directement liés à une activité autorisée et ne doivent pas être incompatibles avec les activités environnantes",
+                  "En secteur UXa : ils doivent être entreposés temporairement et ne pas engendrer de nuisances pour le voisinage"
+                ]
+              },
+              {
+                "secteur": "UXb",
+                "statut": "X"
+              },
+              {
+                "secteur": "UXia",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Campings, stationnements de caravanes et Habitations Légères de Loisir",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "tous_secteurs",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Terrains familiaux et résidences mobiles constituant l'habitat permanent des gens du voyage",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "tous_secteurs",
+                "statut": "X"
+              }
+            ]
+          },
+          {
+            "libelle": "Extensions, surélévations, aménagement, transformation, annexes de bâtiments existants dont la destination n'est pas autorisée dans la zone",
+            "reglementation_par_secteur": [
+              {
+                "secteur": "UX_UXa",
+                "statut": "V*"
+              },
+              {
+                "secteur": "UXc",
+                "statut": "V*"
+              },
+              {
+                "secteur": "UXr",
+                "statut": "V*"
+              },
+              {
+                "secteur": "UXb",
+                "statut": "V*"
+              },
+              {
+                "secteur": "UXia",
+                "statut": "V*"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "dispositions_specifiques": [
+      {
+        "id": "DISPOSITIONS_PAR_SECTEUR",
+        "contenu": {
+          "UXb": {
+            "inventaires_faune_flore": "Au regard des inventaires faune flore réalisés en 2023 qui ont révélé l'existence de plantes et d'espèces protégées au plan régional et national :",
+            "lots_2_et_7": "Une bande inconstructible de 10 m de large doit être respectée sur toute la longueur de la voie qui borde la limite Ouest de chaque lot",
+            "lots_3_6_et_8": "Ne pourront être urbanisés que suite à une dérogation pour destruction d'habitat d'espèces protégées après définition de mesures de compensation adaptées"
+          },
+          "UXe": "Sont autorisées les occupations des sols du secteur UXa mais uniquement pour les besoins des entreprises présentes sur les lots d'activités économiques contigus aux terrains inscrits dans le secteur UXe",
+          "UXia": "Sont autorisés les locaux de formation et d'hébergement et les occupations du sol compatibles ou complémentaires à ces activités",
+          "UXp": "Sont autorisées sous réserve d'une bonne intégration paysagère dans le site les aires de stationnement, qui seront nécessairement paysagées et non imperméabilisées",
+          "UXrb": "Sont uniquement autorisés les ouvrages liés au traitement des eaux usées de l'entreprise Rousselot"
+        }
+      }
+    ]
+  },
+  "section_2_caracteristiques": {
+    "art_2_1_implantation": {
+      "note": "Les constructions et installations liées et nécessaires aux services publics et d'intérêt collectif ne sont pas réglementées",
+      "par_rapport_aux_voies": {
+        "regle_generale": {
+          "retrait_standard": "Retrait d'au moins 5 m par rapport à la limite de voirie ou à l'alignement",
+          "retrait_reduit": "Retrait pouvant être inférieur à 5 m si au moins une construction existante immédiatement voisine observe déjà un retrait inférieur à 5 m, sans empiéter dans la marge de recul du bâtiment existant"
+        },
+        "routes_departementales": "Recul d'au moins 10 m par rapport aux routes départementales sauf indications contraires inscrites aux règlements graphiques. Aucune implantation inférieure au retrait imposé n'est autorisée, sauf si des bâtiments voisins observent un retrait inférieur",
+        "UXb": "Les façades principales seront orientées sur la rue Louis Blériot pour autant que la longueur de façade des lots sur cette voie le permette",
+        "emprises_ferroviaires_UXb": "Les constructions nouvelles ne pourront être implantées à moins de 10 m de ces emprises",
+        "IMPLANTATION_PAR_RAPPORT_AUX_EMPRISES_FERROVIAIRES": {
+          "habitations_LGV_site_propre": "50 m minimum (hors secteur des embranchements vers la gare d'Angoulême)",
+          "habitations_autres_lignes": "15 m minimum",
+          "annexes_autres_lignes": "5 m minimum",
+          "autres_constructions_LGV": "10 m minimum",
+          "autres_constructions_autres_sections_LGV_et_autres_lignes": "5 m minimum"
+        },
+        "voies_express_et_routes_grande_circulation": {
+          "axes_concernes": [
+            "Route nationale 10",
+            "Route nationale 141",
+            "Route départementale 939",
+            "Route départementale 1000"
+          ],
+          "renvoi": "Se reporter au chapitre 6 du titre I « Dispositions relatives aux voies et infrastructures routières »"
+        }
+      },
+      "par_rapport_aux_limites_separatives": {
+        "constructions_nouvelles": "Les constructions nouvelles doivent s'implanter en retrait des limites séparatives. Ce retrait doit être au moins égal à la moitié de la hauteur des bâtiments sans être inférieur à 5 m",
+        "extensions": "Les extensions des constructions existantes ne sont pas concernées, dans la mesure où les dispositions relatives à la sécurité incendie sont assurées",
+        "recul_voisinage_non_economique": "Les constructions doivent respecter un recul de 10 m lorsque l'unité foncière ne jouxte pas une parcelle à vocation économique",
+        "recul_activites_non_nuisantes": "Cette distance est abaissée à 5 m pour les constructions à usage d'activités économiques qui ne produisent pas de nuisances et qui ne sont donc pas soumises à la réglementation sur les ICPE, à l'exception de celles seulement soumises à déclaration qui sont compatibles avec le voisinage des zones habitées"
+      },
+      "emprise_au_sol": {
+        "regle_generale": "L'emprise au sol ne devra pas excéder 70 % de l'unité foncière"
+      },
+      "hauteur": {
+        "mesure": "La hauteur des constructions, en tout point, est mesurée à partir du niveau du terrain naturel (niveau du sol existant avant les éventuels travaux de terrassement et d'exhaussement)",
+        "exceptions_regles_hauteur": "Les règles de hauteur ne s'appliquent pas dans le cas de reconstruction, l'aménagement ou d'extension de constructions existantes, pour certains éléments techniques indispensables au bon fonctionnement de la construction, lorsque la construction projetée est adossée à un bâtiment existant dépassant la hauteur maximale",
+        "UX": "Non réglementé",
+        "UXa_et_UXc": "La hauteur maximale des constructions nouvelles ne doit pas excéder 10 m mesurés du sol naturel au faîtage",
+        "UXd": {
+          "annexes": "Hauteur maximale limitée à 4 m hors tout",
+          "bande_75m_axe_RD939": "Hauteur limitée à 11 m hors tout. Il convient de privilégier les volumes plus bas (accueil, réception) sur la RD 939 et des plus hauts (stockage) sur l'arrière du terrain afin de créer une gradation dans le traitement des volumes",
+          "au_dela_75m": "Hauteur limitée à 12 m hors tout"
+        },
+        "UXr": "Hauteur maximale limitée à 33 m",
+        "ensemble_des_secteurs": {
+          "regle_gabarit": "La distance comptée horizontalement de tout point de l'immeuble au point le plus proche de l'alignement opposé doit être égale ou inférieure à la différence d'altitude entre ces deux points (H < D)",
+          "edicules_techniques": "Les édicules techniques ou destinés à la production d'énergie situés en toiture, peu visibles depuis l'espace public et intégrés dans l'environnement, d'une hauteur maximale de 2 m, n'entrent pas dans le calcul de la hauteur maximale autorisée"
+        }
+      }
+    },
+    "art_2_2_qualite_architecturale": {
+      "GENERALITES": {
+        "prescriptions_speciales": "Le projet peut n'être accepté que sous réserve de l'observation de prescriptions spéciales si, par son importance, sa situation ou sa destination, il est de nature à avoir des conséquences dommageables pour l'environnement",
+        "qualite_facades": "Toutes les façades d'une construction vues depuis l'espace public doivent bénéficier d'un même degré de qualité architecturale et être traitées avec la même qualité de finition que les façades principales",
+        "couleurs_foncees": "L'utilisation de matériaux de revêtement de couleur foncée de manière généralisée en façade est interdite sauf si elle est justifiée par la recherche de l'insertion dans le milieu, par des raisons techniques ou esthétiques ou spécifiquement liée à l'utilisation de l'image d'une marque (dans ce cas le visuel de la marque ne peut pas couvrir plus de 15 % de la superficie des façades)",
+        "composition_ensemble": "Toutes les constructions nouvelles, y compris les ouvrages et édicules techniques et les extensions, doivent respecter le caractère et l'intérêt des lieux avoisinants, des sites et des paysages naturels et urbains locaux",
+        "transformations": "Les projets de transformation, de restauration, de surélévation ou d'extension devront s'harmoniser avec l'architecture du bâtiment concerné et des constructions avoisinantes si celles-ci sont de qualité"
+      },
+      "FACADES": {
+        "materiaux": {
+          "regle_generale": "Les nouvelles constructions doivent utiliser de préférence les matériaux qui présentent une bonne qualité architecturale, compatibles avec l'architecture du bâtiment, pérennes, de qualité et de faible entretien",
+          "raccords": "Les raccords entre les bâtiments implantés en ordre continu devront être traités de manière à assurer une transition harmonieuse",
+          "facade_principale": "Un traitement plus spécifique viendra marquer la façade principale sans exclure une certaine cohérence avec les façades les moins nobles"
+        },
+        "materiaux_interdits": [
+          "L'emploi à nu en parements de matériaux fabriqués en vue de recevoir un enduit (briques creuses, agglomérés, carreaux de plâtre)",
+          "L'emploi de matériaux susceptibles de provoquer des éclats de lumière ou des reflets pouvant constituer une gêne pour les habitants voisins ou les usagers des voies de circulation"
+        ],
+        "couleurs_entreprise": "La couleur dominante peut être complétée par des couleurs propres à l'entreprise ou à une marque dans la mesure où elles n'occupent qu'une surface limitée de la façade et participent à la qualité esthétique générale",
+        "UXd_bande_75m": {
+          "bardages": "Les bardages devront être à lames verticales",
+          "couleurs_interdites": "Le blanc pur, les couleurs vives et les surfaces brillantes sont interdits",
+          "couleurs_privilegiees": "Les tons foncés gris anthracite seront privilégiés"
+        }
+      },
+      "OUVERTURES": {
+        "regle_generale": "Le dessin des baies et des garde-corps doit participer à la mise en valeur et à la recomposition de la façade (rythmes verticaux, horizontaux…). Le positionnement, le dimensionnement des baies ainsi que le système d'occultation et de protection solaire devront répondre aux objectifs de haute qualité environnementale"
+      },
+      "TOITURES": {
+        "regle_generale": "Les toitures constituent la cinquième façade de la construction : elles doivent assurer un bon couronnement de la construction et être en harmonie avec les constructions voisines par leurs formes, leurs couleurs ou leurs matériaux",
+        "toitures_terrasses": "L'architecture des toitures terrasses devra être composée (fragmentation des volumes). Elles seront traitées avec des matériaux de revêtement autres qu'une simple protection d'étanchéité. Des revêtements de type jardins (dallage, gazon, plantations) seront privilégiés. La surface résiduelle sera traitée en teinte claire non réfléchissante. La transition entre la façade et la toiture-terrasse sera traitée visiblement et distinctement",
+        "UXd": {
+          "couvertures_interdites": "Les couvertures d'aspect brillant (tôle d'acier, fer galvanisé) sont interdites",
+          "bande_75m": "Les toitures devront être sombres et de teinte discrète"
+        }
+      },
+      "CLOTURES": {
+        "regle_generale": "Les clôtures doivent présenter une cohérence d'aspect avec la construction principale et être conçues avec simplicité, en évitant les éléments d'aspect médiocre, de caractère insolite, trop recherché, les imitations de matériaux naturels et les matériaux précaires. Les clôtures ajourées, doublées de plantations seront préférées aux clôtures aveugles",
+        "integrations_techniques": "Les éléments techniques seront autant que possible intégrés aux clôtures (boîtes-aux-lettres, compteurs…)",
+        "visibilite_angle": "A l'angle des rues, pour des raisons de sécurité, la visibilité doit être dégagée pour la circulation automobile",
+        "hauteur_maximale": "2 m pour les murs pleins ou haies vives. Sont autorisés les murs bahuts de 0,60 m surmontés d'un grillage ou d'une grille de 1,40 m maximum",
+        "hauteurs_superieures": "Des hauteurs plus importantes peuvent être admises, sur rue ou en limite séparative, en cas d'impératifs de sécurité pour les équipements collectifs, les services publics ou les constructions abritant une activité économique",
+        "UXd_bande_75m": "Les clôtures doivent être obligatoirement constituées de végétaux issus d'essences locales, doublées ou non d'un grillage non occultant",
+        "contact_zone_naturelle_ou_agricole": "La clôture sera obligatoirement constituée d'un grillage doublé ou non de végétaux"
+      },
+      "DISPOSITIONS_PARTICULIERES": {
+        "cas_admis": [
+          "Pour les constructions contemporaines/originales ou répondant à des critères d'intérêt bioclimatique",
+          "Pour l'accessibilité et la sécurité des équipements publics et tous les locaux recevant du public sur la composition des façades",
+          "Pour les constructions à usage d'activités et les équipements publics"
+        ],
+        "condition": "Ces autres dispositions peuvent être admises sous réserve que le projet, de par son aspect extérieur, ne soit pas de nature à porter atteinte au caractère ou à l'intérêt des lieux avoisinants, aux sites, aux paysages naturels ou perspectives monumentales"
+      }
+    },
+    "art_2_3_traitement_paysager": {
+      "ESPACES_LIBRES": {
+        "regle_generale": "Tous les espaces libres non affectés à la construction, au dépôt, au stationnement ou à la circulation doivent obligatoirement être aménagés en espaces paysagers",
+        "plantations_existantes": "La préservation des plantations existantes doit être assurée et s'il est indispensable de procéder à leur enlèvement, des arbres de haute tige seront replantés",
+        "marges_de_recul": "Les marges de recul doivent être aménagées en espaces à dominante végétale",
+        "masquage_stockages": "Des rideaux de végétation (essences locales diversifiées) doivent être obligatoirement plantés afin de masquer les aires de stockages extérieurs et les annexes nécessaires à l'activité",
+        "talus": "Les talus de déblais et de remblais réalisés devront être traités afin de ne pas se distinguer dans le paysage et être intégrés au projet architectural"
+      },
+      "COEFFICIENT_PLEINE_TERRE": {
+        "regle": "Au moins 30 % de la superficie du terrain non bâti doivent être traités en espaces verts, dont au moins 20 % en pleine terre",
+        "dalles_souterraines": "Les dalles non bâties en surface, générées par la création d'aires de stationnement en souterrain doivent être végétalisées sur au moins 50 % de la surface de la dalle"
+      },
+      "COEFFICIENT_DE_PONDERATION": {
+        "description": "Un coefficient de pondération est affecté à l'emprise des réalisations végétales pour le calcul de la surface d'espaces verts",
+        "valeurs": {
+          "espaces_verts_pleine_terre": {
+            "indice": 1
+          },
+          "espaces_verts_sur_dalle_80cm_min": {
+            "indice": 0.5
+          },
+          "espaces_verts_sur_dalle_15cm_min": {
+            "indice": 0.25,
+            "exemple": "toiture végétalisée semi-intensive ou intensive"
+          },
+          "espaces_verts_sur_dalle_5cm_a_15cm": {
+            "indice": 0.15,
+            "exemple": "toiture végétalisée extensive"
+          }
+        }
+      }
+    },
+    "art_2_4_stationnement": {
+      "principe": "Le stationnement des véhicules de toute nature, correspondant aux besoins des installations et constructions autorisées dans la zone, doit être assuré en dehors des voies publiques ou privées, par la réalisation d'aires de stationnement sur le terrain propre à l'opération",
+      "alternative_mutualisation": null,
+      "cycles": "Le stationnement des cycles devra être prévu selon les besoins générés par l'activité. Les dispositions applicables figurent au chapitre 7 du titre I du présent règlement",
+      "residences_personnes_agees": null,
+      "revetement_collectif": {
+        "principe": "Les aires de stationnement collectif ne doivent être ni imperméables ni de couleur foncée",
+        "materiaux_autorises": [
+          "Pleine terre",
+          "Mélange terre/pierre",
+          "Revêtements alvéolaires de couleur claire engazonnés",
+          "Pavés perméables de couleur claire",
+          "Pierres concassées, graviers de couleur claire",
+          "Bétons poreux",
+          "Dalles alvéolées avec gravillon sur structures drainantes",
+          "Tout autre procédé utilisant des matériaux naturels assurant une perméabilité et une bonne réfraction de la lumière"
+        ]
+      },
+      "plantations_collectif": {
+        "regle": "Les aires de stationnement collectif doivent comporter 25 % d'arbres de haute tige rapportés au nombre d'emplacements de stationnement",
+        "disposition_arbres": "Les arbres de haute tige doivent être disposés de façon optimale pour protéger de l'ensoleillement ces emplacements",
+        "pieds_arbres": "Les pieds des arbres de haute tige doivent comporter une surface de 4 m² non imperméabilisée",
+        "essences": "Ces arbres de haute tige devront être d'essences locales variées (se référer au chapitre 10 du titre I et à l'OAP thématique Trames verte et bleue)",
+        "applicabilite": "Les dispositions sont également applicables aux places de stationnement réalisées dans les espaces communs des opérations d'aménagement en zones urbaines et en zone 1AUa, 1AUb, 1AUX et 1AUY"
+      },
+      "stationnement_individuel": {
+        "recommandation": "Il est recommandé que le stationnement individuel sur la parcelle privative ne soit ni imperméable ni de couleur foncée",
+        "surfaces_preferentielles": [
+          "Pleine terre",
+          "Mélange terre/pierre",
+          "Revêtements alvéolaires de couleur claire engazonnés",
+          "Pavés perméables de couleur claire",
+          "Pierres concassées, graviers de couleur claire",
+          "Bétons poreux",
+          "Tout autre procédé utilisant des matériaux naturels assurant une perméabilité et une bonne réfraction de la lumière"
+        ]
+      },
+      "exceptions": {
+        "portance_voie": "Les dispositions sur les revêtements ne s'appliquent pas quand il est démontré que la portance de la voie au regard des véhicules à stationner n'est pas compatible avec un revêtement perméable",
+        "PMR": "Les dispositions ne s'appliquent pas aux emplacements de stationnement obligatoires réalisés pour les véhicules des personnes à mobilité réduite"
+      },
+      "besoin_en_stationnement": "Voir chapitre 7 du titre I du présent règlement"
+    }
+  },
+  "section_3_voirie_acces": {
+    "art_3_1_desserte_voies": {
+      "DISPOSITION_GENERALE": {
+        "voies_acces_privees": {
+          "recommandation": "Il est recommandé de traiter les voies d'accès privées secondaires peu passantes avec des matériaux clairs non imperméables",
+          "materiaux_recommandes": [
+            "Revêtements alvéolaires perméables",
+            "Pavés résines perméables",
+            "Graviers et pierres concassées",
+            "Tout autre procédé non imperméable et évitant les couleurs foncées"
+          ],
+          "exception": "Ces dispositions ne s'appliquent pas quand il est démontré que la portance de la voie d'accès au regard des véhicules qui doivent l'emprunter n'est pas compatible avec un revêtement perméable"
+        },
+        "trottoirs_voies_privees": {
+          "materiaux_autorises": [
+            "Pleine terre engazonnée lorsqu'il existe un autre cheminement possible aussi direct pour les personnes à mobilité réduite",
+            "Stabilisé clair",
+            "Béton poreux",
+            "Dalles alvéolées avec gravillons sur structures drainantes",
+            "Tout autre procédé non imperméable et évitant les couleurs foncées"
+          ]
+        }
+      },
+      "ACCES": {
+        "visibilite_et_securite": "Toutes dispositions permettant une bonne visibilité et assurant la sécurité des usagers des voies publiques et celle des personnes utilisant les accès créés doivent être prises en compte pour le débouché des véhicules sur voie publique ou privée : position, configuration, nombre, etc.",
+        "limitation_acces": "Le nombre des accès sur les voies publiques pourra notamment être limité dans l'intérêt de la sécurité. Lorsque le terrain est desservi par plusieurs voies, les constructions peuvent n'être autorisées que sous réserve que l'accès soit établi sur la voie où la gêne pour la circulation sera la moindre",
+        "refus_projet": "Un projet pourra être refusé lorsque l'augmentation des entrées et sorties qu'il engendre sur la voie qui le dessert est incompatible avec la fréquentation ou la configuration de celle-ci",
+        "mutualisation": "Dans la mesure du possible, il est recommandé de mutualiser les accès"
+      },
+      "VOIE_DE_CIRCULATION": {
+        "regle": "Les terrains doivent être desservis par des voies répondant à l'importance et à la destination de la construction ou de l'ensemble des constructions qui y sont édifiés",
+        "defense_incendie": "Les caractéristiques des voies créées doivent répondre aux critères d'accessibilité de la défense incendie et protection civile"
+      }
+    },
+    "art_3_2_desserte_reseaux": {
+      "UXb": "Le parc d'activités ne peut accueillir aucun établissement qui produirait des rejets d'eau industrielle"
+    }
+  }
+}

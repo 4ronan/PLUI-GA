@@ -1,0 +1,236 @@
+{
+  "$schema": "https://schema.plu.fr/reglement/v1.0",
+  "meta": {
+    "type_document": "PLUi",
+    "commune": "Grand Angoulême",
+    "version": "1.0.0"
+  },
+  "zone": {
+    "code": "NS",
+    "famille": "N",
+    "libelle": "La zone NS correspond aux espaces naturels à grande sensibilité environnementale (Natura 2000 ; éléments de la trame verte et bleue du SCoT de l'Angoumois…).",
+    "description": "La zone NS correspond aux espaces naturels à grande sensibilité environnementale (Natura 2000 ; éléments de la trame verte et bleue du SCoT de l'Angoumois…).",
+    "note_generale": "Une partie de la zone NS est concernée par les plans de prévention des risques, qui figurent en annexe du présent PLUi. En cas de divergence entre les règles du PLUi et du PPRi, c'est la règle la plus contraignante qui doit être appliquée. Les STECAL sont les Secteurs de Taille et de Capacité d'Accueil Limitées permettant d'accepter des installations ne correspondant pas avec la vocation générale de la zone mais compatibles avec elle.",
+    "localisation": null,
+    "objectifs": [],
+    "secteurs": [
+      {
+        "code": "NS",
+        "libelle": "Zone naturelle à grande sensibilité environnementale"
+      },
+      {
+        "code": "NSl",
+        "libelle": "STECAL - Zone de loisirs avec des aménagements légers"
+      }
+    ]
+  },
+  "section_1_destinations": {
+    "mode": "liste_interdictions",
+    "legende": {
+      "V": "Autorisé sans condition particulière",
+      "V*": "Autorisé sous conditions",
+      "X": "Interdit"
+    },
+    "principe_general": "Dans l'ensemble de la zone NS, sont interdits tous les modes d'occupation du sol et notamment les constructions quelle que soit leur destination à l'exception de ceux autorisés ou autorisés sous conditions",
+    "structures_specifiques": {
+      "ZONE_NS_HORS_SECTEURS": {
+        "description": "Sont uniquement autorisés :",
+        "autorisations": [
+          "La reconstruction après sinistre à l'identique d'un bâtiment détruit ou démoli depuis moins de 10 ans, sous réserve que la construction d'origine ait été édifiée régulièrement",
+          "Sous réserve d'une bonne insertion dans le site, les constructions et installations strictement liées et nécessaires à la sécurité, à la gestion ou à l'ouverture au public de ces espaces (abris pour arrêts de transports collectifs, sentiers piétons, aires naturelles de stationnement, ouvrages techniques tels que transformateurs, postes de refoulement, supports de transport d'énergie…) nécessaires au fonctionnement des réseaux d'utilité publique, ainsi que la réalisation d'infrastructures routières et travaux d'intérêt public si nécessité technique justifiée",
+          "Les infrastructures des modes de déplacement doux compatibles avec la protection du milieu",
+          "Les aménagements nécessaires aux pontons et cales à bateaux d'intérêt public, sous réserve de ne pas porter atteinte à l'environnement et d'une bonne intégration dans le site",
+          "Les travaux de restauration des milieux naturels, notamment des zones humides",
+          "Les travaux de protection des berges contre l'érosion sous réserve du respect des dispositions de la loi sur l'eau en privilégiant le fascinage (en cas d'impossibilité technique, d'autres dispositifs pourront être autorisés tel que le tunage, qui pourront servir d'amarrage pour les bateaux)"
+        ],
+        "EXTENSION_LOGEMENTS_EXISTANTS": {
+          "statut": "V*",
+          "conditions": [
+            "Ne pas créer de nouveaux logements",
+            "Dans la limite de 25 m² d'emprise au sol sans pouvoir excéder ce seuil par des opérations successives",
+            "Sous réserve de n'entraîner aucun abattage d'arbre ou aucune atteinte au milieu qui justifie le classement en zone NS"
+          ]
+        },
+        "ANNEXES": {
+          "statut": "V*",
+          "conditions": [
+            "Être liées à un logement existant dans la zone",
+            "La superficie de l'ensemble des annexes existantes (en excluant les surfaces du bâti ancien) ou créées ne doit pas dépasser 20 m² d'emprise au sol (hors piscine) pour la durée d'application du PLUi-M",
+            "Être incluses entièrement dans un rayon de 25 m de l'habitation à l'exception des abris pour animaux",
+            "Sous réserve de n'entraîner aucun abattage d'arbre ou aucune atteinte au milieu qui justifie le classement en zone NS"
+          ]
+        },
+        "BATIMENTS_ELEVAGE": {
+          "statut": "V*",
+          "conditions": [
+            "N'entraînant aucune nuisance pour l'habitat environnant (tels que ceux nécessaires à l'héliciculture notamment)",
+            "Sous réserve de n'entraîner aucun abattage d'arbre ou aucune atteinte au milieu qui justifie le classement en zone NS"
+          ]
+        },
+        "PISCINES": {
+          "statut": "V*",
+          "conditions": [
+            "Être liées à un logement existant dans la zone",
+            "Sous réserve de n'entraîner aucun abattage d'arbre ou aucune atteinte au milieu qui justifie le classement en zone NS",
+            "Ne pas excéder 2 m de haut pour les piscines hors sol"
+          ]
+        },
+        "INSTALLATIONS_AUTOCONSOMMATION": {
+          "statut": "V*",
+          "conditions": [
+            "Dans la limite de 25 m² d'emprise au sol",
+            "Sous les mêmes conditions que les piscines"
+          ]
+        },
+        "CHANGEMENT_DE_DESTINATION": {
+          "statut": "V*",
+          "condition": "Pour les bâtiments spécifiquement identifiés aux documents graphiques (chapitre 8 du titre I), à condition qu'il ne compromette pas l'activité agricole ou la qualité paysagère du site"
+        }
+      },
+      "SECTEUR_NSl_STECAL": {
+        "description": "Sont autorisés, sous réserve du respect du règlement du PPRi applicable au sein des zones concernées :",
+        "autorisations": [
+          "Les constructions, aménagements et installations légers destinés à permettre une pratique de découverte et de loisirs de nature (tables de pique-nique, kiosques, buvettes, signalisation et panneaux d'information, etc.) conçus pour permettre un retour du site à l'état naturel",
+          "Le changement de destination des bâtiments à condition que la nouvelle activité ne relève pas des sous-destinations logement ou industrie, soit conforme aux dispositions de l'article 11 des dispositions générales du PLUi-M sur le commerce et soit compatible avec la protection des paysages et des espaces naturels"
+        ]
+      }
+    }
+  },
+  "section_2_caracteristiques": {
+    "art_2_1_implantation": {
+      "note": "Les constructions et installations liées et nécessaires aux services publics et d'intérêt collectif ne sont pas réglementées",
+      "par_rapport_aux_voies": {
+        "TABLEAU_RETRAITS": {
+          "RN_10_141_et_RD_1000": {
+            "habitations_et_annexes": "Retrait de 100 m minimum par rapport à l'axe",
+            "batiments_agricoles": "Retrait de 50 m minimum par rapport à l'axe"
+          },
+          "RD_939_echangeur_Effamiers_a_limite_SE_Dignac": {
+            "habitations_et_annexes": "Retrait de 75 m minimum par rapport à l'axe",
+            "batiments_agricoles": "Retrait de 50 m minimum par rapport à l'axe"
+          },
+          "autres_RD": {
+            "habitations_et_annexes": "Retrait de 5 m minimum par rapport à l'alignement",
+            "batiments_agricoles": "Retrait de 10 m minimum par rapport à l'alignement"
+          },
+          "autres_voies": {
+            "habitations_et_annexes": "Retrait de 3 m minimum par rapport à l'alignement",
+            "batiments_agricoles": "Retrait de 10 m minimum par rapport à l'alignement"
+          }
+        },
+        "exceptions": [
+          "Ces règles ne s'appliquent pas dès lors qu'il s'agit de l'extension d'une construction existante ne respectant pas ces marges, sous réserve que l'extension ne contribue pas à réduire la marge de recul initiale",
+          "En cas de problème de sécurité liée notamment à la visibilité, une distance supérieure pourra être exigée après avis du gestionnaire de la voirie"
+        ],
+        "recul_cours_eau": "Les nouvelles constructions et installations autorisées dans la zone devront respecter un recul minimum de 10 m par rapport aux cours d'eau",
+        "plusieurs_voies": "Lorsque la parcelle est bordée par plusieurs voies, les règles de cette section s'appliquent par rapport à toutes les voies"
+      },
+      "par_rapport_aux_limites_separatives": {
+        "regle_generale": "Non réglementé"
+      },
+      "emprise_au_sol": {
+        "NSl_STECAL": "L'emprise au sol cumulée des constructions est limitée à 40 m² de surface de plancher"
+      },
+      "hauteur": {
+        "NSl_STECAL": "La hauteur maximale des constructions est limitée à 4 m"
+      }
+    },
+    "art_2_2_qualite_architecturale": {
+      "GENERALITES": {
+        "integration": "Toutes les constructions nouvelles dans leur ensemble, y compris les ouvrages et édicules techniques et les extensions, doivent, par leur architecture, leurs dimensions ou leur aspect extérieur, respecter le caractère et l'intérêt des lieux avoisinants, des sites et des paysages naturels et urbains locaux",
+        "refus_possible": "Les différents types d'occupation ou d'utilisation du sol peuvent être refusés ou n'être accordés que sous réserve de prescriptions spéciales si les aménagements prévus sont de nature à porter atteinte au caractère ou à l'intérêt des lieux avoisinants, aux sites, aux paysages naturels ou urbains ainsi qu'à la conservation des perspectives monumentales"
+      },
+      "MATERIAUX_INTERDITS": [
+        "L'emploi à nu des matériaux destinés à être enduits ou recouverts d'un parement (brique creuse, carreaux de plâtre, parpaing de ciment…)",
+        "L'emploi de matériaux constituant une imitation d'un autre (PVC imitant le bois, fausses pierres, toutes formes de pastiche…)",
+        "L'emploi de matériaux à caractère provisoire (fibrociment, tôle ondulée, carton ou feutre asphalté…)"
+      ],
+      "CLOTURES": {
+        "regle_generale": "Les clôtures sur rue comme en limite séparative devront prendre la forme d'une haie d'essences locales diversifiées doublée ou non d'un grillage à large maille permettant le passage de la petite faune"
+      }
+    },
+    "art_2_3_traitement_paysager": {
+      "arbres": "Tout abattage d'arbres doit être compensé",
+      "stockage": "Les aires de stockage à l'air libre et les aires de propreté doivent être dissimulées"
+    },
+    "art_2_4_stationnement": {
+      "principe": "Le stationnement des véhicules de toute nature, correspondant aux besoins des installations et constructions autorisées dans la zone, doit être assuré en dehors des voies publiques ou privées, par la réalisation d'aires de stationnement sur le terrain propre à l'opération. Les dispositions applicables figurent au chapitre 7 du titre I du présent règlement",
+      "alternative_mutualisation": null,
+      "cycles": null,
+      "residences_personnes_agees": null,
+      "revetement_collectif": {
+        "principe": "Les aires de stationnement collectif ne doivent être ni imperméables ni de couleur foncée",
+        "materiaux_autorises": [
+          "Pleine terre",
+          "Mélange terre/pierre",
+          "Revêtements alvéolaires de couleur claire engazonnés",
+          "Pavés perméables de couleur claire",
+          "Pierres concassées, graviers de couleur claire",
+          "Bétons poreux",
+          "Dalles alvéolées avec gravillon sur structures drainantes",
+          "Tout autre procédé utilisant des matériaux naturels assurant une perméabilité et une bonne réfraction de la lumière"
+        ]
+      },
+      "plantations_collectif": {
+        "regle": "Les aires de stationnement collectif doivent comporter 25 % d'arbres de haute tige rapportés au nombre d'emplacements de stationnement",
+        "disposition_arbres": "Les arbres de haute tige doivent être disposés de façon optimale pour protéger de l'ensoleillement ces emplacements",
+        "pieds_arbres": "Les pieds des arbres de haute tige doivent comporter une surface de 4 m² non imperméabilisée",
+        "essences": "Ces arbres de haute tige devront être d'essences locales variées (se référer au chapitre 10 du titre I et à l'OAP thématique Trames verte et bleue)",
+        "applicabilite": "Les dispositions sont également applicables aux places de stationnement réalisées dans les espaces communs des opérations d'aménagement en zones urbaines et en zone 1AUa, 1AUb, 1AUX et 1AUY"
+      },
+      "stationnement_individuel": {
+        "recommandation": "Il est recommandé que le stationnement individuel sur la parcelle privative ne soit ni imperméable ni de couleur foncée",
+        "surfaces_preferentielles": [
+          "Pleine terre",
+          "Mélange terre/pierre",
+          "Revêtements alvéolaires de couleur claire engazonnés",
+          "Pavés perméables de couleur claire",
+          "Pierres concassées, graviers de couleur claire",
+          "Bétons poreux",
+          "Tout autre procédé utilisant des matériaux naturels assurant une perméabilité et une bonne réfraction de la lumière"
+        ]
+      },
+      "exceptions": {
+        "portance_voie": "Les dispositions sur les revêtements ne s'appliquent pas quand il est démontré que la portance de la voie au regard des véhicules à stationner n'est pas compatible avec un revêtement perméable",
+        "PMR": "Les dispositions ne s'appliquent pas aux emplacements de stationnement obligatoires réalisés pour les véhicules des personnes à mobilité réduite"
+      },
+      "besoin_en_stationnement": "Voir chapitre 7 du titre I du présent règlement"
+    }
+  },
+  "section_3_voirie_acces": {
+    "art_3_1_desserte_voies": {
+      "DISPOSITION_GENERALE": {
+        "voies_acces_privees": {
+          "recommandation": "Il est recommandé de traiter les voies d'accès privées secondaires peu passantes avec des matériaux clairs non imperméables",
+          "materiaux_recommandes": [
+            "Revêtements alvéolaires perméables",
+            "Pavés résines perméables",
+            "Graviers et pierres concassées",
+            "Tout autre procédé non imperméable et évitant les couleurs foncées"
+          ],
+          "exception": "Ces dispositions ne s'appliquent pas quand il est démontré que la portance de la voie d'accès au regard des véhicules qui doivent l'emprunter n'est pas compatible avec un revêtement perméable"
+        },
+        "trottoirs_voies_privees": {
+          "materiaux_autorises": [
+            "Pleine terre engazonnée lorsqu'il existe un autre cheminement possible aussi direct pour les personnes à mobilité réduite",
+            "Stabilisé clair",
+            "Béton poreux",
+            "Dalles alvéolées avec gravillons sur structures drainantes",
+            "Tout autre procédé non imperméable et évitant les couleurs foncées"
+          ]
+        }
+      },
+      "ACCES": {
+        "visibilite_et_securite": "Toutes dispositions permettant une bonne visibilité et assurant la sécurité des usagers des voies publiques et celle des personnes utilisant les accès créés doivent être prises en compte pour le débouché des véhicules sur voie publique ou privée : position, configuration, nombre, etc.",
+        "limitation_acces": "Le nombre des accès sur les voies publiques pourra notamment être limité dans l'intérêt de la sécurité. Lorsque le terrain est desservi par plusieurs voies, les constructions peuvent n'être autorisées que sous réserve que l'accès soit établi sur la voie où la gêne pour la circulation sera la moindre",
+        "refus_projet": "Un projet pourra être refusé lorsque l'augmentation des entrées et sorties qu'il engendre sur la voie qui le dessert est incompatible avec la fréquentation ou la configuration de celle-ci",
+        "mutualisation": "Dans la mesure du possible, il est recommandé de mutualiser les accès"
+      },
+      "VOIE_DE_CIRCULATION": {
+        "regle": "Les terrains doivent être desservis par des voies répondant à l'importance et à la destination de la construction ou de l'ensemble des constructions qui y sont édifiés",
+        "defense_incendie": "Les caractéristiques des voies créées doivent répondre aux critères d'accessibilité de la défense incendie et protection civile"
+      }
+    },
+    "art_3_2_desserte_reseaux": null
+  }
+}
