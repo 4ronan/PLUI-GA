@@ -1,0 +1,26 @@
+name: Filosofi 3I-C-D-E panel
+
+on:
+  push:
+    branches:
+      - vacants-rpls-d2
+    paths:
+      - 'scripts/filosofi_panel_contract_3icde.py'
+      - '.github/workflows/filosofi-3icde-panel.yml'
+  workflow_dispatch:
+
+jobs:
+  panel:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Calculer les indicateurs Filosofi 3I-C/D/E
+        run: python scripts/filosofi_panel_contract_3icde.py
+      - name: Publier le contrat
+        uses: actions/upload-artifact@v4
+        with:
+          name: filosofi-3icde-angouleme-panel
+          path: output/filosofi-3icde-angouleme-panel.json
