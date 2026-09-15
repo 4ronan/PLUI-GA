@@ -1,0 +1,8 @@
+{
+  "rows": 16893,
+  "unique_communes": 16893,
+  "duplicate_commune_rows": 0,
+  "angouleme_rows": 1,
+  "available_columns": ["DEPCOM", "millesime", "nb_logt_total", "nb_ls_actif", "nb_ls_qpv", "nb_ls_coll", "nb_ls_ind", "nb_ls_etu", "nb_ls_loue", "nb_ls_vacant", "nb_ls_vacant_3", "nb_ls_vide", "nb_ls_association", "nb_ls_autre", "num_mob", "denom_mob", "nb_mes", "nb_ls_age_0_5", "nb_ls_age_5_10", "nb_ls_age_10_20", "nb_ls_age_20_40", "nb_ls_age_40_60", "nb_ls_age_60_plus", "nb_ls_dpe_realise", "nb_ls_dpe_new_ener_A", "nb_ls_dpe_new_ener_B", "nb_ls_dpe_new_ener_C", "nb_ls_dpe_new_ener_D", "nb_ls_dpe_new_ener_E", "nb_ls_dpe_new_ener_F", "nb_ls_dpe_new_ener_G", "somme_loyer", "somme_surface"],
+  "missing_columns": []
+}
