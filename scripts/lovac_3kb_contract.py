@@ -8,7 +8,19 @@ TARGET='16015'
 Path('tmp_3kb').mkdir(exist_ok=True)
 raw_path=Path('tmp_3kb/lovac.csv')
 subprocess.run(['curl','--fail','--location','--retry','4','--output',str(raw_path),RESOURCE_URL],check=True)
-text=raw_path.read_text(encoding='utf-8-sig')
+raw=raw_path.read_bytes()
+text=None
+encoding_used=None
+for enc in ('utf-8-sig','cp1252','latin-1'):
+    try:
+        text=raw.decode(enc)
+        encoding_used=enc
+        break
+    except UnicodeDecodeError:
+        pass
+if text is None:
+    raise RuntimeError('Encodage LOVAC indétectable')
+
 dialect=csv.Sniffer().sniff(text[:20000], delimiters=';,\t,')
 rows=list(csv.DictReader(io.StringIO(text), dialect=dialect))
 if not rows: raise RuntimeError('CSV LOVAC vide')
@@ -63,7 +75,7 @@ for y in range(2020,2027):
     short=(vac['value']-gt2['value']) if vac.get('value') is not None and gt2.get('value') is not None else None
     series[str(y)]={'private_stock':stock,'vacant_all':vac,'vacant_gt2y':gt2,'vacant_le2y_derived_count':short,'vacancy_rate_pct':rate,'structural_vacancy_rate_pct':gt2rate,'rate_status':'compatible_denominator' if y<=2025 and stock.get('value') not in (None,0) else ('counts_only_no_compatible_denominator' if y==2026 else 'unavailable')}
 
-contract={'source':'LOVAC open data - Ministère de la Transition écologique','dataset_page':DATASET_PAGE,'resource_url':RESOURCE_URL,'territory':TARGET,'scope':'vacance du parc privé','role':'coeur_du_diagnostic','merge_with_other_vacancy_universes':False,'causal_interpretation':False,'code_field':code_field,'series':series,'selected_indicators':['private_vacancy_rate_latest_compatible','private_structural_vacancy_rate_latest_compatible','private_vacancy_counts_2026'],'metrics':{'latest_compatible_rate_year':2025,'vacancy_rate_pct':series['2025']['vacancy_rate_pct'],'structural_vacancy_rate_pct':series['2025']['structural_vacancy_rate_pct'],'vacant_all_count_2026':series['2026']['vacant_all']['value'],'vacant_gt2y_count_2026':series['2026']['vacant_gt2y']['value']},'quality':{'secret_rule':'s/secret => null, jamais 0','rate_rule':'aucun taux 2026 sans dénominateur parc privé 2026 compatible','breaks_in_series':['GMBI autour de 2023','1767Biscom en 2025'],'short_vacancy_rule':'<=2 ans = vacants totaux - vacants >2 ans si les deux sont disponibles'},'schema_audit':{'fields':fields,'classified_fields':{f'{fam}_{y}':fs for (fam,y),fs in classified.items()}}}
+contract={'source':'LOVAC open data - Ministère de la Transition écologique','dataset_page':DATASET_PAGE,'resource_url':RESOURCE_URL,'territory':TARGET,'scope':'vacance du parc privé','role':'coeur_du_diagnostic','merge_with_other_vacancy_universes':False,'causal_interpretation':False,'code_field':code_field,'series':series,'selected_indicators':['private_vacancy_rate_latest_compatible','private_structural_vacancy_rate_latest_compatible','private_vacancy_counts_2026'],'metrics':{'latest_compatible_rate_year':2025,'vacancy_rate_pct':series['2025']['vacancy_rate_pct'],'structural_vacancy_rate_pct':series['2025']['structural_vacancy_rate_pct'],'vacant_all_count_2026':series['2026']['vacant_all']['value'],'vacant_gt2y_count_2026':series['2026']['vacant_gt2y']['value']},'quality':{'encoding_used':encoding_used,'secret_rule':'s/secret => null, jamais 0','rate_rule':'aucun taux 2026 sans dénominateur parc privé 2026 compatible','breaks_in_series':['GMBI autour de 2023','1767Biscom en 2025'],'short_vacancy_rule':'<=2 ans = vacants totaux - vacants >2 ans si les deux sont disponibles'},'schema_audit':{'fields':fields,'classified_fields':{f'{fam}_{y}':fs for (fam,y),fs in classified.items()}}}
 if contract['metrics']['vacancy_rate_pct'] is None or contract['metrics']['structural_vacancy_rate_pct'] is None: raise RuntimeError('LOVAC 2025 non matérialisable avec le schéma détecté')
 if contract['metrics']['vacant_all_count_2026'] is None or contract['metrics']['vacant_gt2y_count_2026'] is None: raise RuntimeError('LOVAC 2026 non matérialisable avec le schéma détecté')
 Path('output').mkdir(exist_ok=True)
