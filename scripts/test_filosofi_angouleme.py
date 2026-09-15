@@ -1,7 +1,7 @@
 import csv
 import json
 import zipfile
-import urllib.request
+import subprocess
 from pathlib import Path
 import duckdb
 
@@ -14,9 +14,22 @@ TMP.mkdir(exist_ok=True)
 OUT.mkdir(exist_ok=True)
 zip_path = TMP / "Filosofi2021_carreaux_200m_csv.zip"
 
-if not zip_path.exists():
-    print("Téléchargement de l'archive officielle Insee...")
-    urllib.request.urlretrieve(ZIP_URL, zip_path)
+# Téléchargement robuste : curl reprend un fichier partiel et réessaie les erreurs
+# réseau/HTTP. Cela évite les IncompleteRead observés avec urllib sur le runner GitHub.
+print("Téléchargement de l'archive officielle Insee avec reprise...")
+cmd = [
+    "curl", "--fail", "--location", "--show-error", "--silent",
+    "--retry", "8", "--retry-all-errors", "--retry-delay", "5",
+    "--connect-timeout", "30", "--max-time", "1200",
+    "--continue-at", "-", "--output", str(zip_path), ZIP_URL,
+]
+subprocess.run(cmd, check=True)
+
+if not zip_path.exists() or zip_path.stat().st_size < 1_000_000:
+    raise RuntimeError(f"Archive absente ou anormalement petite: {zip_path.stat().st_size if zip_path.exists() else 0} octets")
+
+if not zipfile.is_zipfile(zip_path):
+    raise RuntimeError("Le fichier téléchargé n'est pas une archive ZIP valide")
 
 with zipfile.ZipFile(zip_path) as z:
     names = z.namelist()
@@ -96,6 +109,7 @@ result = {
     'source_page': SOURCE_PAGE,
     'download_url': ZIP_URL,
     'source_file': csv_name,
+    'archive_bytes': zip_path.stat().st_size,
     'commune_code': COMMUNE,
     'commune_field': geo,
     'selection_method': 'lcog_geo contains commune code',
@@ -112,6 +126,7 @@ result = {
 print(json.dumps({
     'ok': True,
     'source_file': csv_name,
+    'archive_bytes': zip_path.stat().st_size,
     'rows': count,
     'n_columns': len(columns),
     'carreaux_imputes': agg.get('carreaux_imputes'),
