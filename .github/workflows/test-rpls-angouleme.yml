@@ -16,22 +16,23 @@ jobs:
         with:
           use-public-rspm: true
 
-      - name: Installer les dependances R
+      - name: Installer les dependances R minimales
         run: |
-          install.packages(c("remotes","jsonlite","dplyr"))
+          install.packages(c("jsonlite","dplyr"))
         shell: Rscript {0}
 
-      - name: Installer propre.rpls depuis la forge publique
+      - name: Telecharger les sources publiques propre.rpls
         run: |
-          remotes::install_gitlab(
-            repo = "pub/cgdd-public/sdes-dreal/propre.rpls",
-            host = "gitlab-forge.din.developpement-durable.gouv.fr",
-            upgrade = "never"
-          )
-        shell: Rscript {0}
+          curl --fail --location --retry 3 \
+            "https://gitlab-forge.din.developpement-durable.gouv.fr/api/v4/projects/28046/repository/archive.tar.gz?sha=HEAD" \
+            -o propre-rpls.tar.gz
+          mkdir -p vendor/propre-rpls
+          tar -xzf propre-rpls.tar.gz -C vendor/propre-rpls --strip-components=1
+          echo "Fichiers de donnees trouves :"
+          find vendor/propre-rpls -type f \( -iname '*.rda' -o -iname '*.RData' -o -iname '*.rds' \) -print | head -100
 
       - name: Extraire Angouleme 16015 - millesime 2025
-        run: Rscript scripts/test_rpls_angouleme.R
+        run: Rscript scripts/test_rpls_angouleme.R vendor/propre-rpls
 
       - name: Publier le resultat comme artefact
         uses: actions/upload-artifact@v4
