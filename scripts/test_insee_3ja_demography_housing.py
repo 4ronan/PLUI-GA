@@ -31,14 +31,21 @@ if not raw_path.exists() or raw_path.stat().st_size < 1000:
     raise RuntimeError("Téléchargement INSEE absent ou anormalement petit")
 
 labels = {}
+archive_files = []
 if zipfile.is_zipfile(raw_path):
     with zipfile.ZipFile(raw_path) as z:
         names = z.namelist()
         csv_names = [n for n in names if n.lower().endswith('.csv')]
-        data_name = next((n for n in csv_names if 'data' in n.lower()), csv_names[0] if csv_names else None)
-        meta_name = next((n for n in csv_names if 'metadata' in n.lower() or 'meta' in n.lower()), None)
-        if not data_name:
+        if not csv_names:
             raise RuntimeError(f"Aucun CSV dans l'archive: {names}")
+        meta_candidates = [n for n in csv_names if 'metadata' in n.lower() or 'meta' in n.lower()]
+        meta_name = meta_candidates[0] if meta_candidates else None
+        data_candidates = [n for n in csv_names if n != meta_name and 'metadata' not in n.lower() and 'meta' not in n.lower()]
+        if not data_candidates:
+            raise RuntimeError(f"Aucun CSV de données distinct des métadonnées. Archive: {names}")
+        # Le fichier de données est de loin le plus volumineux ; ne jamais prendre le CSV de métadonnées par défaut.
+        data_name = max(data_candidates, key=lambda n: z.getinfo(n).file_size)
+        archive_files = [{"name":n,"bytes":z.getinfo(n).file_size} for n in csv_names]
         data_text = z.read(data_name).decode('utf-8-sig')
         if meta_name:
             meta_text = z.read(meta_name).decode('utf-8-sig')
@@ -58,15 +65,17 @@ delim = ';' if sample.count(';') >= sample.count(',') else ','
 rd = csv.DictReader(io.StringIO(data_text), delimiter=delim)
 fields = rd.fieldnames or []
 
-# Le format Melodi harmonisé est normalement long. On reste volontairement adaptatif pour contrôler le schéma réel.
 geo_field = 'GEO' if 'GEO' in fields else ('CODGEO' if 'CODGEO' in fields else None)
 geo_object_field = 'GEO_OBJECT' if 'GEO_OBJECT' in fields else None
 time_field = 'TIME_PERIOD' if 'TIME_PERIOD' in fields else None
 value_field = 'OBS_VALUE' if 'OBS_VALUE' in fields else None
 
+if not geo_field:
+    raise RuntimeError(f"Champ géographique absent du fichier de données {data_name}. Champs: {fields}; archive: {archive_files}")
+
 rows = []
 for r in rd:
-    code = str(r.get(geo_field,'')).strip() if geo_field else ''
+    code = str(r.get(geo_field,'')).strip()
     if code not in PANEL:
         continue
     if geo_object_field and str(r.get(geo_object_field,'')).strip() != 'COM':
@@ -76,14 +85,11 @@ for r in rd:
     rows.append(r)
 
 if not rows:
-    raise RuntimeError(f"Aucune ligne panel trouvée. Champs: {fields}")
+    raise RuntimeError(f"Aucune ligne panel trouvée dans {data_name}. Champs: {fields}; archive: {archive_files}")
 
-# Détecter la dimension de mesure : toute colonne de code catégoriel dont plusieurs modalités apparaissent,
-# en privilégiant celles contenant MEASURE/INDICATOR/SERIE.
 measure_candidates = [f for f in fields if any(k in f.upper() for k in ('MEASURE','INDICATOR','SERIE','VARIABLE'))]
 measure_field = measure_candidates[0] if measure_candidates else None
 if not measure_field:
-    # Chercher une dimension ayant peu de modalités répétées sur les lignes du panel.
     excluded = {geo_field, geo_object_field, time_field, value_field, 'UNIT_MEASURE','UNIT_MULT','OBS_STATUS','CONF_STATUS'}
     candidates = []
     for f in fields:
@@ -103,16 +109,15 @@ if measure_field:
             continue
         measures.setdefault(m, {'count':0,'years':set(),'geos':set(),'label':None,'unit':None})
         measures[m]['count'] += 1
-        if time_field: measures[m]['years'].add(str(r.get(time_field,'')).strip())
+        if time_field:
+            measures[m]['years'].add(str(r.get(time_field,'')).strip())
         measures[m]['geos'].add(str(r.get(geo_field,'')).strip())
         measures[m]['unit'] = r.get('UNIT_MEASURE')
-        # métadonnées si disponibles
         for key in ((measure_field,m), ('SERIE_HISTORIQUE_MEASURE',m), ('RP_SERIE_HISTORIQUE_MEASURE',m)):
             if key in labels:
                 measures[m]['label'] = labels[key]
                 break
 
-# Ne conserver comme candidats métier que les libellés/codes liés à population, ménages, RP, résidences secondaires.
 keywords = ('population','ménage','menage','résidence principale','residence principale','résidence secondaire','residence secondaire','logement occasionnel')
 candidate_measures = []
 for code, info in sorted(measures.items()):
@@ -123,7 +128,6 @@ for code, info in sorted(measures.items()):
             'years':sorted(info['years']),'geos_n':len(info['geos'])
         })
 
-# Contrôles de couverture du panel par année.
 coverage = {}
 for y in sorted(YEARS):
     geos = {str(r.get(geo_field,'')).strip() for r in rows if (not time_field or str(r.get(time_field,'')).strip()==y)}
@@ -136,6 +140,7 @@ result = {
     'download_url': DATA_URL,
     'download_bytes': raw_path.stat().st_size,
     'source_file': data_name,
+    'archive_files': archive_files,
     'fields': fields,
     'geo_field': geo_field,
     'geo_object_field': geo_object_field,
@@ -148,7 +153,7 @@ result = {
     'measure_count': len(measures),
     'candidate_measures': candidate_measures,
     'all_measure_codes': sorted(measures),
-    'method_note': "3J-A contrôle seulement la disponibilité et la comparabilité des données INSEE en géographie 2026. Aucun percentile ni diagnostic n'est produit à ce stade. Les évolutions 2017-2023 seront privilégiées pour éviter d'allonger inutilement la fenêtre et la rupture de questionnaire 2018 sera rappelée pour la population."
+    'method_note': "3J-A contrôle seulement la disponibilité et la comparabilité des données INSEE en géographie 2026. Aucun percentile ni diagnostic n'est produit à ce stade. Les évolutions 2017-2023 seront privilégiées ; la prudence méthodologique INSEE sur les comparaisons de population autour du changement de questionnaire sera rappelée."
 }
 
 out = OUT / 'insee-3ja-demography-housing.json'
