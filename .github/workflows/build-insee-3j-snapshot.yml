@@ -1,0 +1,40 @@
+name: Build INSEE 3J panel snapshot
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [vacants-rpls-d2]
+    paths:
+      - 'scripts/build_insee_3j_snapshot.py'
+      - '.github/workflows/build-insee-3j-snapshot.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Construire le snapshot INSEE 3J
+        run: python scripts/build_insee_3j_snapshot.py
+      - name: Vérifier les fichiers produits
+        run: |
+          test -s data/insee-rp2023-panel-3j.csv
+          test -s data/insee-rp2023-panel-3j-meta.json
+          wc -l data/insee-rp2023-panel-3j.csv
+          cat data/insee-rp2023-panel-3j-meta.json
+      - name: Versionner le snapshot réduit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/insee-rp2023-panel-3j.csv data/insee-rp2023-panel-3j-meta.json
+          if git diff --cached --quiet; then
+            echo 'Snapshot inchangé'
+          else
+            git commit -m 'Update INSEE 3J panel snapshot'
+            git push
+          fi
