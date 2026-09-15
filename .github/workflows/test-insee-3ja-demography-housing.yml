@@ -1,0 +1,26 @@
+name: Test INSEE 3J-A demography housing
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - vacants-rpls-d2
+    paths:
+      - 'scripts/test_insee_3ja_demography_housing.py'
+      - '.github/workflows/test-insee-3ja-demography-housing.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Vérifier la disponibilité INSEE 3J-A
+        run: python scripts/test_insee_3ja_demography_housing.py
+      - name: Publier le résultat 3J-A
+        uses: actions/upload-artifact@v4
+        with:
+          name: insee-3ja-demography-housing
+          path: output/insee-3ja-demography-housing.json
