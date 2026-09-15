@@ -1,0 +1,38 @@
+name: Test LOVAC 3K-B contract
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [vacants-rpls-d2]
+    paths:
+      - 'scripts/lovac_3kb_contract.py'
+      - '.github/workflows/test-lovac-3kb-contract.yml'
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Générer le contrat LOVAC 3K-B
+        run: python scripts/lovac_3kb_contract.py
+      - name: Vérifier le contrat
+        run: |
+          test -s output/lovac-3kb-contract.json
+          python - <<'PY'
+          import json
+          d=json.load(open('output/lovac-3kb-contract.json',encoding='utf-8'))
+          assert d['territory']=='16015'
+          assert d['metrics']['latest_compatible_rate_year']==2025
+          assert d['series']['2026']['rate_status']=='counts_only_no_compatible_denominator'
+          assert d['merge_with_other_vacancy_universes'] is False
+          assert d['causal_interpretation'] is False
+          print(json.dumps(d,ensure_ascii=False,indent=2))
+          PY
+      - name: Publier le contrat 3K-B
+        uses: actions/upload-artifact@v4
+        with:
+          name: lovac-3kb-contract
+          path: output/lovac-3kb-contract.json
