@@ -28,93 +28,82 @@ if not zipfile.is_zipfile(zip_path):
     raise RuntimeError("Le fichier téléchargé n'est pas une archive ZIP valide")
 
 with zipfile.ZipFile(zip_path) as z:
-    csv_names = [n for n in z.namelist() if n.lower().endswith('.csv')]
-    if not csv_names:
-        raise RuntimeError(f"Aucun CSV dans l'archive: {z.namelist()}")
-    found = []
-    inspected = []
-    for name in csv_names:
-        with z.open(name) as f:
-            raw = f.read()
-        text = None
-        enc = None
-        for candidate in ('utf-8-sig','latin-1','cp1252'):
-            try:
-                text = raw.decode(candidate)
-                enc = candidate
-                break
-            except UnicodeDecodeError:
-                pass
-        if text is None:
-            continue
-        sample = text[:65536]
-        try:
-            delim = csv.Sniffer().sniff(sample, delimiters=';,\t|').delimiter
-        except csv.Error:
-            delim = ';'
-        reader = csv.DictReader(text.splitlines(), delimiter=delim)
-        fields = reader.fieldnames or []
-        inspected.append({'file': name, 'encoding': enc, 'delimiter': delim, 'fields': fields[:60]})
-        by_lower = {c.lower(): c for c in fields}
-        code_field = by_lower.get('codgeo') or by_lower.get('codegeo') or by_lower.get('code_geo')
-        if not code_field:
-            continue
-        for row in reader:
-            if str(row.get(code_field, '')).strip() == COMMUNE:
-                found.append({'file': name, 'encoding': enc, 'delimiter': delim, 'row': row, 'fields': fields})
+    names = z.namelist()
+    data_name = next((n for n in names if n.endswith('DS_FILOSOFI_CC_data.csv')), None)
+    meta_name = next((n for n in names if n.endswith('DS_FILOSOFI_CC_metadata.csv')), None)
+    if not data_name:
+        raise RuntimeError(f"Fichier de données Filosofi introuvable. Archive: {names}")
 
-if not found:
-    raise RuntimeError(f"Aucune ligne Filosofi trouvée pour {COMMUNE}. Fichiers inspectés: {inspected}")
+    # Lire les libellés de mesures depuis les métadonnées.
+    labels = {}
+    if meta_name:
+        raw = z.read(meta_name).decode('utf-8-sig')
+        rd = csv.DictReader(raw.splitlines(), delimiter=';')
+        for r in rd:
+            if r.get('COD_VAR') == 'FILOSOFI_MEASURE' and r.get('COD_MOD'):
+                labels[r['COD_MOD']] = r.get('LIB_MOD')
 
-# Il peut exister plusieurs CSV spécialisés ; on privilégie la ligne contenant les indicateurs principaux.
-def score(item):
-    fields = {c.upper() for c in item['fields']}
-    wanted = {'MED21','TP6021','PIMP21','NBMENFISC21','NBPERSMENFISC21','D121','D921','RD21'}
-    return len(fields & wanted)
+    raw = z.read(data_name).decode('utf-8-sig')
+    rd = csv.DictReader(raw.splitlines(), delimiter=';')
+    fields = rd.fieldnames or []
+    required_fields = {'GEO','GEO_OBJECT','FILOSOFI_MEASURE','OBS_VALUE'}
+    if not required_fields.issubset(set(fields)):
+        raise RuntimeError(f"Schéma long Filosofi inattendu: {fields}")
 
-best = max(found, key=score)
-row = best['row']
-by_upper = {k.upper(): k for k in row.keys()}
+    matched = []
+    for r in rd:
+        geo = str(r.get('GEO','')).strip()
+        # GEO est une clé SDMX, pas nécessairement le code commune brut.
+        # On accepte 16015, COM-16015, 2021-COM-16015, etc., mais pas un simple sous-chaînage numérique ambigu.
+        parts = [p for p in geo.replace('_','-').split('-') if p]
+        is_target = geo == COMMUNE or (COMMUNE in parts)
+        if is_target:
+            matched.append(r)
 
-def val(code):
-    k = by_upper.get(code.upper())
-    if not k:
-        return None
-    v = row.get(k)
-    if v is None or str(v).strip() in ('','s','nd','NA'):
-        return None
-    s = str(v).strip().replace(' ', '').replace(',', '.')
-    try:
-        return float(s)
-    except ValueError:
-        return str(v).strip()
+if not matched:
+    # Diagnostic compact : quelques exemples de clés GEO pour comprendre le format exact si l'Insee le change.
+    with zipfile.ZipFile(zip_path) as z:
+        raw = z.read(data_name).decode('utf-8-sig')
+        rd = csv.DictReader(raw.splitlines(), delimiter=';')
+        examples=[]
+        for r in rd:
+            g=str(r.get('GEO','')).strip()
+            if g and g not in examples:
+                examples.append(g)
+            if len(examples)>=20: break
+    raise RuntimeError(f"Aucune observation Filosofi trouvée pour {COMMUNE}. Exemples GEO: {examples}")
 
-indicators = {
-    'CODGEO': str(row.get(by_upper.get('CODGEO'), COMMUNE)).strip(),
-    'LIBGEO': row.get(by_upper.get('LIBGEO')) if by_upper.get('LIBGEO') else None,
-    'NBMENFISC21': val('NBMENFISC21'),
-    'NBPERSMENFISC21': val('NBPERSMENFISC21'),
-    'MED21': val('MED21'),
-    'PIMP21': val('PIMP21'),
-    'TP6021': val('TP6021'),
-    'D121': val('D121'),
-    'D921': val('D921'),
-    'RD21': val('RD21'),
-    'PACT21': val('PACT21'),
-    'PCHO21': val('PCHO21'),
-    'PPEN21': val('PPEN21'),
-    'PPAT21': val('PPAT21'),
-    'PPSOC21': val('PPSOC21'),
-    'PPMINI21': val('PPMINI21'),
-    'PPLOGT21': val('PPLOGT21'),
-    'TP60TOL121': val('TP60TOL121'),
-    'TP60TOL221': val('TP60TOL221'),
-}
+# Les données sont en format long : une observation par mesure.
+# On ne suppose pas à l'avance les codes exacts ; on conserve tous ceux du territoire.
+def parse_value(v):
+    if v is None: return None
+    s=str(v).strip()
+    if s in ('','s','nd','NA','NaN'): return None
+    s2=s.replace(' ','').replace(',','.')
+    try: return float(s2)
+    except ValueError: return s
 
-required = ['MED21','TP6021','NBMENFISC21']
-missing_required = [k for k in required if indicators.get(k) is None]
-if missing_required:
-    raise RuntimeError(f"Ligne Angoulême trouvée mais indicateurs essentiels absents: {missing_required}; colonnes: {best['fields']}")
+obs = {}
+meta_obs = {}
+for r in matched:
+    code = str(r.get('FILOSOFI_MEASURE','')).strip()
+    if not code: continue
+    obs[code] = parse_value(r.get('OBS_VALUE'))
+    meta_obs[code] = {
+        'label': labels.get(code),
+        'unit': r.get('UNIT_MEASURE'),
+        'unit_mult': r.get('UNIT_MULT'),
+        'conf_status': r.get('CONF_STATUS'),
+        'obs_status': r.get('OBS_STATUS'),
+        'time_period': r.get('TIME_PERIOD'),
+        'geo': r.get('GEO'),
+        'geo_object': r.get('GEO_OBJECT'),
+    }
+
+# Codes attendus si présents dans la diffusion actuelle. Les absences sont signalées sans inventer.
+wanted = ['MED21','TP6021','PIMP21','NBMENFISC21','NBPERSMENFISC21','D121','D921','RD21',
+          'PACT21','PCHO21','PPEN21','PPAT21','PPSOC21','PPMINI21','PPLOGT21','TP60TOL121','TP60TOL221']
+selected = {k: obs.get(k) for k in wanted if k in obs}
 
 result = {
     'ok': True,
@@ -122,17 +111,27 @@ result = {
     'download_url': ZIP_URL,
     'archive_bytes': zip_path.stat().st_size,
     'commune_code': COMMUNE,
-    'source_file': best['file'],
-    'encoding': best['encoding'],
-    'delimiter': best['delimiter'],
-    'rows_found_for_commune': len(found),
-    'n_columns_selected_file': len(best['fields']),
-    'columns': best['fields'],
-    'indicators': indicators,
-    'missing_required': missing_required,
-    'method_note': "Étape 3I-A : validation technique des indicateurs communaux officiels Filosofi 2021. Le carroyage 200 m sera traité séparément pour l'analyse infracommunale."
+    'source_file': data_name,
+    'format': 'long SDMX CSV',
+    'rows_found_for_commune': len(matched),
+    'geo_values': sorted({str(r.get('GEO','')) for r in matched}),
+    'geo_objects': sorted({str(r.get('GEO_OBJECT','')) for r in matched}),
+    'measure_count': len(obs),
+    'selected_expected_codes': selected,
+    'all_measures': [
+        {'code': k, 'value': obs[k], **meta_obs[k]}
+        for k in sorted(obs)
+    ],
+    'method_note': "Étape 3I-A : validation technique du format long officiel Filosofi 2021. Les codes réellement présents sont conservés tels quels ; aucune équivalence n'est inventée."
 }
 
 out = OUT / 'filosofi-2021-angouleme.json'
 out.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding='utf-8')
-print(json.dumps(result, ensure_ascii=False, indent=2))
+print(json.dumps({
+    'ok': True,
+    'rows_found_for_commune': len(matched),
+    'geo_values': result['geo_values'],
+    'measure_count': len(obs),
+    'selected_expected_codes': selected,
+    'first_measures': result['all_measures'][:20]
+}, ensure_ascii=False, indent=2))
