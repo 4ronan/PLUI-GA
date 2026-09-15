@@ -9,55 +9,70 @@ Path("output").mkdir(exist_ok=True)
 con = duckdb.connect()
 con.execute("INSTALL httpfs; LOAD httpfs;")
 
-# Schéma exact du parquet
 schema = con.execute(f"DESCRIBE SELECT * FROM read_parquet('{PARQUET}')").fetchall()
 columns = [r[0] for r in schema]
+print("Colonnes parquet:", columns)
 
-if "lcog_geo" not in columns:
-    raise RuntimeError("Colonne lcog_geo absente du parquet")
+# Correspondance insensible à la casse, car le parquet communautaire peut conserver
+# la casse des colonnes du fichier source Insee.
+by_lower = {c.lower(): c for c in columns}
+geo_col = by_lower.get("lcog_geo")
+if not geo_col:
+    candidates_geo = [c for c in columns if "cog" in c.lower() or "comm" in c.lower()]
+    raise RuntimeError(f"Colonne communale introuvable. Colonnes candidates: {candidates_geo}; schéma: {columns}")
 
-# lcog_geo peut contenir plusieurs codes communaux ; on teste donc l'appartenance textuelle.
-where = "strpos(CAST(lcog_geo AS VARCHAR), ?) > 0"
+where = f"strpos(CAST(\"{geo_col}\" AS VARCHAR), ?) > 0"
 count = con.execute(f"SELECT COUNT(*) FROM read_parquet('{PARQUET}') WHERE {where}", [COMMUNE]).fetchone()[0]
 if count == 0:
     raise RuntimeError("Aucun carreau Filosofi trouvé pour Angoulême 16015")
 
-# Variables candidates documentées par l'Insee et présentes dans le fichier.
-candidates = [
-    "idcar_200m","idcar_1km","id_car_nat","i_est_200","i_est_1Km","lcog_geo",
+wanted_lower = [
+    "idcar_200m","idcar_1km","id_car_nat","i_est_200","i_est_1km","lcog_geo",
     "ind","men","men_pauv","men_1ind","men_5ind","men_prop","men_fmp","men_coll","men_mais",
     "ind_0_3","ind_4_5","ind_6_10","ind_11_17","ind_18_24","ind_25_39","ind_40_54","ind_55_64","ind_65_79","ind_80p",
-    "ind_inc","men_surf","men_coll","men_mais","log_av45","log_45_70","log_70_90","log_ap90",
-    "revdisp","nivvie"
+    "log_av45","log_45_70","log_70_90","log_ap90","revdisp","nivvie"
 ]
-available = [c for c in candidates if c in columns]
+available = [by_lower[k] for k in wanted_lower if k in by_lower]
 
-# Agrégations prudentes : sommes pour les effectifs, aucune moyenne de revenu n'est encore publiée.
-sum_vars = [c for c in ["ind","men","men_pauv","men_1ind","men_5ind","men_prop","men_fmp","men_coll","men_mais"] if c in columns]
-selects = ["COUNT(*) AS carreaux", "SUM(CASE WHEN CAST(i_est_200 AS INTEGER)=1 THEN 1 ELSE 0 END) AS carreaux_imputes" if "i_est_200" in columns else "NULL AS carreaux_imputes"]
+sum_lower = ["ind","men","men_pauv","men_1ind","men_5ind","men_prop","men_fmp","men_coll","men_mais"]
+sum_vars = [by_lower[k] for k in sum_lower if k in by_lower]
+
+selects = ["COUNT(*) AS carreaux"]
+est_col = by_lower.get("i_est_200")
+if est_col:
+    selects.append(f'SUM(CASE WHEN CAST("{est_col}" AS INTEGER)=1 THEN 1 ELSE 0 END) AS carreaux_imputes')
+else:
+    selects.append("NULL AS carreaux_imputes")
 for c in sum_vars:
-    selects.append(f"SUM(COALESCE({c},0)) AS {c}")
+    selects.append(f'SUM(COALESCE("{c}",0)) AS "{c}"')
 
-agg = con.execute(f"SELECT {', '.join(selects)} FROM read_parquet('{PARQUET}') WHERE {where}", [COMMUNE]).fetchdf().to_dict(orient="records")[0]
+agg = con.execute(
+    f"SELECT {', '.join(selects)} FROM read_parquet('{PARQUET}') WHERE {where}",
+    [COMMUNE],
+).fetchdf().to_dict(orient="records")[0]
 
 sample_cols = available[:20]
+sample_select = ", ".join([f'"{c}"' for c in sample_cols])
 sample = con.execute(
-    f"SELECT {', '.join(sample_cols)} FROM read_parquet('{PARQUET}') WHERE {where} LIMIT 5",
-    [COMMUNE]
-).fetchdf().to_dict(orient="records")
+    f"SELECT {sample_select} FROM read_parquet('{PARQUET}') WHERE {where} LIMIT 5",
+    [COMMUNE],
+).fetchdf().to_dict(orient="records") if sample_cols else []
 
 result = {
     "ok": True,
     "source": PARQUET,
     "commune_code": COMMUNE,
+    "commune_field": geo_col,
     "rows": count,
     "n_columns": len(columns),
     "columns": columns,
     "candidate_columns_available": available,
     "aggregate": agg,
     "sample": sample,
-    "method_note": "Test de récupération uniquement. Les variables de revenu ne sont pas encore agrégées ni interprétées à l'étape 3I-A."
+    "method_note": "Étape 3I-A = validation technique de récupération. Les indicateurs de revenu et de pauvreté ne sont pas encore interprétés."
 }
 
-Path("output/filosofi-2021-angouleme.json").write_text(json.dumps(result, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
-print(json.dumps({"rows": count, "n_columns": len(columns), "aggregate": agg}, ensure_ascii=False, indent=2, default=str))
+Path("output/filosofi-2021-angouleme.json").write_text(
+    json.dumps(result, ensure_ascii=False, indent=2, default=str), encoding="utf-8"
+)
+print(json.dumps({"rows": count, "n_columns": len(columns), "commune_field": geo_col, "aggregate": agg}, ensure_ascii=False, indent=2, default=str))
