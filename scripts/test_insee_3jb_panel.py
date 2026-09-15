@@ -10,7 +10,7 @@ if not SNAPSHOT.exists():
     raise RuntimeError('Snapshot INSEE 3J absent')
 
 with SNAPSHOT.open(encoding='utf-8-sig', newline='') as f:
-    rows=list(csv.DictReader(f, delimiter=';'))
+    rows=list(csv.DictReader(f))
 
 # Le snapshot est déjà réduit aux 16 communes, années 2017/2023, mesures POP/DWELLINGS.
 ocs_codes=sorted({(r.get('OCS') or '').strip() for r in rows if (r.get('RP_MEASURE') or '').strip()=='DWELLINGS'})
@@ -48,7 +48,6 @@ for code,name in PANEL.items():
     rs23=val(code,'2023','DWELLINGS',OCS_RS)
     tot23=val(code,'2023','DWELLINGS',OCS_TOTAL)
     vac23=val(code,'2023','DWELLINGS',OCS_VAC)
-    # Contrôle d'identité du parc : RP + RS/occasionnels + vacants = total
     diff=abs((rp23+rs23+vac23)-tot23)
     if diff>0.01:
         raise RuntimeError(f'Identité parc incohérente {code}: écart {diff}')
