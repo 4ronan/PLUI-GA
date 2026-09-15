@@ -1,78 +1,121 @@
+import csv
 import json
+import zipfile
+import urllib.request
 from pathlib import Path
 import duckdb
 
-PARQUET = "https://static.data.gouv.fr/resources/revenus-pauvrete-et-niveau-de-vie-donnees-carroyees-dispositif-fichier-localise-social-et-fiscal-filosofi/20260309-120901/carreaux-200m-met-3035-2021.parquet"
+SOURCE_PAGE = "https://www.insee.fr/fr/statistiques/8735162"
+ZIP_URL = "https://www.insee.fr/fr/statistiques/fichier/8735162/Filosofi2021_carreaux_200m_csv.zip"
 COMMUNE = "16015"
+TMP = Path("tmp_filosofi")
+OUT = Path("output")
+TMP.mkdir(exist_ok=True)
+OUT.mkdir(exist_ok=True)
+zip_path = TMP / "Filosofi2021_carreaux_200m_csv.zip"
 
-Path("output").mkdir(exist_ok=True)
+if not zip_path.exists():
+    print("Téléchargement de l'archive officielle Insee...")
+    urllib.request.urlretrieve(ZIP_URL, zip_path)
+
+with zipfile.ZipFile(zip_path) as z:
+    names = z.namelist()
+    print("Fichiers archive:", names)
+    csv_names = [n for n in names if n.lower().endswith('.csv')]
+    if not csv_names:
+        raise RuntimeError(f"Aucun CSV dans l'archive. Fichiers: {names}")
+    # Le fichier Métropole est le plus volumineux des CSV ; Angoulême est en métropole.
+    csv_name = max(csv_names, key=lambda n: z.getinfo(n).file_size)
+    z.extract(csv_name, TMP)
+
+csv_path = TMP / csv_name
+print("CSV retenu:", csv_path, "taille", csv_path.stat().st_size)
+
+# Détection robuste séparateur/encodage sur l'en-tête uniquement.
+raw = csv_path.open('rb').read(65536)
+encoding = 'utf-8-sig'
+try:
+    text = raw.decode(encoding)
+except UnicodeDecodeError:
+    encoding = 'latin-1'
+    text = raw.decode(encoding)
+try:
+    dialect = csv.Sniffer().sniff(text, delimiters=';,\t|')
+    delim = dialect.delimiter
+except csv.Error:
+    delim = ';'
+print("Encodage:", encoding, "séparateur:", repr(delim))
+
 con = duckdb.connect()
-con.execute("INSTALL httpfs; LOAD httpfs;")
-
-schema = con.execute(f"DESCRIBE SELECT * FROM read_parquet('{PARQUET}')").fetchall()
+rel = f"read_csv_auto('{csv_path.as_posix()}', delim='{delim}', header=true, all_varchar=false, ignore_errors=true)"
+schema = con.execute(f"DESCRIBE SELECT * FROM {rel}").fetchall()
 columns = [r[0] for r in schema]
-print("Colonnes parquet:", columns)
-
-# Correspondance insensible à la casse, car le parquet communautaire peut conserver
-# la casse des colonnes du fichier source Insee.
 by_lower = {c.lower(): c for c in columns}
-geo_col = by_lower.get("lcog_geo")
-if not geo_col:
-    candidates_geo = [c for c in columns if "cog" in c.lower() or "comm" in c.lower()]
-    raise RuntimeError(f"Colonne communale introuvable. Colonnes candidates: {candidates_geo}; schéma: {columns}")
+print("Colonnes:", columns)
 
-where = f"strpos(CAST(\"{geo_col}\" AS VARCHAR), ?) > 0"
-count = con.execute(f"SELECT COUNT(*) FROM read_parquet('{PARQUET}') WHERE {where}", [COMMUNE]).fetchone()[0]
+required = ['idcar_200m','i_est_200','lcog_geo','ind','men','men_pauv']
+missing = [c for c in required if c not in by_lower]
+if missing:
+    raise RuntimeError(f"Colonnes officielles attendues absentes: {missing}; schéma: {columns}")
+
+geo = by_lower['lcog_geo']
+# lcog_geo contient un ou plusieurs codes COG concaténés ; le code 16015 doit être présent.
+where = f"strpos(CAST(\"{geo}\" AS VARCHAR), ?) > 0"
+count = con.execute(f"SELECT COUNT(*) FROM {rel} WHERE {where}", [COMMUNE]).fetchone()[0]
 if count == 0:
-    raise RuntimeError("Aucun carreau Filosofi trouvé pour Angoulême 16015")
+    raise RuntimeError("Aucun carreau Filosofi officiel trouvé pour Angoulême 16015")
 
-wanted_lower = [
-    "idcar_200m","idcar_1km","id_car_nat","i_est_200","i_est_1km","lcog_geo",
-    "ind","men","men_pauv","men_1ind","men_5ind","men_prop","men_fmp","men_coll","men_mais",
-    "ind_0_3","ind_4_5","ind_6_10","ind_11_17","ind_18_24","ind_25_39","ind_40_54","ind_55_64","ind_65_79","ind_80p",
-    "log_av45","log_45_70","log_70_90","log_ap90","revdisp","nivvie"
+wanted = [
+    'idcar_200m','idcar_1km','id_car_nat','i_est_200','i_est_1km','lcog_geo',
+    'ind','men','men_pauv','men_1ind','men_5ind','men_prop','men_fmp','ind_snv','men_surf',
+    'men_coll','men_mais','log_av45','log_45_70','log_70_90','log_ap90','log_inc','log_soc',
+    'ind_0_3','ind_4_5','ind_6_10','ind_11_17','ind_18_24','ind_25_39','ind_40_54','ind_55_64','ind_65_79','ind_80p','ind_inc'
 ]
-available = [by_lower[k] for k in wanted_lower if k in by_lower]
+available = [by_lower[k] for k in wanted if k in by_lower]
 
-sum_lower = ["ind","men","men_pauv","men_1ind","men_5ind","men_prop","men_fmp","men_coll","men_mais"]
-sum_vars = [by_lower[k] for k in sum_lower if k in by_lower]
-
+sum_keys = [
+    'ind','men','men_pauv','men_1ind','men_5ind','men_prop','men_fmp','ind_snv','men_surf',
+    'men_coll','men_mais','log_av45','log_45_70','log_70_90','log_ap90','log_inc','log_soc'
+]
 selects = ["COUNT(*) AS carreaux"]
-est_col = by_lower.get("i_est_200")
-if est_col:
-    selects.append(f'SUM(CASE WHEN CAST("{est_col}" AS INTEGER)=1 THEN 1 ELSE 0 END) AS carreaux_imputes')
-else:
-    selects.append("NULL AS carreaux_imputes")
-for c in sum_vars:
-    selects.append(f'SUM(COALESCE("{c}",0)) AS "{c}"')
+est = by_lower['i_est_200']
+selects.append(f'SUM(CASE WHEN TRY_CAST(\"{est}\" AS INTEGER)=1 THEN 1 ELSE 0 END) AS carreaux_imputes')
+for k in sum_keys:
+    if k in by_lower:
+        c = by_lower[k]
+        selects.append(f'SUM(COALESCE(TRY_CAST(\"{c}\" AS DOUBLE),0)) AS \"{k}\"')
 
-agg = con.execute(
-    f"SELECT {', '.join(selects)} FROM read_parquet('{PARQUET}') WHERE {where}",
-    [COMMUNE],
-).fetchdf().to_dict(orient="records")[0]
+agg = con.execute(f"SELECT {', '.join(selects)} FROM {rel} WHERE {where}", [COMMUNE]).fetchdf().to_dict(orient='records')[0]
 
-sample_cols = available[:20]
-sample_select = ", ".join([f'"{c}"' for c in sample_cols])
-sample = con.execute(
-    f"SELECT {sample_select} FROM read_parquet('{PARQUET}') WHERE {where} LIMIT 5",
-    [COMMUNE],
-).fetchdf().to_dict(orient="records") if sample_cols else []
+sample_cols = available[:18]
+sample_select = ', '.join(f'"{c}"' for c in sample_cols)
+sample = con.execute(f"SELECT {sample_select} FROM {rel} WHERE {where} LIMIT 5", [COMMUNE]).fetchdf().to_dict(orient='records')
 
 result = {
-    "ok": True,
-    "source": PARQUET,
-    "commune_code": COMMUNE,
-    "commune_field": geo_col,
-    "rows": count,
-    "n_columns": len(columns),
-    "columns": columns,
-    "candidate_columns_available": available,
-    "aggregate": agg,
-    "sample": sample,
-    "method_note": "Étape 3I-A = validation technique de récupération. Les indicateurs de revenu et de pauvreté ne sont pas encore interprétés."
+    'ok': True,
+    'source_page': SOURCE_PAGE,
+    'download_url': ZIP_URL,
+    'source_file': csv_name,
+    'commune_code': COMMUNE,
+    'commune_field': geo,
+    'selection_method': 'lcog_geo contains commune code',
+    'rows': count,
+    'n_columns': len(columns),
+    'columns': columns,
+    'candidate_columns_available': available,
+    'aggregate_exploratory': agg,
+    'sample': sample,
+    'method_note': "Étape 3I-A : validation technique de récupération depuis le fichier CSV officiel Insee. Les sommes sont exploratoires ; les indicateurs territoriaux et l'interprétation seront validés séparément."
 }
 
-Path("output/filosofi-2021-angouleme.json").write_text(
-    json.dumps(result, ensure_ascii=False, indent=2, default=str), encoding="utf-8"
-)
-print(json.dumps({"rows": count, "n_columns": len(columns), "commune_field": geo_col, "aggregate": agg}, ensure_ascii=False, indent=2, default=str))
+(OUT / 'filosofi-2021-angouleme.json').write_text(json.dumps(result, ensure_ascii=False, indent=2, default=str), encoding='utf-8')
+print(json.dumps({
+    'ok': True,
+    'source_file': csv_name,
+    'rows': count,
+    'n_columns': len(columns),
+    'carreaux_imputes': agg.get('carreaux_imputes'),
+    'ind': agg.get('ind'),
+    'men': agg.get('men'),
+    'men_pauv': agg.get('men_pauv')
+}, ensure_ascii=False, indent=2, default=str))
