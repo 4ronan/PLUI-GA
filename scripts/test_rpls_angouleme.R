@@ -3,6 +3,8 @@ suppressPackageStartupMessages({
   library(jsonlite)
 })
 
+`%||%` <- function(x, y) if (is.null(x)) y else x
+
 dir.create("output", showWarnings = FALSE)
 
 args <- commandArgs(trailingOnly = TRUE)
@@ -18,7 +20,7 @@ find_tab_result <- function(root) {
     if (grepl("\\.rds$", f, ignore.case = TRUE)) {
       obj <- tryCatch(readRDS(f), error = function(e) NULL)
       if (is.data.frame(obj) && all(c("DEPCOM", "millesime") %in% names(obj))) {
-        return(list(data = obj, file = f))
+        return(list(data = obj, file = f, object = basename(f)))
       }
     } else {
       e <- new.env(parent = emptyenv())
@@ -102,5 +104,3 @@ cat("Source :", found$file, "\n")
 cat("Colonnes totales :", ncol(row), "\n")
 cat("Colonnes selectionnees :", length(available), "\n")
 cat("Colonnes attendues absentes :", length(missing), "\n")
-
-`%||%` <- function(x, y) if (is.null(x)) y else x
