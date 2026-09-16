@@ -8,10 +8,13 @@ TMP=Path('tmp_3kc')
 TMP.mkdir(exist_ok=True)
 archive=TMP/'insee-logement-caract-princ-2023.zip'
 
+# L'endpoint Melodi peut être instable en HTTP/2 sur les gros fichiers.
+# On force HTTP/1.1 et on autorise la reprise partielle.
 subprocess.run([
-    'curl','--fail','--location','--show-error','--silent',
-    '--retry','5','--retry-all-errors','--retry-delay','2',
-    '--connect-timeout','30','--max-time','600',
+    'curl','--http1.1','--fail','--location','--show-error','--silent',
+    '--retry','8','--retry-all-errors','--retry-delay','2',
+    '--connect-timeout','30','--max-time','1200',
+    '--continue-at','-',
     '--output',str(archive),URL
 ], check=True)
 
