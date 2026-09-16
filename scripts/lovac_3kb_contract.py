@@ -23,61 +23,139 @@ if text is None:
 
 dialect=csv.Sniffer().sniff(text[:20000], delimiters=';,\t,')
 rows=list(csv.DictReader(io.StringIO(text), dialect=dialect))
-if not rows: raise RuntimeError('CSV LOVAC vide')
+if not rows:
+    raise RuntimeError('CSV LOVAC vide')
 fields=list(rows[0].keys())
 
-def norm(s): return re.sub(r'[^a-z0-9]+','', (s or '').lower())
-code_candidates=[f for f in fields if norm(f) in {'codgeo','codecommune','com','insee','codeinsee','codgeo2026'}]
-if not code_candidates: code_candidates=[f for f in fields if 'com' in norm(f) and ('code' in norm(f) or 'insee' in norm(f))]
-if not code_candidates: raise RuntimeError(f'Champ code commune introuvable. Champs={fields}')
+def norm(s):
+    return re.sub(r'[^a-z0-9]+','', (s or '').lower())
+
+# Schéma officiel observé en 2026 : CODGEO_26, ff_pp_total_YY,
+# pp_vacant_YY, pp_vacant_plus_2ans_YY.
+code_candidates=[f for f in fields if norm(f) in {'codgeo26','codgeo2026','codgeo','codecommune','com','insee','codeinsee'}]
+if not code_candidates:
+    code_candidates=[f for f in fields if norm(f).startswith('codgeo')]
+if not code_candidates:
+    raise RuntimeError(f'Champ code commune introuvable. Champs={fields}')
 code_field=code_candidates[0]
+
 matches=[r for r in rows if str(r.get(code_field,'')).strip()==TARGET]
-if len(matches)!=1: raise RuntimeError(f'Angoulême non unique avec {code_field}: {len(matches)}')
+if len(matches)!=1:
+    raise RuntimeError(f'Angoulême non unique avec {code_field}: {len(matches)}')
 r=matches[0]
 
 def to_num(v):
     s=str(v or '').strip()
-    if not s or s.lower() in {'s','secret','na','nan','null'}: return None
+    if not s or s.lower() in {'s','secret','na','nan','null'}:
+        return None
     s=s.replace('\u202f','').replace(' ','').replace(',','.')
-    try: return float(s)
-    except: return None
+    try:
+        return float(s)
+    except ValueError:
+        return None
 
 def year_of(f):
+    # Le fichier utilise des suffixes _20 ... _26.
+    m=re.search(r'(?:_|\b)(2[0-6])(?:\b|$)', f)
+    if m:
+        return 2000 + int(m.group(1))
     m=re.search(r'(20(?:20|21|22|23|24|25|26))', f)
     return int(m.group(1)) if m else None
 
 def family(f):
     n=norm(f)
-    if any(k in n for k in ['plus2','plusde2','2ans','struct','filtre','fil']): return 'vacant_gt2y'
-    if any(k in n for k in ['parcprive','nbpp','logpriv','prive']) and not any(k in n for k in ['vac','lv']): return 'private_stock'
-    if any(k in n for k in ['vac','lv','exh']): return 'vacant_all'
+    if n.startswith('ppvacantplus2ans'):
+        return 'vacant_gt2y'
+    if n.startswith('ffpptotal'):
+        return 'private_stock'
+    if n.startswith('ppvacant'):
+        return 'vacant_all'
+    # Replis prudents si le producteur renomme légèrement les champs.
+    if any(k in n for k in ['plus2ans','plusde2ans','vacantplus2']):
+        return 'vacant_gt2y'
+    if ('pptotal' in n or 'parcprive' in n) and 'vacant' not in n:
+        return 'private_stock'
+    if 'vacant' in n:
+        return 'vacant_all'
     return None
 
 classified={}
 for f in fields:
-    y=year_of(f); fam=family(f)
-    if y and fam: classified.setdefault((fam,y),[]).append(f)
+    y=year_of(f)
+    fam=family(f)
+    if y and fam:
+        classified.setdefault((fam,y),[]).append(f)
 
 def get(fam,y):
     fs=classified.get((fam,y),[])
-    if len(fs)!=1: return {'value':None,'status':'ambiguous_or_missing','fields':fs}
+    if len(fs)!=1:
+        return {'value':None,'status':'ambiguous_or_missing','fields':fs}
     v=to_num(r.get(fs[0]))
     return {'value':v,'status':'ok' if v is not None else 'secret_or_missing','field':fs[0]}
 
 series={}
 for y in range(2020,2027):
     stock=get('private_stock',y) if y<=2025 else {'value':None,'status':'not_available_by_design'}
-    vac=get('vacant_all',y); gt2=get('vacant_gt2y',y)
+    vac=get('vacant_all',y)
+    gt2=get('vacant_gt2y',y)
     rate=gt2rate=None
     if y<=2025 and stock.get('value') not in (None,0):
-        if vac.get('value') is not None: rate=vac['value']/stock['value']*100
-        if gt2.get('value') is not None: gt2rate=gt2['value']/stock['value']*100
+        if vac.get('value') is not None:
+            rate=vac['value']/stock['value']*100
+        if gt2.get('value') is not None:
+            gt2rate=gt2['value']/stock['value']*100
     short=(vac['value']-gt2['value']) if vac.get('value') is not None and gt2.get('value') is not None else None
-    series[str(y)]={'private_stock':stock,'vacant_all':vac,'vacant_gt2y':gt2,'vacant_le2y_derived_count':short,'vacancy_rate_pct':rate,'structural_vacancy_rate_pct':gt2rate,'rate_status':'compatible_denominator' if y<=2025 and stock.get('value') not in (None,0) else ('counts_only_no_compatible_denominator' if y==2026 else 'unavailable')}
+    series[str(y)]={
+        'private_stock':stock,
+        'vacant_all':vac,
+        'vacant_gt2y':gt2,
+        'vacant_le2y_derived_count':short,
+        'vacancy_rate_pct':rate,
+        'structural_vacancy_rate_pct':gt2rate,
+        'rate_status':'compatible_denominator' if y<=2025 and stock.get('value') not in (None,0) else ('counts_only_no_compatible_denominator' if y==2026 else 'unavailable')
+    }
 
-contract={'source':'LOVAC open data - Ministère de la Transition écologique','dataset_page':DATASET_PAGE,'resource_url':RESOURCE_URL,'territory':TARGET,'scope':'vacance du parc privé','role':'coeur_du_diagnostic','merge_with_other_vacancy_universes':False,'causal_interpretation':False,'code_field':code_field,'series':series,'selected_indicators':['private_vacancy_rate_latest_compatible','private_structural_vacancy_rate_latest_compatible','private_vacancy_counts_2026'],'metrics':{'latest_compatible_rate_year':2025,'vacancy_rate_pct':series['2025']['vacancy_rate_pct'],'structural_vacancy_rate_pct':series['2025']['structural_vacancy_rate_pct'],'vacant_all_count_2026':series['2026']['vacant_all']['value'],'vacant_gt2y_count_2026':series['2026']['vacant_gt2y']['value']},'quality':{'encoding_used':encoding_used,'secret_rule':'s/secret => null, jamais 0','rate_rule':'aucun taux 2026 sans dénominateur parc privé 2026 compatible','breaks_in_series':['GMBI autour de 2023','1767Biscom en 2025'],'short_vacancy_rule':'<=2 ans = vacants totaux - vacants >2 ans si les deux sont disponibles'},'schema_audit':{'fields':fields,'classified_fields':{f'{fam}_{y}':fs for (fam,y),fs in classified.items()}}}
-if contract['metrics']['vacancy_rate_pct'] is None or contract['metrics']['structural_vacancy_rate_pct'] is None: raise RuntimeError('LOVAC 2025 non matérialisable avec le schéma détecté')
-if contract['metrics']['vacant_all_count_2026'] is None or contract['metrics']['vacant_gt2y_count_2026'] is None: raise RuntimeError('LOVAC 2026 non matérialisable avec le schéma détecté')
+contract={
+    'source':'LOVAC open data - Ministère de la Transition écologique',
+    'dataset_page':DATASET_PAGE,
+    'resource_url':RESOURCE_URL,
+    'territory':TARGET,
+    'scope':'vacance du parc privé',
+    'role':'coeur_du_diagnostic',
+    'merge_with_other_vacancy_universes':False,
+    'causal_interpretation':False,
+    'code_field':code_field,
+    'series':series,
+    'selected_indicators':[
+        'private_vacancy_rate_latest_compatible',
+        'private_structural_vacancy_rate_latest_compatible',
+        'private_vacancy_counts_2026'
+    ],
+    'metrics':{
+        'latest_compatible_rate_year':2025,
+        'vacancy_rate_pct':series['2025']['vacancy_rate_pct'],
+        'structural_vacancy_rate_pct':series['2025']['structural_vacancy_rate_pct'],
+        'vacant_all_count_2026':series['2026']['vacant_all']['value'],
+        'vacant_gt2y_count_2026':series['2026']['vacant_gt2y']['value']
+    },
+    'quality':{
+        'encoding_used':encoding_used,
+        'secret_rule':'s/secret => null, jamais 0',
+        'rate_rule':'aucun taux 2026 sans dénominateur parc privé 2026 compatible',
+        'breaks_in_series':['GMBI autour de 2023','1767Biscom en 2025'],
+        'short_vacancy_rule':'<=2 ans = vacants totaux - vacants >2 ans si les deux sont disponibles'
+    },
+    'schema_audit':{
+        'fields':fields,
+        'classified_fields':{f'{fam}_{y}':fs for (fam,y),fs in classified.items()}
+    }
+}
+
+if contract['metrics']['vacancy_rate_pct'] is None or contract['metrics']['structural_vacancy_rate_pct'] is None:
+    raise RuntimeError('LOVAC 2025 non matérialisable avec le schéma détecté')
+if contract['metrics']['vacant_all_count_2026'] is None or contract['metrics']['vacant_gt2y_count_2026'] is None:
+    raise RuntimeError('LOVAC 2026 non matérialisable avec le schéma détecté')
+
 Path('output').mkdir(exist_ok=True)
 Path('output/lovac-3kb-contract.json').write_text(json.dumps(contract,ensure_ascii=False,indent=2),encoding='utf-8')
 print(json.dumps(contract,ensure_ascii=False,indent=2))
