@@ -16,8 +16,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Installer pyarrow
-        run: python -m pip install --disable-pip-version-check pyarrow pandas
+      - name: Installer openpyxl
+        run: python -m pip install --disable-pip-version-check openpyxl
       - name: Auditer le schéma INSEE LOG1 2023
         run: python scripts/insee_log1_3kc_audit.py
       - name: Vérifier la sortie
@@ -29,6 +29,7 @@ jobs:
           assert d['territory']=='16015'
           assert d['target_rows_2023']>0
           assert d['fields']
+          assert d['detected']['vacancy_columns']
           print(json.dumps(d['detected'],ensure_ascii=False,indent=2))
           PY
       - name: Publier l'audit 3K-C
