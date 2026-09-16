@@ -24,11 +24,7 @@ def fetch_json(url: str, name: str):
         '--output', str(path), url
     ], check=True)
     raw = path.read_text(encoding='utf-8-sig')
-    try:
-        return json.loads(raw), len(raw.encode('utf-8'))
-    except json.JSONDecodeError as exc:
-        preview = raw[:500].replace('\n', ' ')
-        raise RuntimeError(f'Réponse non JSON pour {url}: {preview}') from exc
+    return json.loads(raw), len(raw.encode('utf-8'))
 
 
 def lists_of_dicts(obj, path='$'):
@@ -44,75 +40,64 @@ def lists_of_dicts(obj, path='$'):
     return found
 
 
-def scalar_fields(row):
-    return {
-        k: v for k, v in row.items()
-        if v is None or isinstance(v, (str, int, float, bool))
-    }
+def flatten_scalars(obj, prefix=''):
+    out = {}
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            p = f'{prefix}.{k}' if prefix else str(k)
+            out.update(flatten_scalars(v, p))
+    elif isinstance(obj, list):
+        for i, v in enumerate(obj):
+            p = f'{prefix}[{i}]'
+            out.update(flatten_scalars(v, p))
+    elif obj is None or isinstance(obj, (str, int, float, bool)):
+        out[prefix] = obj
+    return out
 
 
 def find_data_rows(payload):
     candidates = lists_of_dicts(payload)
     if not candidates:
         return None, []
-    # Priorité à une liste dont les objets ressemblent à des observations Melodi.
-    def score(item):
-        path, rows = item
-        keys = set()
-        for row in rows[:10]:
-            keys.update(row.keys())
-        markers = {'GEO', 'GEO_OBJECT', 'TIME_PERIOD', 'OBS_VALUE', 'FREQ'}
-        return (len(keys & markers), len(rows))
-    return max(candidates, key=score)
+    for path, rows in candidates:
+        if path.endswith('.observations'):
+            return path, rows
+    return max(candidates, key=lambda x: len(x[1]))
 
 
 def flatten_range(payload):
-    """Extrait les couples dimension/modalité sans dépendre d'un schéma JSON précis."""
     out = []
     seen = set()
     for path, rows in lists_of_dicts(payload):
         for row in rows:
-            flat = scalar_fields(row)
-            # Les noms rencontrés dans Melodi peuvent différer légèrement selon l'endpoint.
-            dim = next((flat.get(k) for k in ('DIM', 'dimension', 'dimensionCode', 'codeDimension') if flat.get(k) is not None), None)
-            mod = next((flat.get(k) for k in ('MOD', 'modality', 'modalityCode', 'codeModalite', 'code') if flat.get(k) is not None), None)
-            label = next((flat.get(k) for k in ('MOD_LABEL', 'label', 'modalityLabel', 'libelle', 'Libelle') if flat.get(k) is not None), None)
-            if dim is not None or mod is not None or label is not None:
-                key = (str(dim), str(mod), str(label))
-                if key not in seen:
-                    seen.add(key)
-                    out.append({'path': path, 'dim': dim, 'mod': mod, 'label': label, 'raw': flat})
+            flat = flatten_scalars(row)
+            mod = next((v for k, v in flat.items() if k.endswith('.code') or k == 'code'), None)
+            if mod is None:
+                continue
+            key = (path, str(mod))
+            if key in seen:
+                continue
+            seen.add(key)
+            out.append({'path': path, 'mod': mod, 'raw': flat})
     return out
 
 
 range_payload, range_bytes = fetch_json(RANGE_URL, 'range.json')
 data_payload, data_bytes = fetch_json(DATA_URL, 'data-16015.json')
-row_path, rows = find_data_rows(data_payload)
-if not rows:
-    raise RuntimeError(f'Aucune observation Melodi trouvée pour {TARGET}. Clés racine={list(data_payload) if isinstance(data_payload, dict) else type(data_payload).__name__}')
+row_path, raw_rows = find_data_rows(data_payload)
+if not raw_rows:
+    raise RuntimeError('Aucune observation Melodi trouvée')
 
-rows = [scalar_fields(r) for r in rows]
-# Contrôle géographique défensif : si GEO est présent, seules les lignes 16015 sont retenues.
-if any('GEO' in r for r in rows):
-    geo_rows = [r for r in rows if str(r.get('GEO', '')).strip() == TARGET]
-    if geo_rows:
-        rows = geo_rows
-
-# Même principe pour l'année demandée.
-if any('TIME_PERIOD' in r for r in rows):
-    year_rows = [r for r in rows if str(r.get('TIME_PERIOD', '')).strip() == YEAR]
-    if year_rows:
-        rows = year_rows
-
-fields = sorted({k for r in rows for k in r.keys()})
+rows = [flatten_scalars(r) for r in raw_rows]
+fields = sorted({k for r in rows for k in r})
 unique = {}
 for field in fields:
     vals = []
     for row in rows:
-        value = row.get(field)
-        if value is None:
+        v = row.get(field)
+        if v is None:
             continue
-        s = str(value)
+        s = str(v)
         if s not in vals:
             vals.append(s)
         if len(vals) >= 100:
@@ -123,24 +108,24 @@ range_items = flatten_range(range_payload)
 
 def matching_modalities(tokens):
     tokens = [t.lower() for t in tokens]
-    matches = []
+    out = []
     for item in range_items:
-        hay = ' '.join(str(item.get(k) or '') for k in ('dim', 'mod', 'label')).lower()
+        hay = json.dumps(item, ensure_ascii=False).lower()
         if any(t in hay for t in tokens):
-            matches.append(item)
-    return matches
+            out.append(item)
+    return out
 
 
 def matching_values(tokens):
     tokens = [t.lower() for t in tokens]
     out = {}
     for field, vals in unique.items():
-        selected = [v for v in vals if any(t in v.lower() for t in tokens)]
-        if selected:
-            out[field] = selected
+        m = [v for v in vals if any(t in v.lower() for t in tokens)]
+        if m:
+            out[field] = m
     return out
 
-period_tokens = ['y_lt1919', 'y1919t1945', 'y1946t1970', 'y1971t1990', 'y1991t2005', 'y2006taaaa', 'avant 1919', '1919', '1946', '1971', '1991', '2006']
+period_tokens = ['y_lt1919','y1919t1945','y1946t1970','y1971t1990','y1991t2005','y2006taaaa']
 result = {
     'source': 'Insee RP2023 - DS_RP_TD_LOGEMENT_CARACT_PRINC',
     'dataset': DATASET,
@@ -154,23 +139,22 @@ result = {
     'target_rows_2023': len(rows),
     'fields': fields,
     'unique_values': unique,
-    'sample_rows': rows[:20],
+    'sample_rows': rows[:5],
     'detected': {
-        'vacancy_from_range': matching_modalities(['DW_VAC', 'vacant', 'vacance']),
+        'vacancy_from_range': matching_modalities(['DW_VAC']),
         'construction_periods_from_range': matching_modalities(period_tokens),
-        'dwelling_types_from_range': matching_modalities(['maison', 'appartement', 'house', 'apart']),
-        'nor_from_range_for_exclusion': matching_modalities(['NOR', 'nombre de pièces']),
-        'vacancy_in_data': matching_values(['DW_VAC', 'VAC']),
+        'dwelling_types_from_range': matching_modalities(['HOUSE','APART','MAISON','APPART']),
+        'nor_from_range_for_exclusion': matching_modalities(['NOR']),
+        'vacancy_in_data': matching_values(['DW_VAC']),
         'construction_periods_in_data': matching_values(period_tokens),
-        'dwelling_types_in_data': matching_values(['HOUSE', 'APART', 'MAISON', 'APPART'])
+        'dwelling_types_in_data': matching_values(['HOUSE','APART','MAISON','APPART'])
     },
     'quality': {
         'geography': 'commune',
         'local_query_only': True,
         'merge_with_lovac': False,
         'causal_interpretation': False,
-        'nor_rule': 'NOR ne doit pas être utilisé pour le profil des logements vacants.',
-        'purpose': 'Audit de schéma et des modalités avant matérialisation du contrat machine 3K-C.'
+        'nor_rule': 'NOR ne doit pas être utilisé pour le profil des logements vacants.'
     }
 }
 
