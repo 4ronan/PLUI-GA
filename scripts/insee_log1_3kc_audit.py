@@ -1,80 +1,58 @@
-import csv, io, json, subprocess, zipfile
+import json, subprocess
 from pathlib import Path
+import pyarrow.parquet as pq
 
-URL='https://api.insee.fr/melodi/file/DS_RP_TD_LOGEMENT_CARACT_PRINC/DS_RP_TD_LOGEMENT_CARACT_PRINC_2023_CSV_FR'
+URL='https://api.insee.fr/melodi/file/DS_RP_TD_LOGEMENT_CARACT_PRINC_2023/PARQUET'
 TARGET='16015'
 OUT=Path('output/insee-log1-3kc-audit.json')
 TMP=Path('tmp_3kc')
 TMP.mkdir(exist_ok=True)
-archive=TMP/'insee-logement-caract-princ-2023.zip'
+parquet_path=TMP/'insee-logement-caract-princ-2023.parquet'
 
-# L'endpoint Melodi peut être instable en HTTP/2 sur les gros fichiers.
-# On force HTTP/1.1 et on autorise la reprise partielle.
 subprocess.run([
     'curl','--http1.1','--fail','--location','--show-error','--silent',
-    '--retry','8','--retry-all-errors','--retry-delay','2',
-    '--connect-timeout','30','--max-time','1200',
-    '--continue-at','-',
-    '--output',str(archive),URL
+    '--retry','5','--retry-all-errors','--retry-delay','2',
+    '--connect-timeout','30','--max-time','900',
+    '--output',str(parquet_path),URL
 ], check=True)
 
-if not zipfile.is_zipfile(archive):
-    raise RuntimeError('La ressource INSEE téléchargée n’est pas une archive ZIP valide')
+pf=pq.ParquetFile(parquet_path)
+fields=pf.schema.names
 
-with zipfile.ZipFile(archive) as z:
-    names=[n for n in z.namelist() if n.lower().endswith('.csv')]
-    if not names:
-        raise RuntimeError('Aucun CSV dans l’archive INSEE')
-    infos={n:z.getinfo(n).file_size for n in names}
-    data_candidates=[n for n in names if 'meta' not in n.lower()]
-    if not data_candidates:
-        data_candidates=names
-    data_name=max(data_candidates,key=lambda n: infos[n])
-    raw=z.read(data_name)
-
-text=None
-encoding=None
-for enc in ('utf-8-sig','utf-8','cp1252','latin-1'):
-    try:
-        text=raw.decode(enc)
-        encoding=enc
-        break
-    except UnicodeDecodeError:
-        pass
-if text is None:
-    raise RuntimeError('Encodage du CSV INSEE indétectable')
-
-sample=text[:30000]
-dialect=csv.Sniffer().sniff(sample,delimiters=';,\t,')
-reader=csv.DictReader(io.StringIO(text),dialect=dialect)
-fields=reader.fieldnames or []
-rows=[]
-for r in reader:
-    geo=(r.get('GEO') or r.get('CODGEO') or '').strip()
-    obj=(r.get('GEO_OBJECT') or '').strip()
-    if geo==TARGET and (not obj or obj in {'COM','COMMUNE'}):
-        rows.append(r)
-
-if not rows:
+# Lecture filtrée par commune directement via pyarrow dataset quand possible.
+import pyarrow.dataset as ds
+dataset=ds.dataset(str(parquet_path),format='parquet')
+filter_expr=(ds.field('GEO')==TARGET)
+if 'GEO_OBJECT' in fields:
+    filter_expr=filter_expr & (ds.field('GEO_OBJECT')=='COM')
+table=dataset.to_table(filter=filter_expr)
+if table.num_rows==0:
+    # Certains exports utilisent CODGEO au lieu de GEO.
+    if 'CODGEO' in fields:
+        filter_expr=(ds.field('CODGEO')==TARGET)
+        table=dataset.to_table(filter=filter_expr)
+if table.num_rows==0:
     raise RuntimeError(f'Aucune ligne trouvée pour {TARGET}; champs={fields}')
 
-# Profil des dimensions présentes pour la commune cible, sans présumer du schéma.
+df=table.to_pandas()
+rows=df.to_dict(orient='records')
+
 unique={}
 for f in fields:
     vals=[]
-    seen=set()
-    for r in rows:
-        v=(r.get(f) or '').strip()
-        if v and v not in seen:
-            seen.add(v); vals.append(v)
-        if len(vals)>=50:
-            break
+    if f in df.columns:
+        for v in df[f].dropna().astype(str):
+            if v not in vals:
+                vals.append(v)
+            if len(vals)>=50:
+                break
     unique[f]=vals
 
-# Sous-ensemble utile : uniquement 2023 lorsqu’une dimension temporelle existe.
-rows_2023=[r for r in rows if not r.get('TIME_PERIOD') or str(r.get('TIME_PERIOD')).strip()=='2023']
+if 'TIME_PERIOD' in df.columns:
+    rows_2023=df[df['TIME_PERIOD'].astype(str)=='2023']
+else:
+    rows_2023=df
 
-# Recherche descriptive des modalités LOG1 attendues, sans les utiliser encore pour calculer.
 def matching_values(tokens):
     out={}
     for f,vals in unique.items():
@@ -86,12 +64,10 @@ result={
     'source':'Insee RP2023 - DS_RP_TD_LOGEMENT_CARACT_PRINC',
     'url':URL,
     'territory':TARGET,
-    'data_file':data_name,
-    'encoding':encoding,
-    'delimiter':dialect.delimiter,
+    'format':'parquet',
     'fields':fields,
     'target_rows':len(rows),
-    'target_rows_2023':len(rows_2023),
+    'target_rows_2023':int(len(rows_2023)),
     'unique_values':unique,
     'detected':{
         'vacancy_candidates':matching_values(['DW_VAC','VAC']),
