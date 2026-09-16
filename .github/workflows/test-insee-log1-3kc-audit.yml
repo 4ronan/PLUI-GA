@@ -16,6 +16,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Installer pyarrow
+        run: python -m pip install --disable-pip-version-check pyarrow pandas
       - name: Auditer le schéma INSEE LOG1 2023
         run: python scripts/insee_log1_3kc_audit.py
       - name: Vérifier la sortie
