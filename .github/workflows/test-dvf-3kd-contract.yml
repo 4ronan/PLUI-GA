@@ -26,11 +26,13 @@ jobs:
           d=json.load(open('output/dvf-3kd-contract.json',encoding='utf-8'))
           assert d['territory']=='16015'
           assert d['quality']['status']=='ok'
-          assert len(d['series'])==6
-          assert d['selected_metrics']['latest_year']>=2024
+          assert d['years']==[2021,2022,2023,2024,2025]
+          assert len(d['series'])==5
+          assert d['selected_metrics']['latest_year']==2025
           assert d['selected_metrics']['residential_sale_mutations_n']>0
           assert d['selected_metrics']['simple_residential_sale_mutations_n']>0
           assert d['selected_metrics']['median_price_m2_eur_simple']>0
+          assert '2020' in d['method']['excluded_years']
           print(json.dumps(d['selected_metrics'],ensure_ascii=False,indent=2))
           PY
       - name: Publier le contrat 3K-D
