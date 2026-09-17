@@ -1,0 +1,63 @@
+name: Test diagnostic 3K-G assembly
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [vacants-rpls-d2]
+    paths:
+      - 'scripts/diagnostic_3kg_assembly.py'
+      - '.github/workflows/test-diagnostic-3kg-assembly.yml'
+
+jobs:
+  assembly:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Générer LOVAC
+        run: python scripts/lovac_3kb_contract.py
+      - name: Générer INSEE LOG1
+        run: python scripts/insee_log1_3kc_contract.py
+      - name: Générer DVF
+        run: python scripts/dvf_3kd_contract.py
+      - name: Générer Sitadel
+        run: python scripts/sitadel_3ke_contract.py
+      - name: Générer RPLS
+        run: python scripts/rpls_3kf_contract.py
+      - name: Générer démographie-logement INSEE
+        run: python scripts/insee_3jc_contract.py
+      - name: Générer Filosofi
+        run: python scripts/filosofi_panel_contract_3icde.py
+
+      - name: Assembler 3K-G
+        run: python scripts/diagnostic_3kg_assembly.py
+
+      - name: Vérifier l'assemblage
+        run: |
+          test -s output/diagnostic-3kg-assembly.json
+          python - <<'PY'
+          import json
+          d=json.load(open('output/diagnostic-3kg-assembly.json',encoding='utf-8'))
+          assert d['stage']=='3K-G'
+          assert d['territory']=='16015'
+          assert d['diagnostic_interpretation_included'] is False
+          assert d['global_score_included'] is False
+          assert d['causal_claims_included'] is False
+          assert d['quality']['status']=='ok'
+          assert d['quality']['loaded_blocks']==7
+          assert d['quality']['ready_for_interpretation_layer'] is True
+          assert set(d['blocks'])=={
+            'vacancy_private','vacant_stock_profile','real_estate_market',
+            'construction','social_housing','demography_housing','socioeconomic_context'
+          }
+          print(json.dumps(d['quality'],ensure_ascii=False,indent=2))
+          PY
+
+      - name: Publier assemblage 3K-G
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostic-3kg-assembly
+          path: output/diagnostic-3kg-assembly.json
