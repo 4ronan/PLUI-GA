@@ -21,7 +21,7 @@ PERIODS=[
  ('Y2006TAAAA','2006-2020'),
 ]
 TYPES=[('1','Maison'),('2','Appartement'),('3T6','Autres logements')]
-CHAR_DIMS=['dimensions.BUILD_END','dimensions.LIFT','dimensions.L_STAY','dimensions.NOC','dimensions.NOR','dimensions.TDW','dimensions.TSH']
+OTHER_DIMS=['dimensions.LIFT','dimensions.L_STAY','dimensions.NOC','dimensions.NOR','dimensions.TSH']
 
 def fetch_json(url):
     p=TMP/'data.json'
@@ -70,37 +70,50 @@ def match_base(r):
       r.get('dimensions.OCS')=='DW_VAC'
     )
 
-def select_one(rows, breakdown_dim=None, breakdown_value=None):
-    matches=[]
-    for r in rows:
-        if not match_base(r): continue
-        if breakdown_dim is not None and r.get(breakdown_dim)!=breakdown_value: continue
-        ok=True
-        for d in CHAR_DIMS:
-            if d==breakdown_dim: continue
-            if r.get(d)!='_T': ok=False; break
-        if ok: matches.append(r)
+def all_other_total(r):
+    return all(r.get(d)=='_T' for d in OTHER_DIMS)
+
+def select_exact(rows, *, build_end, tdw):
+    matches=[r for r in rows if match_base(r) and all_other_total(r) and r.get('dimensions.BUILD_END')==build_end and r.get('dimensions.TDW')==tdw]
     if len(matches)!=1:
-        raise RuntimeError(f'Attendu 1 ligne pour {breakdown_dim}={breakdown_value}, trouvé {len(matches)}')
+        diag=[{k:r.get(k) for k in ['dimensions.BUILD_END','dimensions.TDW',*OTHER_DIMS]} for r in rows if match_base(r) and all_other_total(r)][:30]
+        raise RuntimeError(f'Attendu 1 ligne BUILD_END={build_end}, TDW={tdw}, trouvé {len(matches)}; candidats={diag}')
     return value(matches[0])
 
 payload=fetch_json(DATA_URL)
 row_path,rows=find_rows(payload)
 if not rows: raise RuntimeError('Aucune observation Melodi')
 
-total=select_one(rows)
+# LOG1 2023 porte sur les logements construits avant 2021. Dans Melodi,
+# l'agrégat de cette population est codé BUILD_END=Y_LT2021 (et non _T).
+# Les profils par période et par type sont donc reconstruits dans ce même univers.
 by_period=[]
 for code,label in PERIODS:
-    v=select_one(rows,'dimensions.BUILD_END',code)
-    by_period.append({'code':code,'label':label,'value':v,'share_pct':None if total in (None,0) else v/total*100})
+    v=select_exact(rows,build_end=code,tdw='_T')
+    by_period.append({'code':code,'label':label,'value':v})
+
 by_type=[]
 for code,label in TYPES:
-    v=select_one(rows,'dimensions.TDW',code)
-    by_type.append({'code':code,'label':label,'value':v,'share_pct':None if total in (None,0) else v/total*100})
+    v=select_exact(rows,build_end='Y_LT2021',tdw=code)
+    by_type.append({'code':code,'label':label,'value':v})
 
 period_sum=sum(x['value'] for x in by_period if x['value'] is not None)
 type_sum=sum(x['value'] for x in by_type if x['value'] is not None)
 
+# Contrôle supplémentaire sur l'agrégat publié, lorsqu'il existe.
+try:
+    published_total=select_exact(rows,build_end='Y_LT2021',tdw='_T')
+except RuntimeError:
+    published_total=None
+
+total=published_total if published_total is not None else period_sum
+for x in by_period:
+    x['share_pct']=None if total in (None,0) else x['value']/total*100
+for x in by_type:
+    x['share_pct']=None if total in (None,0) else x['value']/total*100
+
+period_delta=period_sum-total
+type_delta=type_sum-total
 contract={
  'source':'Insee RP2023 - DS_RP_TD_LOGEMENT_CARACT_PRINC',
  'dataset':DATASET,
@@ -114,11 +127,13 @@ contract={
  'universe':{
    'occupancy_code':'DW_VAC',
    'measure':'DWELLINGS',
+   'construction_universe_code':'Y_LT2021',
    'label':'Logements vacants INSEE construits avant 2021',
    'note':'Profil issu du recensement de la population 2023. Il ne correspond pas au champ LOVAC du parc privé et ne permet pas d’identifier la vacance de plus de 2 ans.'
  },
  'metrics':{
    'vacant_total':total,
+   'published_total':published_total,
    'by_construction_period':by_period,
    'by_dwelling_type':by_type,
  },
@@ -126,13 +141,13 @@ contract={
    'construction_codes':[c for c,_ in PERIODS],
    'dwelling_type_codes':[c for c,_ in TYPES],
    'nor_excluded':True,
-   'nor_rule':'La dimension NOR concerne les résidences principales dans l’usage retenu ici et n’est pas utilisée pour caractériser les logements vacants.',
+   'nor_rule':'La dimension NOR n’est pas utilisée pour caractériser les logements vacants.',
    'period_sum':period_sum,
    'type_sum':type_sum,
-   'period_sum_delta_vs_total':period_sum-total,
-   'type_sum_delta_vs_total':type_sum-total,
+   'period_sum_delta_vs_total':period_delta,
+   'type_sum_delta_vs_total':type_delta,
    'tolerance_abs':0.05,
-   'status':'ok' if abs(period_sum-total)<=0.05 and abs(type_sum-total)<=0.05 else 'inconsistent'
+   'status':'ok' if abs(period_delta)<=0.05 and abs(type_delta)<=0.05 else 'inconsistent'
  }
 }
 if contract['quality']['status']!='ok':
