@@ -4,9 +4,11 @@ from pathlib import Path
 
 TARGET='16015'
 DEPT='16'
-YEARS=list(range(2020,2026))
+# Fenêtre volontairement limitée aux millésimes encore exposés de façon stable
+# par Geo-DVF /latest. Le millésime 2020 n'est plus publié dans cette arborescence
+# et n'est donc pas utilisé dans le contrat reproductible.
+YEARS=list(range(2021,2026))
 LATEST='https://files.data.gouv.fr/geo-dvf/latest/csv'
-ARCHIVE_2020='https://files.data.gouv.fr/geo-dvf/2024-12/csv'
 OUT=Path('output/dvf-3kd-contract.json')
 TMP=Path('tmp_3kd')
 TMP.mkdir(exist_ok=True)
@@ -24,11 +26,8 @@ def fnum(v):
 
 
 def download(year):
-    # Geo-DVF publie directement un CSV par commune : c'est la voie la plus légère
-    # et la plus robuste pour le moteur territorial. Le millésime 2020 n'est plus
-    # exposé dans latest ; on le lit dans l'archive officielle 2024-12.
-    base=ARCHIVE_2020 if year==2020 else LATEST
-    url=f'{base}/{year}/communes/{DEPT}/{TARGET}.csv'
+    # Fichier Geo-DVF communal : léger, stable et directement adapté au moteur territorial.
+    url=f'{LATEST}/{year}/communes/{DEPT}/{TARGET}.csv'
     path=TMP/f'{year}-{TARGET}.csv'
     subprocess.run([
         'curl','--http1.1','--fail','--location','--show-error','--silent',
@@ -139,7 +138,8 @@ contract={
     'years':YEARS,
     'urls':urls,
     'method':{
-        'download_strategy':'CSV Geo-DVF communal 16015 ; 2020 depuis archive officielle 2024-12, 2021-2025 depuis latest',
+        'download_strategy':'CSV Geo-DVF communal 16015 depuis /latest ; fenêtre reproductible 2021-2025',
+        'excluded_years':{'2020':'non exposé dans l’arborescence Geo-DVF /latest au moment de la matérialisation ; non substitué par une source différente'},
         'mutation_filter':'code_commune=16015; nature_mutation=Vente; au moins un local Maison/Appartement',
         'transaction_count_unit':'id_mutation distinct',
         'price_m2_filter':'ventes résidentielles simples avec exactement un id_local Maison ou Appartement, valeur_fonciere>0, surface_reelle_bati>0',
@@ -160,6 +160,7 @@ contract={
         'deduplicated_by_id_mutation':True,
         'complex_mutations_excluded_from_price_m2':True,
         'missing_semantics':'absence de valeur = null, jamais 0',
+        'year_window_status':'2021-2025 stable/reproductible; 2020 explicitement hors contrat',
         'status':'ok' if all(x['residential_sale_mutations_n']>0 for x in series) else 'partial'
     }
 }
