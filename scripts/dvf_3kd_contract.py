@@ -1,11 +1,12 @@
-import csv, gzip, io, json, math, statistics, subprocess
+import csv, json, math, statistics, subprocess
 from collections import defaultdict
 from pathlib import Path
 
 TARGET='16015'
 DEPT='16'
 YEARS=list(range(2020,2026))
-BASE='https://files.data.gouv.fr/geo-dvf/latest/csv'
+LATEST='https://files.data.gouv.fr/geo-dvf/latest/csv'
+ARCHIVE_2020='https://files.data.gouv.fr/geo-dvf/2024-12/csv'
 OUT=Path('output/dvf-3kd-contract.json')
 TMP=Path('tmp_3kd')
 TMP.mkdir(exist_ok=True)
@@ -23,21 +24,16 @@ def fnum(v):
 
 
 def download(year):
-    # Les exports départementaux sont disponibles pour 2021-2025 dans l'arborescence latest.
-    # Pour 2020, le dossier departements est vide dans la publication courante : on utilise
-    # donc le full.csv.gz 2020 officiel, puis on filtre Angoulême en streaming.
-    if year == 2020:
-        url=f'{BASE}/{year}/full.csv.gz'
-        path=TMP/f'{year}-full.csv.gz'
-        max_time='900'
-    else:
-        url=f'{BASE}/{year}/departements/{DEPT}.csv.gz'
-        path=TMP/f'{year}-{DEPT}.csv.gz'
-        max_time='300'
+    # Geo-DVF publie directement un CSV par commune : c'est la voie la plus légère
+    # et la plus robuste pour le moteur territorial. Le millésime 2020 n'est plus
+    # exposé dans latest ; on le lit dans l'archive officielle 2024-12.
+    base=ARCHIVE_2020 if year==2020 else LATEST
+    url=f'{base}/{year}/communes/{DEPT}/{TARGET}.csv'
+    path=TMP/f'{year}-{TARGET}.csv'
     subprocess.run([
         'curl','--http1.1','--fail','--location','--show-error','--silent',
         '--retry','5','--retry-all-errors','--retry-delay','2',
-        '--connect-timeout','30','--max-time',max_time,
+        '--connect-timeout','30','--max-time','180',
         '--output',str(path),url
     ],check=True)
     return url,path
@@ -45,7 +41,7 @@ def download(year):
 
 def mutation_rows(path):
     groups=defaultdict(list)
-    with gzip.open(path,'rt',encoding='utf-8-sig',newline='') as fh:
+    with open(path,'rt',encoding='utf-8-sig',newline='') as fh:
         reader=csv.DictReader(fh)
         required={'id_mutation','date_mutation','nature_mutation','valeur_fonciere','code_commune','code_type_local','surface_reelle_bati'}
         missing=required-set(reader.fieldnames or [])
@@ -133,7 +129,7 @@ for year in YEARS:
 latest=max((x for x in series if x['residential_sale_mutations_n']>0),key=lambda x:x['year'])
 contract={
     'source':'DVF géolocalisées (Etalab / data.gouv.fr)',
-    'source_kind':'static_geo_dvf_csv',
+    'source_kind':'static_geo_dvf_commune_csv',
     'territory':TARGET,
     'department':DEPT,
     'scope':'contexte du marché immobilier résidentiel',
@@ -143,7 +139,7 @@ contract={
     'years':YEARS,
     'urls':urls,
     'method':{
-        'download_strategy':'2020 full.csv.gz officiel filtré en streaming; 2021-2025 exports départementaux 16.csv.gz',
+        'download_strategy':'CSV Geo-DVF communal 16015 ; 2020 depuis archive officielle 2024-12, 2021-2025 depuis latest',
         'mutation_filter':'code_commune=16015; nature_mutation=Vente; au moins un local Maison/Appartement',
         'transaction_count_unit':'id_mutation distinct',
         'price_m2_filter':'ventes résidentielles simples avec exactement un id_local Maison ou Appartement, valeur_fonciere>0, surface_reelle_bati>0',
