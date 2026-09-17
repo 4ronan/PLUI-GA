@@ -23,12 +23,21 @@ def fnum(v):
 
 
 def download(year):
-    url=f'{BASE}/{year}/departements/{DEPT}.csv.gz'
-    path=TMP/f'{year}-{DEPT}.csv.gz'
+    # Les exports départementaux sont disponibles pour 2021-2025 dans l'arborescence latest.
+    # Pour 2020, le dossier departements est vide dans la publication courante : on utilise
+    # donc le full.csv.gz 2020 officiel, puis on filtre Angoulême en streaming.
+    if year == 2020:
+        url=f'{BASE}/{year}/full.csv.gz'
+        path=TMP/f'{year}-full.csv.gz'
+        max_time='900'
+    else:
+        url=f'{BASE}/{year}/departements/{DEPT}.csv.gz'
+        path=TMP/f'{year}-{DEPT}.csv.gz'
+        max_time='300'
     subprocess.run([
         'curl','--http1.1','--fail','--location','--show-error','--silent',
         '--retry','5','--retry-all-errors','--retry-delay','2',
-        '--connect-timeout','30','--max-time','300',
+        '--connect-timeout','30','--max-time',max_time,
         '--output',str(path),url
     ],check=True)
     return url,path
@@ -124,7 +133,7 @@ for year in YEARS:
 latest=max((x for x in series if x['residential_sale_mutations_n']>0),key=lambda x:x['year'])
 contract={
     'source':'DVF géolocalisées (Etalab / data.gouv.fr)',
-    'source_kind':'static_geo_dvf_department_csv',
+    'source_kind':'static_geo_dvf_csv',
     'territory':TARGET,
     'department':DEPT,
     'scope':'contexte du marché immobilier résidentiel',
@@ -134,6 +143,7 @@ contract={
     'years':YEARS,
     'urls':urls,
     'method':{
+        'download_strategy':'2020 full.csv.gz officiel filtré en streaming; 2021-2025 exports départementaux 16.csv.gz',
         'mutation_filter':'code_commune=16015; nature_mutation=Vente; au moins un local Maison/Appartement',
         'transaction_count_unit':'id_mutation distinct',
         'price_m2_filter':'ventes résidentielles simples avec exactement un id_local Maison ou Appartement, valeur_fonciere>0, surface_reelle_bati>0',
