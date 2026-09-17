@@ -1,0 +1,49 @@
+name: Test diagnostic 3M-P panels
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [vacants-rpls-d2]
+    paths:
+      - 'scripts/diagnostic_3mp_missing_panels.py'
+      - 'data/insee-rp2023-panel-3j.csv'
+      - '.github/workflows/test-diagnostic-3mp-panels.yml'
+
+jobs:
+  panels:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Matérialiser les panels manquants
+        run: python scripts/diagnostic_3mp_missing_panels.py
+
+      - name: Vérifier 3M-P
+        run: |
+          test -s output/diagnostic-3mp-panels.json
+          python - <<'PY'
+          import json
+          d=json.load(open('output/diagnostic-3mp-panels.json',encoding='utf-8'))
+          assert d['stage']=='3M-P'
+          assert d['territory']=='16015'
+          assert d['quality']['status']=='ok'
+          assert d['quality']['reference_n']==15
+          assert d['quality']['all_panel_stats_n_15'] is True
+          assert d['quality']['same_panel_as_filosofi_demography_rpls'] is True
+          assert d['quality']['causal_claims_included'] is False
+          assert set(d['blocks'])=={'lovac','dvf','sitadel','insee_log1_vacant_profile'}
+          assert d['blocks']['lovac']['stats']['vacancy_rate_pct']['panel_n']==15
+          assert d['blocks']['dvf']['stats']['median_price_m2_eur_simple']['panel_n']==15
+          assert d['blocks']['sitadel']['stats']['authorized_2025_per_1000_pop2023']['panel_n']==15
+          assert d['blocks']['insee_log1_vacant_profile']['stats']['vacant_apartment_share_pct']['panel_n']==15
+          print(json.dumps({k:v['stats'] for k,v in d['blocks'].items()},ensure_ascii=False,indent=2))
+          PY
+
+      - name: Publier 3M-P
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostic-3mp-panels
+          path: output/diagnostic-3mp-panels.json
