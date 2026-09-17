@@ -1,0 +1,42 @@
+name: Test Sitadel 3K-E contract
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [vacants-rpls-d2]
+    paths:
+      - 'scripts/sitadel_3ke_contract.py'
+      - '.github/workflows/test-sitadel-3ke-contract.yml'
+
+jobs:
+  contract:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Générer le contrat Sitadel 3K-E
+        run: python scripts/sitadel_3ke_contract.py
+      - name: Vérifier le contrat
+        run: |
+          test -s output/sitadel-3ke-contract.json
+          python - <<'PY'
+          import json
+          d=json.load(open('output/sitadel-3ke-contract.json',encoding='utf-8'))
+          assert d['territory']=='16015'
+          assert d['quality']['status']=='ok'
+          assert d['quality']['years']==list(range(2013,2026))
+          assert d['selected_metrics']['latest_authorized_year']==2025
+          assert d['selected_metrics']['latest_authorized_dwellings'] is not None
+          assert d['selected_metrics']['latest_started_year']<=2025
+          assert d['selected_metrics']['latest_started_dwellings'] is not None
+          assert all(r['authorized_reconciles'] is not False for r in d['quality']['reconciliation'])
+          assert all(r['started_reconciles'] is not False for r in d['quality']['reconciliation'])
+          print(json.dumps(d['selected_metrics'],ensure_ascii=False,indent=2))
+          PY
+      - name: Publier le contrat 3K-E
+        uses: actions/upload-artifact@v4
+        with:
+          name: sitadel-3ke-contract
+          path: output/sitadel-3ke-contract.json
