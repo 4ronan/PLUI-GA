@@ -1,0 +1,72 @@
+name: Test diagnostic 3L interpretation
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [vacants-rpls-d2]
+    paths:
+      - 'scripts/diagnostic_3l_interpretation.py'
+      - '.github/workflows/test-diagnostic-3l-interpretation.yml'
+
+jobs:
+  interpretation:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Générer LOVAC
+        run: python scripts/lovac_3kb_contract.py
+      - name: Générer INSEE LOG1
+        run: python scripts/insee_log1_3kc_contract.py
+      - name: Générer DVF
+        run: python scripts/dvf_3kd_contract.py
+      - name: Générer Sitadel
+        run: python scripts/sitadel_3ke_contract.py
+      - name: Générer RPLS
+        run: python scripts/rpls_3kf_contract.py
+      - name: Générer démographie-logement INSEE
+        run: python scripts/insee_3jc_contract.py
+      - name: Générer Filosofi
+        run: python scripts/filosofi_panel_contract_3icde.py
+      - name: Assembler 3K-G
+        run: python scripts/diagnostic_3kg_assembly.py
+      - name: Interpréter 3L
+        run: python scripts/diagnostic_3l_interpretation.py
+
+      - name: Vérifier 3L
+        run: |
+          test -s output/diagnostic-3l-interpretation.json
+          python - <<'PY'
+          import json
+          d=json.load(open('output/diagnostic-3l-interpretation.json',encoding='utf-8'))
+          assert d['stage']=='3L'
+          assert d['territory']=='16015'
+          assert d['source_stage']=='3K-G'
+          assert d['quality']['status']=='ok'
+          assert d['quality']['section_count']==7
+          assert d['quality']['all_canonical_blocks_interpreted'] is True
+          assert d['quality']['causal_claims_included'] is False
+          assert d['quality']['recommendations_included'] is False
+          assert d['quality']['global_score_included'] is False
+          assert d['quality']['discriminant_ranking_included'] is False
+          assert [x['id'] for x in d['sections']]==[
+            'vacancy_private','vacant_stock_profile','real_estate_market',
+            'demography_housing','socioeconomic_context','construction','social_housing'
+          ]
+          allowed={'constat','comparaison','limite'}
+          for section in d['sections']:
+            assert section['statements']
+            assert all(s['kind'] in allowed for s in section['statements'])
+            assert any(s['kind']=='limite' for s in section['statements'])
+            assert all(s.get('evidence') for s in section['statements'])
+          print(json.dumps(d['quality'],ensure_ascii=False,indent=2))
+          PY
+
+      - name: Publier 3L
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostic-3l-interpretation
+          path: output/diagnostic-3l-interpretation.json
