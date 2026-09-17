@@ -1,0 +1,261 @@
+import json
+from pathlib import Path
+
+IN = Path('output/diagnostic-3kg-assembly.json')
+OUT = Path('output/diagnostic-3l-interpretation.json')
+TARGET = '16015'
+
+
+def pct(x):
+    return None if x is None else round(float(x), 2)
+
+
+def eur(x):
+    return None if x is None else round(float(x))
+
+
+def statement(kind, text, evidence, limit=None):
+    d = {
+        'kind': kind,
+        'text': text,
+        'evidence': evidence,
+    }
+    if limit:
+        d['limit'] = limit
+    return d
+
+
+if not IN.exists() or IN.stat().st_size == 0:
+    raise RuntimeError('Assemblage 3K-G absent ou vide')
+
+assembly = json.loads(IN.read_text(encoding='utf-8'))
+if assembly.get('stage') != '3K-G':
+    raise RuntimeError('Entrée attendue: assemblage 3K-G')
+if str(assembly.get('territory')) != TARGET:
+    raise RuntimeError('Territoire inattendu')
+if assembly.get('quality', {}).get('ready_for_interpretation_layer') is not True:
+    raise RuntimeError('3K-G non prêt pour interprétation')
+
+b = assembly['blocks']
+
+lovac = b['vacancy_private']
+lm = lovac['metrics']
+log1 = b['vacant_stock_profile']
+logm = log1['metrics']
+dvf = b['real_estate_market']
+dvfm = dvf['selected_metrics']
+demo = b['demography_housing']
+demom = demo['metrics']
+filo = b['socioeconomic_context']
+filom = filo['metrics']
+sit = b['construction']
+sitm = sit['selected_metrics']
+rpls = b['social_housing']
+rplsm = rpls['metrics']
+rplsp = rpls['panel']
+
+# Profil vacant INSEE : sommes strictement descriptives, sans comparaison au parc de référence.
+periods = {x['code']: x for x in logm['by_construction_period']}
+share_1946_1990 = periods['Y1946T1970']['share_pct'] + periods['Y1971T1990']['share_pct']
+
+demo_med = demom['medians_panel']
+demo_pct = demom['percentiles']
+filo_med = filom['medians_panel']
+filo_pct = filom['percentiles']
+rpls_med = rplsp['medians']
+rpls_pct = rplsp['percentiles']
+
+sections = [
+    {
+        'id': 'vacancy_private',
+        'title': 'Vacance du parc privé',
+        'statements': [
+            statement(
+                'constat',
+                f"En 2025, dernière année disposant d'un dénominateur compatible, {pct(lm['vacancy_rate_pct'])} % du parc privé est vacant et {pct(lm['structural_vacancy_rate_pct'])} % du parc privé relève d'une vacance de plus de deux ans.",
+                ['blocks.vacancy_private.metrics.latest_compatible_rate_year', 'blocks.vacancy_private.metrics.vacancy_rate_pct', 'blocks.vacancy_private.metrics.structural_vacancy_rate_pct']
+            ),
+            statement(
+                'constat',
+                f"En 2026, LOVAC recense {int(lm['vacant_all_count_2026'])} logements privés vacants, dont {int(lm['vacant_gt2y_count_2026'])} vacants depuis plus de deux ans.",
+                ['blocks.vacancy_private.metrics.vacant_all_count_2026', 'blocks.vacancy_private.metrics.vacant_gt2y_count_2026']
+            ),
+            statement(
+                'limite',
+                "Aucun taux de vacance 2026 n'est calculé, faute de dénominateur 2026 compatible. Les ruptures méthodologiques documentées dans LOVAC imposent aussi de la prudence pour les comparaisons temporelles.",
+                ['blocks.vacancy_private.series.2026.rate_status', 'blocks.vacancy_private.quality.breaks_in_series']
+            ),
+        ],
+    },
+    {
+        'id': 'vacant_stock_profile',
+        'title': 'Caractéristiques du parc vacant',
+        'statements': [
+            statement(
+                'constat',
+                f"Dans le profil INSEE 2023 des logements vacants construits avant 2021, les appartements représentent {pct(next(x['share_pct'] for x in logm['by_dwelling_type'] if x['code']=='2'))} % des logements vacants et les maisons {pct(next(x['share_pct'] for x in logm['by_dwelling_type'] if x['code']=='1'))} %.",
+                ['blocks.vacant_stock_profile.metrics.by_dwelling_type']
+            ),
+            statement(
+                'constat',
+                f"Les logements construits entre 1946 et 1990 représentent {pct(share_1946_1990)} % de ce profil de logements vacants.",
+                ['blocks.vacant_stock_profile.metrics.by_construction_period']
+            ),
+            statement(
+                'limite',
+                "Ce bloc décrit le profil des logements vacants au recensement. Sans distribution de référence du parc occupé construite sur le même univers, il ne permet pas encore de parler de surreprésentation d'un type de logement ou d'une période de construction.",
+                ['blocks.vacant_stock_profile.universe', 'blocks.vacant_stock_profile.merge_with_lovac']
+            ),
+        ],
+    },
+    {
+        'id': 'real_estate_market',
+        'title': 'Contexte immobilier',
+        'statements': [
+            statement(
+                'constat',
+                f"En 2025, DVF recense {int(dvfm['residential_sale_mutations_n'])} mutations résidentielles à Angoulême. Sur les ventes résidentielles simples retenues, le prix médian est de {eur(dvfm['median_price_m2_eur_simple'])} €/m².",
+                ['blocks.real_estate_market.selected_metrics.residential_sale_mutations_n', 'blocks.real_estate_market.selected_metrics.median_price_m2_eur_simple']
+            ),
+            statement(
+                'constat',
+                f"La médiane 2025 atteint {eur(dvfm['house_median_price_m2_eur'])} €/m² pour les maisons et {eur(dvfm['apartment_median_price_m2_eur'])} €/m² pour les appartements.",
+                ['blocks.real_estate_market.selected_metrics.house_median_price_m2_eur', 'blocks.real_estate_market.selected_metrics.apartment_median_price_m2_eur']
+            ),
+            statement(
+                'limite',
+                "Les prix DVF décrivent le marché des mutations observées. Ils ne constituent pas une mesure de la valeur de l'ensemble du parc et ne prouvent aucune cause de vacance.",
+                ['blocks.real_estate_market.method.warning']
+            ),
+        ],
+    },
+    {
+        'id': 'demography_housing',
+        'title': 'Dynamique démographique et résidentielle',
+        'statements': [
+            statement(
+                'constat',
+                f"Entre 2017 et 2023, la population évolue de {pct(demom['population_change_pct'])} % tandis que le nombre de ménages progresse de {pct(demom['households_change_pct'])} %.",
+                ['blocks.demography_housing.metrics.population_change_pct', 'blocks.demography_housing.metrics.households_change_pct']
+            ),
+            statement(
+                'comparaison',
+                f"La croissance des ménages est supérieure à la médiane du panel ({pct(demo_med['households_change_pct'])} %) et se situe au percentile empirique {pct(demo_pct['households_change'])}.",
+                ['blocks.demography_housing.metrics.households_change_pct', 'blocks.demography_housing.metrics.medians_panel.households_change_pct', 'blocks.demography_housing.metrics.percentiles.households_change']
+            ),
+            statement(
+                'comparaison',
+                f"La part des résidences secondaires et logements occasionnels est de {pct(demom['secondary_homes_share_pct'])} %, très proche de la médiane du panel ({pct(demo_med['secondary_homes_share_pct'])} % ; percentile {pct(demo_pct['secondary_homes_share'])}).",
+                ['blocks.demography_housing.metrics.secondary_homes_share_pct', 'blocks.demography_housing.metrics.medians_panel.secondary_homes_share_pct', 'blocks.demography_housing.metrics.percentiles.secondary_homes_share']
+            ),
+            statement(
+                'limite',
+                "Ces indicateurs décrivent la pression résidentielle et la structure démographique ; ils ne permettent pas d'expliquer, à eux seuls, la vacance privée.",
+                ['blocks.demography_housing.causal_interpretation']
+            ),
+        ],
+    },
+    {
+        'id': 'socioeconomic_context',
+        'title': 'Contexte socio-économique',
+        'statements': [
+            statement(
+                'comparaison',
+                f"Le niveau de vie médian est de {eur(filom['niveau_de_vie_median'])} € par unité de consommation, contre {eur(filo_med['revenu_median'])} € dans le panel ; son percentile empirique est {pct(filo_pct['revenu_median'])}.",
+                ['blocks.socioeconomic_context.metrics.niveau_de_vie_median', 'blocks.socioeconomic_context.metrics.medians_panel.revenu_median', 'blocks.socioeconomic_context.metrics.percentiles.revenu_median']
+            ),
+            statement(
+                'comparaison',
+                f"Le taux de pauvreté est de {pct(filom['taux_pauvrete'])} %, contre {pct(filo_med['pauvrete'])} % dans le panel ; son percentile empirique est {pct(filo_pct['pauvrete'])}.",
+                ['blocks.socioeconomic_context.metrics.taux_pauvrete', 'blocks.socioeconomic_context.metrics.medians_panel.pauvrete', 'blocks.socioeconomic_context.metrics.percentiles.pauvrete']
+            ),
+            statement(
+                'limite',
+                "Filosofi décrit le contexte socio-économique communal. Il ne permet pas d'attribuer une situation de revenu ou de pauvreté aux propriétaires ou occupants de logements vacants.",
+                ['blocks.socioeconomic_context.causal_interpretation']
+            ),
+        ],
+    },
+    {
+        'id': 'construction',
+        'title': 'Dynamique de construction',
+        'statements': [
+            statement(
+                'constat',
+                f"Sitadel recense {int(sitm['latest_authorized_dwellings'])} logements autorisés en {int(sitm['latest_authorized_year'])}.",
+                ['blocks.construction.selected_metrics.latest_authorized_year', 'blocks.construction.selected_metrics.latest_authorized_dwellings']
+            ),
+            statement(
+                'constat',
+                f"La dernière valeur disponible pour les logements commencés est de {int(sitm['latest_started_dwellings'])} en {int(sitm['latest_started_year'])}.",
+                ['blocks.construction.selected_metrics.latest_started_year', 'blocks.construction.selected_metrics.latest_started_dwellings']
+            ),
+            statement(
+                'limite',
+                "Les logements commencés 2025 sont indisponibles dans cette série non estimée ; autorisations et mises en chantier ne doivent donc pas être comparées comme si elles portaient sur le même millésime disponible.",
+                ['blocks.construction.series', 'blocks.construction.quality.latest_started_lags_latest_authorized']
+            ),
+        ],
+    },
+    {
+        'id': 'social_housing',
+        'title': 'Contexte du parc locatif social',
+        'statements': [
+            statement(
+                'comparaison',
+                f"La vacance du parc social est de {pct(rplsm['vacance_sociale_pct'])} %, contre une médiane de {pct(rpls_med['vacance_sociale_pct'])} % dans le panel (percentile {pct(rpls_pct['vacance_sociale_pct'])}).",
+                ['blocks.social_housing.metrics.vacance_sociale_pct', 'blocks.social_housing.panel.medians.vacance_sociale_pct', 'blocks.social_housing.panel.percentiles.vacance_sociale_pct']
+            ),
+            statement(
+                'comparaison',
+                f"La mobilité du parc social atteint {pct(rplsm['mobilite_pct'])} %, contre {pct(rpls_med['mobilite_pct'])} % dans le panel (percentile {pct(rpls_pct['mobilite_pct'])}).",
+                ['blocks.social_housing.metrics.mobilite_pct', 'blocks.social_housing.panel.medians.mobilite_pct', 'blocks.social_housing.panel.percentiles.mobilite_pct']
+            ),
+            statement(
+                'comparaison',
+                f"{pct(rplsm['part_qpv_pct'])} % du parc social est situé en QPV, contre {pct(rpls_med['part_qpv_pct'])} % dans le panel (percentile {pct(rpls_pct['part_qpv_pct'])}).",
+                ['blocks.social_housing.metrics.part_qpv_pct', 'blocks.social_housing.panel.medians.part_qpv_pct', 'blocks.social_housing.panel.percentiles.part_qpv_pct']
+            ),
+            statement(
+                'comparaison',
+                f"Les logements sociaux âgés de 40 ans ou plus représentent {pct(rplsm['part_age_40_plus_pct'])} % du parc, contre {pct(rpls_med['part_age_40_plus_pct'])} % dans le panel (percentile {pct(rpls_pct['part_age_40_plus_pct'])}).",
+                ['blocks.social_housing.metrics.part_age_40_plus_pct', 'blocks.social_housing.panel.medians.part_age_40_plus_pct', 'blocks.social_housing.panel.percentiles.part_age_40_plus_pct']
+            ),
+            statement(
+                'limite',
+                "RPLS décrit le parc locatif social et ne doit pas être transposé à la vacance privée LOVAC.",
+                ['blocks.social_housing.universe_note', 'blocks.social_housing.merge_with_lovac']
+            ),
+        ],
+    },
+]
+
+out = {
+    'stage': '3L',
+    'territory': TARGET,
+    'purpose': 'interprétation structurée des blocs validés, avant détection des facteurs discriminants',
+    'source_stage': '3K-G',
+    'interpretation_rules': {
+        'allowed_statement_kinds': ['constat', 'comparaison', 'limite'],
+        'causal_claims_allowed': False,
+        'recommendations_allowed': False,
+        'global_score_allowed': False,
+        'discriminant_factor_ranking_allowed': False,
+        'missing_values_rule': 'null/absence = indisponible; jamais converti en 0',
+        'comparison_rule': 'une comparaison n’est formulée que lorsqu’un panel de référence est déjà présent dans le contrat source',
+    },
+    'sections': sections,
+    'quality': {
+        'section_count': len(sections),
+        'all_canonical_blocks_interpreted': len(sections) == 7,
+        'causal_claims_included': False,
+        'recommendations_included': False,
+        'global_score_included': False,
+        'discriminant_ranking_included': False,
+        'status': 'ok',
+    },
+}
+
+OUT.parent.mkdir(exist_ok=True)
+OUT.write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding='utf-8')
+print(json.dumps(out['quality'], ensure_ascii=False, indent=2))
