@@ -53,9 +53,10 @@ for name, block in blocks.items():
 
 # Verrous minimaux des contrats déjà validés.
 lovac = blocks['vacancy_private']
-if lovac.get('selected_metrics', {}).get('latest_compatible_rate_year') != 2025:
+lovac_metrics = lovac.get('metrics', {})
+if lovac_metrics.get('latest_compatible_rate_year') != 2025:
     raise RuntimeError('LOVAC: dernière année de taux compatible attendue = 2025')
-if lovac.get('selected_metrics', {}).get('vacant_2026') != 2741:
+if lovac_metrics.get('vacant_all_count_2026') != 2741:
     raise RuntimeError('LOVAC: nombre vacant 2026 inattendu')
 
 log1 = blocks['vacant_stock_profile']
