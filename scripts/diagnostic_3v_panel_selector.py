@@ -131,10 +131,10 @@ def _candidate_rank(row,target_row,typology_enabled):
 
     if typology_enabled:
         rank_key=(
+            population_band,
             density7_distance,
             aav_role_distance,
             aav_size_distance,
-            population_band,
             structural_distance,
             pop_distance,
             density_distance,
@@ -273,12 +273,12 @@ def select_panel():
             'population_preference':'70-130 % de la population cible, puis 50-200 %, puis reste de l’échelle',
             'structural_distance':'0.65 * abs(log(population_ratio)) + 0.35 * abs(log(density_ratio))',
             'typology_priority':(
-                'distance DENS7, puis rôle AAV, puis tranche de taille AAV, puis bande de population et distance structurelle'
+                'bande de population, puis distance DENS7, rôle AAV, tranche de taille AAV et distance structurelle'
                 if typology_enabled else
                 'zonages Insee indisponibles: repli sur bande de population puis distance structurelle 3V-A'
             ),
             'tie_break':(
-                'density7_distance, aav_role_distance, aav_size_distance, population_band, structural_distance, population_distance, density_distance, code INSEE'
+                'population_band, density7_distance, aav_role_distance, aav_size_distance, structural_distance, population_distance, density_distance, code INSEE'
                 if typology_enabled else
                 'population_band, structural_distance, population_distance, density_distance, code INSEE'
             ),
