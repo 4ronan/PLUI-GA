@@ -67,7 +67,8 @@ def validate_cached_files(cache_pub,meta):
 started=time.monotonic()
 engine_sha=engine_fingerprint()
 panel_signature=hashlib.sha256(','.join(PEERS).encode()).hexdigest()
-cache_key=f"{TARGET}-{panel_signature[:12]}-{engine_sha[:12]}"
+commune_signature=hashlib.sha256(COMMUNE.encode('utf-8')).hexdigest()
+cache_key=f"{TARGET}-{commune_signature[:10]}-{panel_signature[:12]}-{engine_sha[:12]}"
 cache_dir=CACHE_ROOT/cache_key
 cache_pub=cache_dir/'published'
 cache_meta_path=cache_dir/'cache-meta.json'
@@ -92,6 +93,7 @@ manifest={
         'reason':None,
         'engine_sha256':engine_sha,
         'panel_sha256':panel_signature,
+        'commune_sha256':commune_signature,
     },
     'source_generation_manifest':None,
     'started_at':now_iso(),
@@ -116,8 +118,9 @@ elif cache_meta:
     same_engine=cache_meta.get('engine_sha256')==engine_sha
     same_panel=cache_meta.get('panel_codes')==PEERS
     same_target=cache_meta.get('territory')==TARGET
+    same_commune=cache_meta.get('commune_name')==COMMUNE and cache_meta.get('commune_sha256')==commune_signature
     files_ok=validate_cached_files(cache_pub,cache_meta)
-    if age_hours<=ttl_hours and same_engine and same_panel and same_target and files_ok:
+    if age_hours<=ttl_hours and same_engine and same_panel and same_target and same_commune and files_ok:
         cache_valid=True
         reason='valid_cache'
     elif age_hours>ttl_hours:
@@ -128,6 +131,8 @@ elif cache_meta:
         reason='panel_changed'
     elif not same_target:
         reason='territory_changed'
+    elif not same_commune:
+        reason='commune_name_changed'
     else:
         reason='cache_integrity_failure'
 
@@ -180,6 +185,7 @@ else:
         'commune_name':COMMUNE,
         'panel_codes':PEERS,
         'panel_sha256':panel_signature,
+        'commune_sha256':commune_signature,
         'engine_sha256':engine_sha,
         'created_at':now_iso(),
         'created_at_epoch':time.time(),
