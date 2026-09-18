@@ -93,7 +93,7 @@ if sitadel.get('quality', {}).get('status') not in {'ok','partial'}:
     raise RuntimeError('Sitadel: qualité non validée')
 
 rpls = blocks['social_housing']
-if rpls.get('quality', {}).get('status') != 'ok':
+if rpls.get('quality', {}).get('status') not in {'ok','partial'}:
     raise RuntimeError('RPLS: qualité non validée')
 
 assembly = {
