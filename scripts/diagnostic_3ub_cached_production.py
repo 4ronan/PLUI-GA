@@ -9,7 +9,8 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-from diagnostic_runtime import target, commune_name, panel_peers, runtime_metadata
+from diagnostic_runtime import target, commune_name, panel_peers, comparison_scale, runtime_metadata
+from diagnostic_3v_panel_selector import ensure_runtime_panel
 
 ROOT=Path(__file__).resolve().parents[1]
 OUTPUT=ROOT/'output'
@@ -23,8 +24,10 @@ _lock_handle=LOCK_PATH.open('a+')
 fcntl.flock(_lock_handle.fileno(),fcntl.LOCK_EX)
 
 TARGET=target()
+PANEL_SELECTION=ensure_runtime_panel()
 COMMUNE=commune_name()
 PEERS=panel_peers()
+COMPARISON_SCALE=comparison_scale()
 PUBLISHED_NAMES=('index.html','diagnostic.json','synthesis.json','levers.json','priorities.json')
 
 def truthy(value):
@@ -134,7 +137,8 @@ engine_sha=engine_fingerprint()
 data_sha=local_data_fingerprint()
 panel_signature=hashlib.sha256(','.join(PEERS).encode()).hexdigest()
 commune_signature=hashlib.sha256(COMMUNE.encode('utf-8')).hexdigest()
-cache_key=f"{TARGET}-{commune_signature[:10]}-{panel_signature[:12]}-{engine_sha[:12]}-{data_sha[:12]}"
+scale_signature=hashlib.sha256(COMPARISON_SCALE.encode('utf-8')).hexdigest()
+cache_key=f"{TARGET}-{commune_signature[:10]}-{scale_signature[:8]}-{panel_signature[:12]}-{engine_sha[:12]}-{data_sha[:12]}"
 cache_dir=CACHE_ROOT/cache_key
 cache_pub=cache_dir/'published'
 cache_meta_path=cache_dir/'cache-meta.json'
@@ -150,6 +154,11 @@ manifest={
     'runtime':runtime_metadata(),
     'panel_reference_n':len(PEERS),
     'panel_codes':PEERS,
+    'panel_selection':{
+        'algorithm':PANEL_SELECTION.get('algorithm'),
+        'requested_scale':PANEL_SELECTION.get('requested_scale'),
+        'effective_scale':PANEL_SELECTION.get('effective_scale'),
+    },
     'cache':{
         'key':cache_key,
         'root':str(CACHE_ROOT.relative_to(ROOT)) if CACHE_ROOT.is_relative_to(ROOT) else str(CACHE_ROOT),
@@ -161,6 +170,8 @@ manifest={
         'local_data_sha256':data_sha,
         'panel_sha256':panel_signature,
         'commune_sha256':commune_signature,
+        'comparison_scale':COMPARISON_SCALE,
+        'comparison_scale_sha256':scale_signature,
     },
     'source_generation_manifest':None,
     'serialized_workspace':True,
@@ -188,9 +199,10 @@ elif cache_meta:
     same_panel=cache_meta.get('panel_codes')==PEERS
     same_target=cache_meta.get('territory')==TARGET
     same_commune=cache_meta.get('commune_name')==COMMUNE and cache_meta.get('commune_sha256')==commune_signature
+    same_scale=cache_meta.get('comparison_scale')==COMPARISON_SCALE and cache_meta.get('comparison_scale_sha256')==scale_signature
     files_ok=validate_cached_files(cache_pub,cache_meta)
     source_manifest_ok=validate_cached_source_manifest(cache_dir,cache_meta)
-    if age_hours<=ttl_hours and same_engine and same_data and same_panel and same_target and same_commune and files_ok and source_manifest_ok:
+    if age_hours<=ttl_hours and same_engine and same_data and same_panel and same_target and same_commune and same_scale and files_ok and source_manifest_ok:
         cache_valid=True
         reason='valid_cache'
     elif age_hours>ttl_hours:
@@ -205,6 +217,8 @@ elif cache_meta:
         reason='territory_changed'
     elif not same_commune:
         reason='commune_name_changed'
+    elif not same_scale:
+        reason='comparison_scale_changed'
     else:
         reason='cache_integrity_failure'
 
@@ -265,6 +279,8 @@ else:
         'panel_codes':PEERS,
         'panel_sha256':panel_signature,
         'commune_sha256':commune_signature,
+        'comparison_scale':COMPARISON_SCALE,
+        'comparison_scale_sha256':scale_signature,
         'engine_sha256':engine_sha,
         'local_data_sha256':data_sha,
         'created_at':now_iso(),
