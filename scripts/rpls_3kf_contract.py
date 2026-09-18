@@ -59,7 +59,7 @@ def metrics(r):
         'mobilite_pct':ratio100(num(r.get('num_mob')),num(r.get('denom_mob'))),
         'part_qpv_pct':ratio100(num(r.get('nb_ls_qpv')),active),
         'part_collectif_pct':ratio100(num(r.get('nb_ls_coll')),active),
-        'part_age_40_plus_pct':ratio100((age40_60 or 0)+(age60 or 0),active) if active not in (None,0) else None,
+        'part_age_40_plus_pct':None if active in (None,0) or age40_60 is None or age60 is None else ratio100(age40_60+age60,active),
         'part_age_60_plus_pct':ratio100(age60,active),
     }
 
