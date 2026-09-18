@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from diagnostic_runtime import target, runtime_metadata
+from diagnostic_runtime import target, runtime_metadata, minimum_comparable_panel_n
 
 BASE=Path('output/diagnostic-3m-discriminants.json')
 PANELS=Path('output/diagnostic-3mp-panels.json')
@@ -20,13 +20,21 @@ def band(p):
 
 
 def mk(fid,label,domain,stat,universe,evidence):
-    direction,strength=band(stat['percentile'])
+    effective_n=int(stat.get('panel_n') or 0)
+    minimum_n=minimum_comparable_panel_n()
+    if stat.get('percentile') is not None and effective_n < minimum_n:
+        direction,strength='panel_insuffisant',None
+    else:
+        direction,strength=band(stat.get('percentile'))
     return {
         'id':fid,'label':label,'domain':domain,
         'value':stat['target'],'panel_median':stat['panel_median'],
         'percentile':stat['percentile'],'direction':direction,
         'strength':strength,'is_discriminant':strength is not None,
-        'reference_panel_n':stat['panel_n'],'universe':universe,
+        'reference_panel_n':effective_n,
+        'minimum_reference_panel_n':minimum_n,
+        'comparison_sufficient':effective_n >= minimum_n,
+        'universe':universe,
         'evidence':evidence,
     }
 
@@ -73,7 +81,9 @@ out={
         'causal_claims_allowed':False,
         'recommendations_allowed':False,
         'comparison_required':True,
-        'profile_caution':'LOG1 compare les profils de logements vacants entre communes; il ne mesure pas une surreprésentation par rapport au parc occupé local.'
+        'profile_caution':'LOG1 compare les profils de logements vacants entre communes; il ne mesure pas une surreprésentation par rapport au parc occupé local.',
+        'minimum_comparable_panel_rule':'au moins deux tiers du panel demandé doivent être disponibles pour classer un facteur comme discriminant',
+        'minimum_comparable_panel_n':minimum_comparable_panel_n()
     },
     'discriminant_factors':discriminants,
     'non_discriminant_comparators':non_discriminants,
@@ -83,6 +93,7 @@ out={
         'discriminant_count':len(discriminants),
         'all_candidates_have_panel':all(x.get('reference_panel_n',0)>0 for x in candidates if x.get('percentile') is not None),
         'unavailable_candidate_count':sum(1 for x in candidates if x.get('percentile') is None),
+        'insufficient_panel_candidate_count':sum(1 for x in candidates if not x.get('comparison_sufficient', True)),
         'all_discriminants_have_panel':all(x.get('reference_panel_n',0)>0 for x in discriminants),
         'causal_claims_included':False,
         'recommendations_included':False,
