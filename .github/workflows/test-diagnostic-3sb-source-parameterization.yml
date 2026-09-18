@@ -1,0 +1,117 @@
+name: Test diagnostic 3S-B source parameterization
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [vacants-rpls-d2]
+    paths:
+      - 'scripts/diagnostic_runtime.py'
+      - 'scripts/lovac_3kb_contract.py'
+      - 'scripts/insee_log1_3kc_contract.py'
+      - 'scripts/dvf_3kd_contract.py'
+      - 'scripts/sitadel_3ke_contract.py'
+      - 'scripts/rpls_3kf_contract.py'
+      - 'scripts/insee_3jc_contract.py'
+      - 'scripts/filosofi_panel_contract_3icde.py'
+      - '.github/workflows/test-diagnostic-3sb-source-parameterization.yml'
+
+jobs:
+  regression_angouleme:
+    runs-on: ubuntu-24.04
+    env:
+      DIAG_TERRITORY: '16015'
+      DIAG_COMMUNE_NAME: 'Angoulême'
+      DIAG_PANEL_CODES: '19031,47001,24322,40192,79191,86066,33243,17299,40088,24037,17415,16102,17306,47323,47157'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Générer les 7 contrats sources
+        run: |
+          python scripts/lovac_3kb_contract.py
+          python scripts/insee_log1_3kc_contract.py
+          python scripts/dvf_3kd_contract.py
+          python scripts/sitadel_3ke_contract.py
+          python scripts/rpls_3kf_contract.py
+          python scripts/insee_3jc_contract.py
+          python scripts/filosofi_panel_contract_3icde.py
+      - name: Vérifier non-régression Angoulême
+        run: |
+          python - <<'PY'
+          import json
+          def j(p): return json.load(open(p,encoding='utf-8'))
+          lov=j('output/lovac-3kb-contract.json')
+          log1=j('output/insee-log1-3kc-contract.json')
+          dvf=j('output/dvf-3kd-contract.json')
+          sit=j('output/sitadel-3ke-contract.json')
+          rpls=j('output/rpls-3kf-contract.json')
+          ins=j('output/insee-3jc-contract.json')
+          fil=j('output/filosofi-3icde-angouleme-panel.json')['contract']
+          docs=[lov,log1,dvf,sit,rpls,ins,fil]
+          assert all(x['territory']=='16015' for x in docs)
+          assert all(x.get('runtime',{}).get('territory_source')=='env' for x in docs)
+          assert abs(lov['metrics']['vacancy_rate_pct']-9.51047645714)<1e-6
+          assert abs(rpls['metrics']['vacance_sociale_pct']-1.703975944)<0.01
+          assert abs(ins['metrics']['population_change_pct']-0.4024916147580271)<1e-9
+          assert abs(fil['metrics']['niveau_de_vie_median']-19830)<0.01
+          print('ANGOULEME_REGRESSION_OK')
+          PY
+
+  generic_cognac:
+    runs-on: ubuntu-24.04
+    env:
+      DIAG_TERRITORY: '16102'
+      DIAG_COMMUNE_NAME: 'Cognac'
+      DIAG_PANEL_CODES: '19031,47001,24322,40192,79191,86066,33243,17299,40088,24037,17415,16015,17306,47323,47157'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Générer les 7 contrats sources pour Cognac
+        run: |
+          python scripts/lovac_3kb_contract.py
+          python scripts/insee_log1_3kc_contract.py
+          python scripts/dvf_3kd_contract.py
+          python scripts/sitadel_3ke_contract.py
+          python scripts/rpls_3kf_contract.py
+          python scripts/insee_3jc_contract.py
+          python scripts/filosofi_panel_contract_3icde.py
+      - name: Vérifier paramétrage Cognac
+        run: |
+          python - <<'PY'
+          import json
+          paths=[
+            'output/lovac-3kb-contract.json',
+            'output/insee-log1-3kc-contract.json',
+            'output/dvf-3kd-contract.json',
+            'output/sitadel-3ke-contract.json',
+            'output/rpls-3kf-contract.json',
+            'output/insee-3jc-contract.json',
+          ]
+          docs=[json.load(open(p,encoding='utf-8')) for p in paths]
+          fil=json.load(open('output/filosofi-3icde-angouleme-panel.json',encoding='utf-8'))['contract']
+          docs.append(fil)
+          assert all(x['territory']=='16102' for x in docs)
+          assert all(x.get('runtime',{}).get('territory_source')=='env' for x in docs)
+          rpls=docs[4]
+          assert rpls['panel']['reference_n']==15
+          assert '16102' not in rpls['panel']['codes'][1:]
+          assert docs[2]['department']=='16'
+          assert docs[5]['quality']['panel_n_excluding_target']==15
+          assert fil['quality']['panel_n_excluding_target']==15
+          print('COGNAC_PARAMETERIZATION_OK')
+          PY
+      - name: Publier preuve 3S-B
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostic-3sb-cognac-source-contracts
+          path: |
+            output/lovac-3kb-contract.json
+            output/insee-log1-3kc-contract.json
+            output/dvf-3kd-contract.json
+            output/sitadel-3ke-contract.json
+            output/rpls-3kf-contract.json
+            output/insee-3jc-contract.json
+            output/filosofi-3icde-angouleme-panel.json
