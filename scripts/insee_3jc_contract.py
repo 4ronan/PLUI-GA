@@ -69,8 +69,8 @@ def fetch_commune_rows(code):
         (year,measure,ocs) for year,measure,ocs in required
         if not any(r['TIME_PERIOD']==year and r['RP_MEASURE']==measure and r['OCS']==ocs for r in fetched)
     ]
-    if missing:
-        raise RuntimeError(f'INSEE Melodi incomplet pour {code}; séries manquantes={missing}')
+    # Une série communale partielle reste exploitable pour les indicateurs
+    # effectivement disponibles. Les absences sont conservées comme null.
     return fetched
 
 snapshot_codes={r.get('GEO','') for r in rows}
@@ -81,18 +81,26 @@ for code in PANEL:
 
 def val(code,year,measure,ocs=None):
     m=[r for r in rows if r['GEO']==code and r['TIME_PERIOD']==year and r['RP_MEASURE']==measure and (ocs is None or r['OCS']==ocs)]
-    if len(m)!=1:
+    if len(m)>1:
         raise RuntimeError(f'Valeur non unique {code} {year} {measure} {ocs}: {len(m)}')
-    return float(m[0]['OBS_VALUE'])
+    if not m:
+        return None
+    try:
+        return float(m[0]['OBS_VALUE'])
+    except Exception:
+        return None
 
 def pct_change(a,b):
     return (b/a-1)*100 if a else None
 
 def percentile(target,panel):
-    return sum(1 for x in panel if x<=target)/len(panel)*100
+    vals=[x for x in panel if x is not None]
+    return None if target is None or not vals else sum(1 for x in vals if x<=target)/len(vals)*100
 
 def qlin(xs,q):
-    xs=sorted(xs); n=len(xs); pos=(n-1)*q; lo=int(pos); hi=min(lo+1,n-1); f=pos-lo
+    xs=sorted(x for x in xs if x is not None)
+    if not xs: return None
+    n=len(xs); pos=(n-1)*q; lo=int(pos); hi=min(lo+1,n-1); f=pos-lo
     return xs[lo]*(1-f)+xs[hi]*f
 
 communes=[]
@@ -104,17 +112,19 @@ for code,name in PANEL.items():
         'code':code,'name':name,'is_target':code==TARGET,
         'population_change_pct':pct_change(p17,p23),
         'households_change_pct':pct_change(rp17,rp23),
-        'secondary_share_pct':rs23/total23*100 if total23 else None
+        'secondary_share_pct':rs23/total23*100 if rs23 is not None and total23 else None
     })
 
 target=next(x for x in communes if x['is_target'])
 peers=[x for x in communes if not x['is_target']]
 
 def stat(key):
-    xs=[x[key] for x in peers]; t=target[key]
+    xs=[x[key] for x in peers if x[key] is not None]
+    t=target[key]
     return {
         'value':t,
-        'panel_median':statistics.median(xs),
+        'panel_n':len(xs),
+        'panel_median':statistics.median(xs) if xs else None,
         'panel_q1':qlin(xs,.25),
         'panel_q3':qlin(xs,.75),
         'percentile':percentile(t,xs)
@@ -151,14 +161,18 @@ signals=[
     }
 ]
 
+def stat_text(label,stat):
+    if stat['value'] is None:
+        return f"{label} est indisponible pour la commune ; aucune valeur n’est imputée. "
+    if stat['panel_median'] is None or stat['percentile'] is None:
+        return f"{label} est de {stat['value']:.1f} %, mais le panel comparable est insuffisant. "
+    return f"{label} est de {stat['value']:.1f} % (médiane du panel : {stat['panel_median']:.1f} % ; percentile : {stat['percentile']:.1f} %). "
+
 summary=(
-    f"Entre 2017 et 2023, la population de {COMMUNE_NAME} évolue de {s_pop['value']:.1f} % "
-    f"(médiane du panel : {s_pop['panel_median']:.1f} % ; percentile : {s_pop['percentile']:.1f} %). "
-    f"Le nombre de ménages progresse de {s_hh['value']:.1f} % "
-    f"(médiane du panel : {s_hh['panel_median']:.1f} % ; percentile : {s_hh['percentile']:.1f} %). "
-    f"Les résidences secondaires et logements occasionnels représentent {s_sec['value']:.1f} % du parc en 2023 "
-    f"(médiane du panel : {s_sec['panel_median']:.1f} % ; percentile : {s_sec['percentile']:.1f} %). "
-    "Ces indicateurs décrivent la dynamique démographique et résidentielle. Ils ne permettent pas, à eux seuls, d’expliquer causalement la vacance privée."
+    stat_text(f"Entre 2017 et 2023, l’évolution de la population de {COMMUNE_NAME}",s_pop)
+    + stat_text("L’évolution du nombre de ménages",s_hh)
+    + stat_text("La part des résidences secondaires et logements occasionnels en 2023",s_sec)
+    + "Ces indicateurs décrivent la dynamique démographique et résidentielle. Ils ne permettent pas, à eux seuls, d’expliquer causalement la vacance privée."
 )
 
 contract={
@@ -188,8 +202,19 @@ contract={
     },
     'quality':{
         'panel_n_excluding_target':len(peers),
-        'percentile_rule':f'count(panel <= target) / {len(peers)} * 100',
-        'quartile_rule':f'linear interpolation on the {len(peers)} peers, target excluded',
+        'panel_n_by_indicator':{
+            'population_change':s_pop['panel_n'],
+            'households_change':s_hh['panel_n'],
+            'secondary_homes_share':s_sec['panel_n'],
+        },
+        'target_missing_indicators':[
+            key for key,st in (
+                ('population_change',s_pop),('households_change',s_hh),('secondary_homes_share',s_sec)
+            ) if st['value'] is None
+        ],
+        'missing_semantics':'absence = null et exclusion de la comparaison; jamais 0',
+        'percentile_rule':'count(available peer <= target) / n_available * 100',
+        'quartile_rule':'linear interpolation on available peers, target excluded',
         'households_proxy':'residences principales du recensement',
         'caution':'comparaisons de population à interpréter avec prudence autour du changement de questionnaire INSEE ; contexte résidentiel non causal',
         'snapshot_path':str(SNAPSHOT),
