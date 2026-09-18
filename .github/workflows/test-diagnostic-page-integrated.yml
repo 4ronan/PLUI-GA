@@ -1,0 +1,65 @@
+name: Test integrated vacancy diagnostic page
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [vacants-rpls-d2]
+    paths:
+      - 'tests/diagnostic-vacance-page-test.html'
+      - '.github/workflows/test-diagnostic-page-integrated.yml'
+
+concurrency:
+  group: diagnostic-page-integrated-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static_page:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Vérifier les éléments validés
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('tests/diagnostic-vacance-page-test.html')
+          s=p.read_text(encoding='utf-8')
+          assert '<!doctype html>' in s.lower()
+          assert '3V-D-insee-typology-v2' in s
+          assert 'diagnostic_request.py' in s
+          assert 'LOVAC cœur obligatoire' in s
+          assert 'Manquant = null, jamais 0' in s
+          assert 'DENS7 + AAV Insee 2026' in s
+          assert 'Seuil 10/15' in s
+          assert 'Aucun LLM dans le diagnostic' in s
+          assert 'Cognac · code INSEE 16102' in s
+          assert 'la vacance privée n’est pas atypique dans le panel' in s
+          assert s.count('Panel médian') >= 8
+          panel_codes=['43157','73011','14366','17306','71306','74081','40088','50502','51230','17299','27375','35115','03190','70550','80001']
+          assert all(code in s for code in panel_codes)
+          assert 'Les percentiles sont conditionnels à la composition du panel' in s
+          assert 'Aucun résultat n’est simulé' in s
+          print('3Y_PAGE_CONTENT_OK')
+          PY
+
+      - name: Vérifier la syntaxe JavaScript embarquée
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          s=Path('tests/diagnostic-vacance-page-test.html').read_text(encoding='utf-8')
+          scripts=re.findall(r'<script>(.*?)</script>',s,flags=re.S|re.I)
+          assert len(scripts)==1
+          Path('/tmp/diagnostic-page.js').write_text(scripts[0],encoding='utf-8')
+          PY
+          node --check /tmp/diagnostic-page.js
+
+      - name: Vérifier l'absence de dépendance externe obligatoire
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          s=Path('tests/diagnostic-vacance-page-test.html').read_text(encoding='utf-8').lower()
+          assert '<script src=' not in s
+          assert '<link rel="stylesheet"' not in s
+          print('3Y_STANDALONE_OK')
+          PY
