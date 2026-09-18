@@ -67,8 +67,34 @@ def fingerprint_files(paths):
         h.update(b'\0')
     return h.hexdigest()
 
+ENGINE_RELATIVE_FILES=[
+    'scripts/diagnostic_runtime.py',
+    'scripts/diagnostic_3v_panel_selector.py',
+    'scripts/diagnostic_3vd_insee_zonings.py',
+    'scripts/lovac_3kb_contract.py',
+    'scripts/insee_log1_3kc_contract.py',
+    'scripts/dvf_3kd_contract.py',
+    'scripts/sitadel_3ke_contract.py',
+    'scripts/rpls_3kf_contract.py',
+    'scripts/insee_3jc_contract.py',
+    'scripts/filosofi_panel_contract_3icde.py',
+    'scripts/diagnostic_3kg_assembly.py',
+    'scripts/diagnostic_3l_interpretation.py',
+    'scripts/diagnostic_3m_discriminants.py',
+    'scripts/diagnostic_3mp_missing_panels.py',
+    'scripts/diagnostic_3m2_discriminants_extended.py',
+    'scripts/diagnostic_3n_hypotheses.py',
+    'scripts/diagnostic_3o_synthesis.py',
+    'scripts/diagnostic_3p_levers.py',
+    'scripts/diagnostic_3q_prioritization.py',
+    'scripts/diagnostic_3r_page.py',
+    'scripts/diagnostic_3t_multiterritory_validate.py',
+    'scripts/diagnostic_3u_production.py',
+    'scripts/diagnostic_3ub_cached_production.py',
+]
+
 def engine_fingerprint():
-    return fingerprint_files((ROOT/'scripts').glob('*.py'))
+    return fingerprint_files(ROOT/p for p in ENGINE_RELATIVE_FILES)
 
 def local_data_fingerprint():
     # Snapshots locaux qui influencent directement le diagnostic et doivent
