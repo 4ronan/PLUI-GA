@@ -48,7 +48,9 @@ def factor_view(fid):
         'id':x['id'],'label':x['label'],'value':x['value'],'panel_median':x['panel_median'],
         'percentile':x['percentile'],'direction':x['direction'],'strength':x['strength'],
         'is_discriminant':x['is_discriminant'],'domain':x['domain'],'universe':x['universe'],
-        'reference_panel_n':x.get('reference_panel_n')
+        'reference_panel_n':x.get('reference_panel_n'),
+        'minimum_reference_panel_n':x.get('minimum_reference_panel_n'),
+        'comparison_sufficient':x.get('comparison_sufficient', True)
     }
 
 synthesis={
