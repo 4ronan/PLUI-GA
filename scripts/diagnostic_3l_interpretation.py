@@ -58,7 +58,22 @@ rplsp = rpls['panel']
 
 # Profil vacant INSEE : sommes strictement descriptives, sans comparaison au parc de référence.
 periods = {x['code']: x for x in logm['by_construction_period']}
-share_1946_1990 = periods['Y1946T1970']['share_pct'] + periods['Y1971T1990']['share_pct']
+types = {x['code']: x for x in logm['by_dwelling_type']}
+p1946=periods.get('Y1946T1970',{}).get('share_pct')
+p1971=periods.get('Y1971T1990',{}).get('share_pct')
+share_1946_1990 = None if p1946 is None or p1971 is None else p1946+p1971
+apt_share=types.get('2',{}).get('share_pct')
+house_share=types.get('1',{}).get('share_pct')
+
+def log1_type_text():
+    if apt_share is None or house_share is None:
+        return "Le profil INSEE 2023 des logements vacants par type est indisponible ou incomplet pour la commune ; aucune part n’est imputée."
+    return f"Dans le profil INSEE 2023 des logements vacants construits avant 2021, les appartements représentent {pct(apt_share)} % des logements vacants et les maisons {pct(house_share)} %."
+
+def log1_period_text():
+    if share_1946_1990 is None:
+        return "Le profil INSEE 2023 des logements vacants par période de construction est indisponible ou incomplet pour la commune."
+    return f"Les logements construits entre 1946 et 1990 représentent {pct(share_1946_1990)} % de ce profil de logements vacants."
 
 demo_med = demom['medians_panel']
 demo_pct = demom['percentiles']
@@ -147,12 +162,12 @@ sections = [
         'statements': [
             statement(
                 'constat',
-                f"Dans le profil INSEE 2023 des logements vacants construits avant 2021, les appartements représentent {pct(next(x['share_pct'] for x in logm['by_dwelling_type'] if x['code']=='2'))} % des logements vacants et les maisons {pct(next(x['share_pct'] for x in logm['by_dwelling_type'] if x['code']=='1'))} %.",
+                log1_type_text(),
                 ['blocks.vacant_stock_profile.metrics.by_dwelling_type']
             ),
             statement(
                 'constat',
-                f"Les logements construits entre 1946 et 1990 représentent {pct(share_1946_1990)} % de ce profil de logements vacants.",
+                log1_period_text(),
                 ['blocks.vacant_stock_profile.metrics.by_construction_period']
             ),
             statement(
