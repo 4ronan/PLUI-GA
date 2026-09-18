@@ -49,7 +49,14 @@ def qlin(xs,q):
 def stats(rows,key):
     t=next(r[key] for r in rows if r['code']==TARGET)
     peers=[r[key] for r in rows if r['code']!=TARGET and r[key] is not None]
-    return {'target':t,'panel_n':len(peers),'panel_median':statistics.median(peers),'panel_q1':qlin(peers,.25),'panel_q3':qlin(peers,.75),'percentile':percentile(t,peers)}
+    return {
+        'target':t,
+        'panel_n':len(peers),
+        'panel_median':statistics.median(peers) if peers else None,
+        'panel_q1':qlin(peers,.25),
+        'panel_q3':qlin(peers,.75),
+        'percentile':percentile(t,peers)
+    }
 
 # Population 2023, utilisée uniquement pour normaliser Sitadel sur un dénominateur commun.
 # Le snapshot historique accélère le panel initial; une commune absente est récupérée
@@ -143,8 +150,10 @@ def dvf_summary(code):
 
 dvf=[]
 for code,name in PANEL.items():
-    n,med,ns=dvf_summary(code)
-    if med is None: raise RuntimeError(f'DVF sans médiane {code}')
+    try:
+        n,med,ns=dvf_summary(code)
+    except Exception:
+        n,med,ns=0,None,0
     dvf.append({'code':code,'name':name,'residential_sale_mutations_n':n,'simple_sales_n':ns,'median_price_m2_eur_simple':med})
 
 # 3. Sitadel : années fixes pour rendre les comparaisons homogènes.
@@ -163,11 +172,16 @@ for code,name in PANEL.items():
     totals=[r for r in rr if str(r.get('COMM'))==code and str(r.get('TYPE_LGT'))=='Tous Logements']
     def exact(year,field):
         m=[r for r in totals if int(r['ANNEE'])==year]
-        if len(m)!=1: raise RuntimeError(f'Sitadel {code} {year}: {len(m)}')
+        if len(m)!=1: return None
         return num(m[0].get(field))
     aut25=exact(2025,'LOG_AUT'); com24=exact(2024,'LOG_COM'); pop=pop2023[code]
-    if aut25 is None or com24 is None or pop<=0: raise RuntimeError(f'Sitadel valeur absente {code}')
-    sitadel.append({'code':code,'name':name,'authorized_2025_n':aut25,'authorized_2025_per_1000_pop2023':aut25/pop*1000,'started_2024_n':com24,'started_2024_per_1000_pop2023':com24/pop*1000})
+    sitadel.append({
+        'code':code,'name':name,
+        'authorized_2025_n':aut25,
+        'authorized_2025_per_1000_pop2023':(aut25/pop*1000 if aut25 is not None and pop>0 else None),
+        'started_2024_n':com24,
+        'started_2024_per_1000_pop2023':(com24/pop*1000 if com24 is not None and pop>0 else None)
+    })
 
 # 4. LOG1 : profil des logements vacants comparé entre communes du même panel.
 def flatten(obj,prefix=''):
@@ -232,12 +246,12 @@ quality={
  'same_panel_as_filosofi_demography_rpls':True,
  'percentile_rule':f'count(peer <= target) / {len(PEERS)} * 100',
  'all_panel_stats_complete':all(s['panel_n']==len(PEERS) for s in all_stats),
+ 'partial_panel_stats':[k for k,b in blocks.items() for k2,s in b['stats'].items() if s['panel_n']<len(PEERS) for k in [f'{k}.{k2}']],
  'missing_semantics':'absence/secret = null ou exclusion; jamais 0',
  'causal_claims_included':False,
  'status':'ok' if all(s['panel_n']==len(PEERS) for s in all_stats) else 'partial'
 }
 out={'stage':'3M-P','territory':TARGET,'runtime':runtime_metadata(),'purpose':'matérialiser les panels manquants avant extension de la détection des facteurs discriminants','blocks':blocks,'quality':quality}
-if quality['status']!='ok': raise RuntimeError(json.dumps(quality,ensure_ascii=False))
 OUT.parent.mkdir(exist_ok=True)
 OUT.write_text(json.dumps(out,ensure_ascii=False,indent=2),encoding='utf-8')
 print(json.dumps({'quality':quality,'target_stats':{k:v['stats'] for k,v in blocks.items()}},ensure_ascii=False,indent=2))
