@@ -38,6 +38,7 @@ STEPS = [
     ("3P", "scripts/diagnostic_3p_levers.py"),
     ("3Q", "scripts/diagnostic_3q_prioritization.py"),
     ("3R", "scripts/diagnostic_3r_page.py"),
+    ("3T-M", "scripts/diagnostic_3t_multiterritory_validate.py"),
 ]
 
 FINAL_FILES = [
