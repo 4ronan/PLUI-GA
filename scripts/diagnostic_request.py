@@ -48,7 +48,7 @@ def main():
             'status':'failure',
             'phase':'input_validation',
             'territory':territory,
-            'comparison_scale':scale,
+            'comparison_scale':args.scale,
             'error':{'type':'invalid_scale','message':str(exc)},
         },ensure_ascii=False))
         return 2
