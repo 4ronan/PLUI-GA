@@ -67,6 +67,20 @@ filo_pct = filom['percentiles']
 rpls_med = rplsp['medians']
 rpls_pct = rplsp['percentiles']
 
+def socio_text(label, value, median, percentile, unit=''):
+    if value is None:
+        return f"{label} est indisponible pour la commune (secret statistique ou donnée non diffusée) ; aucune valeur n’est imputée et aucun percentile communal n’est calculé."
+    if median is None or percentile is None:
+        return f"{label} est de {pct(value)}{unit}, mais le panel disponible est insuffisant pour une comparaison robuste."
+    return f"{label} est de {pct(value)}{unit}, contre {pct(median)}{unit} dans le panel ; son percentile empirique est {pct(percentile)}."
+
+income_text = (
+    f"Le niveau de vie médian est indisponible pour la commune (secret statistique ou donnée non diffusée) ; aucune valeur n’est imputée et aucun percentile communal n’est calculé."
+    if filom['niveau_de_vie_median'] is None else
+    f"Le niveau de vie médian est de {eur(filom['niveau_de_vie_median'])} € par unité de consommation, contre {eur(filo_med['revenu_median'])} € dans le panel ; son percentile empirique est {pct(filo_pct['revenu_median'])}."
+)
+poverty_text = socio_text("Le taux de pauvreté", filom['taux_pauvrete'], filo_med['pauvrete'], filo_pct['pauvrete'], " %")
+
 sections = [
     {
         'id': 'vacancy_private',
@@ -163,12 +177,12 @@ sections = [
         'statements': [
             statement(
                 'comparaison',
-                f"Le niveau de vie médian est de {eur(filom['niveau_de_vie_median'])} € par unité de consommation, contre {eur(filo_med['revenu_median'])} € dans le panel ; son percentile empirique est {pct(filo_pct['revenu_median'])}.",
+                income_text,
                 ['blocks.socioeconomic_context.metrics.niveau_de_vie_median', 'blocks.socioeconomic_context.metrics.medians_panel.revenu_median', 'blocks.socioeconomic_context.metrics.percentiles.revenu_median']
             ),
             statement(
                 'comparaison',
-                f"Le taux de pauvreté est de {pct(filom['taux_pauvrete'])} %, contre {pct(filo_med['pauvrete'])} % dans le panel ; son percentile empirique est {pct(filo_pct['pauvrete'])}.",
+                poverty_text,
                 ['blocks.socioeconomic_context.metrics.taux_pauvrete', 'blocks.socioeconomic_context.metrics.medians_panel.pauvrete', 'blocks.socioeconomic_context.metrics.percentiles.pauvrete']
             ),
             statement(
