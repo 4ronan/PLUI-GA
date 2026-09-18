@@ -25,6 +25,7 @@ fcntl.flock(_lock_handle.fileno(),fcntl.LOCK_EX)
 TARGET=target()
 COMMUNE=commune_name()
 PEERS=panel_peers()
+PUBLISHED_NAMES=('index.html','diagnostic.json','synthesis.json','levers.json','priorities.json')
 
 def truthy(value):
     return str(value or '').strip().lower() in {'1','true','yes','oui','on'}
@@ -82,13 +83,25 @@ def atomic_copy2(src,dst):
 
 def restore_publication_atomically(src_dir,dst_dir):
     dst_dir.mkdir(parents=True,exist_ok=True)
-    expected={p.name for p in src_dir.iterdir() if p.is_file()}
-    for p in src_dir.iterdir():
-        if p.is_file():
-            atomic_copy2(p,dst_dir/p.name)
+    expected=set(PUBLISHED_NAMES)
+    for name in PUBLISHED_NAMES:
+        p=src_dir/name
+        if not p.exists() or not p.is_file():
+            raise RuntimeError(f'Cache publié incomplet: {name}')
+        atomic_copy2(p,dst_dir/name)
     for p in list(dst_dir.iterdir()):
         if p.is_file() and p.name not in expected:
             p.unlink()
+
+def snapshot_publication(src_dir,dst_dir):
+    if dst_dir.exists():
+        shutil.rmtree(dst_dir)
+    dst_dir.mkdir(parents=True,exist_ok=True)
+    for name in PUBLISHED_NAMES:
+        src=src_dir/name
+        if not src.exists() or not src.is_file() or src.stat().st_size<=0:
+            raise RuntimeError(f'Publication incomplète avant mise en cache: {name}')
+        shutil.copy2(src,dst_dir/name)
 
 def validate_cached_files(cache_pub,meta):
     expected=meta.get('files') or []
@@ -220,7 +233,7 @@ else:
         raise RuntimeError('Manifeste 3U-A invalide après génération')
 
     cache_dir.mkdir(parents=True,exist_ok=True)
-    copy_tree(PUBLISHED/TARGET,cache_pub)
+    snapshot_publication(PUBLISHED/TARGET,cache_pub)
     shutil.copy2(source_manifest_path,cache_dir/'diagnostic-3u-manifest.json')
     file_meta=[]
     for p in sorted(cache_pub.iterdir()):
