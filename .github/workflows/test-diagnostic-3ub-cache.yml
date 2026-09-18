@@ -60,6 +60,8 @@ jobs:
           assert source['status']=='success' and source['territory']=='16102'
           assert first['cache'].get('local_data_sha256')
           assert second['cache'].get('local_data_sha256')==first['cache']['local_data_sha256']
+          assert first['cache'].get('panel_selection_sha256')
+          assert second['cache'].get('panel_selection_sha256')==first['cache']['panel_selection_sha256']
           before=hashlib.sha256(Path('/tmp/first-diagnostic.json').read_bytes()).hexdigest()
           after=hashlib.sha256(Path('output/published/16102/diagnostic.json').read_bytes()).hexdigest()
           assert before==after
