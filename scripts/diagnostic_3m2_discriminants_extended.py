@@ -1,10 +1,11 @@
 import json
 from pathlib import Path
+from diagnostic_runtime import target, runtime_metadata
 
 BASE=Path('output/diagnostic-3m-discriminants.json')
 PANELS=Path('output/diagnostic-3mp-panels.json')
 OUT=Path('output/diagnostic-3m2-discriminants.json')
-TARGET='16015'
+TARGET=target()
 
 
 def band(p):
@@ -74,6 +75,7 @@ out={
     },
     'discriminant_factors':discriminants,
     'non_discriminant_comparators':non_discriminants,
+    'runtime':runtime_metadata(),
     'quality':{
         'candidate_count':len(candidates),
         'discriminant_count':len(discriminants),
