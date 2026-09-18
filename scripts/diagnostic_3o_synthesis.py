@@ -61,7 +61,13 @@ synthesis={
             factor_view('private_vacancy_rate'),
             factor_view('private_structural_vacancy_rate'),
         ],
-        'reading':'vacance privée discriminante dans le panel' if (factors['private_vacancy_rate']['is_discriminant'] or factors['private_structural_vacancy_rate']['is_discriminant']) else 'vacance privée non discriminante dans le panel',
+        'reading':(
+            'vacance privée indisponible ou non comparable'
+            if not factors['private_vacancy_rate'].get('comparison_sufficient', True) or not factors['private_structural_vacancy_rate'].get('comparison_sufficient', True)
+            else ('vacance privée discriminante dans le panel'
+                  if (factors['private_vacancy_rate']['is_discriminant'] or factors['private_structural_vacancy_rate']['is_discriminant'])
+                  else 'vacance privée non discriminante dans le panel')
+        ),
         'guardrail':guards.get('G1_no_relative_excess_private_vacancy',{}).get('statement'),
     },
     'vacant_stock_profile':{
@@ -74,6 +80,8 @@ synthesis={
         'reading':(
             'profil des logements vacants indisponible ou non comparable'
             if factors['vacant_apartment_share'].get('percentile') is None or factors['vacant_1946_1990_share'].get('percentile') is None
+               or not factors['vacant_apartment_share'].get('comparison_sufficient', True)
+               or not factors['vacant_1946_1990_share'].get('comparison_sufficient', True)
             else ('profil des logements vacants discriminant dans le panel'
                   if (factors['vacant_apartment_share']['is_discriminant'] or factors['vacant_1946_1990_share']['is_discriminant'])
                   else 'profil des logements vacants non discriminant dans le panel')
@@ -137,7 +145,13 @@ out={
         'structural_private_vacancy_discriminant':factors['private_structural_vacancy_rate']['is_discriminant'],
         'discriminant_factor_count':len(s3m['discriminant_factors']),
         'hypothesis_count':len(s3n['hypotheses']),
-        'interpretation':('la vacance privée présente un écart discriminant dans le panel; ce constat reste descriptif et sans causalité automatique' if (factors['private_vacancy_rate']['is_discriminant'] or factors['private_structural_vacancy_rate']['is_discriminant']) else 'la vacance privée n’est pas atypique dans le panel; le diagnostic met en évidence des contextes discriminants distincts à examiner sans causalité automatique'),
+        'interpretation':(
+            'la comparaison de la vacance privée au panel est insuffisante; aucune conclusion de normalité ou d’atypicité relative n’est produite'
+            if not factors['private_vacancy_rate'].get('comparison_sufficient', True) or not factors['private_structural_vacancy_rate'].get('comparison_sufficient', True)
+            else ('la vacance privée présente un écart discriminant dans le panel; ce constat reste descriptif et sans causalité automatique'
+                  if (factors['private_vacancy_rate']['is_discriminant'] or factors['private_structural_vacancy_rate']['is_discriminant'])
+                  else 'la vacance privée n’est pas atypique dans le panel; le diagnostic met en évidence des contextes discriminants distincts à examiner sans causalité automatique')
+        ),
     },
     'synthesis':synthesis,
     'discriminant_factors':[factor_view(x['id']) for x in s3m['discriminant_factors']],
