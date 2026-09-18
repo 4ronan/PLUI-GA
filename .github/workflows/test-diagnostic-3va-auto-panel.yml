@@ -1,0 +1,84 @@
+name: Test diagnostic 3V-A automatic panel
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [vacants-rpls-d2]
+    paths:
+      - 'scripts/diagnostic_runtime.py'
+      - 'scripts/diagnostic_3v_panel_selector.py'
+      - '.github/workflows/test-diagnostic-3va-auto-panel.yml'
+
+jobs:
+  auto_panel:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - code: '16102'
+            scale: 'departement'
+            expected_name: 'Cognac'
+            expected_effective: 'department'
+          - code: '2A004'
+            scale: 'region'
+            expected_name: 'Ajaccio'
+            expected_effective: 'region'
+          - code: '97209'
+            scale: 'departement'
+            expected_name: 'Fort-de-France'
+            expected_effective: 'department'
+    env:
+      DIAG_TERRITORY: ${{ matrix.code }}
+      DIAG_COMPARISON_SCALE: ${{ matrix.scale }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Première sélection automatique
+        run: |
+          export PYTHONPATH="$PWD/scripts:${PYTHONPATH:-}"
+          python scripts/diagnostic_3v_panel_selector.py
+          cp output/diagnostic-3v-panel.json /tmp/first-panel.json
+
+      - name: Deuxième sélection automatique
+        run: |
+          export PYTHONPATH="$PWD/scripts:${PYTHONPATH:-}"
+          rm -f output/diagnostic-3v-panel.json
+          python scripts/diagnostic_3v_panel_selector.py
+
+      - name: Vérifier le panel
+        env:
+          EXPECTED_NAME: ${{ matrix.expected_name }}
+          EXPECTED_EFFECTIVE: ${{ matrix.expected_effective }}
+        run: |
+          python - <<'PY'
+          import json, os
+          first=json.load(open('/tmp/first-panel.json',encoding='utf-8'))
+          second=json.load(open('output/diagnostic-3v-panel.json',encoding='utf-8'))
+          for d in (first,second):
+              assert d['stage']=='3V-A'
+              assert d['algorithm']=='3V-A-structural-v1'
+              assert d['territory']==os.environ['DIAG_TERRITORY']
+              assert d['target']['name']==os.environ['EXPECTED_NAME']
+              assert d['effective_scale']==os.environ['EXPECTED_EFFECTIVE']
+              assert d['quality']['status']=='ok'
+              assert d['quality']['selected_n']==15
+              assert d['quality']['codes_unique'] is True
+              assert d['quality']['target_excluded'] is True
+              assert len(d['panel_codes'])==15
+              assert os.environ['DIAG_TERRITORY'] not in d['panel_codes']
+              assert all(x['structural_score']>=0 for x in d['selected'])
+          assert first['panel_codes']==second['panel_codes']
+          assert [x['rank'] for x in second['selected']]==list(range(1,16))
+          print('3VA_AUTO_PANEL_OK',second['territory'],second['requested_scale'],second['effective_scale'],','.join(second['panel_codes']))
+          PY
+
+      - name: Publier le panel
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostic-3va-${{ matrix.code }}-${{ matrix.scale }}
+          path: output/diagnostic-3v-panel.json
