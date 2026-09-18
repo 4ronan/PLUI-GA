@@ -9,6 +9,10 @@ on:
       - 'data/insee-rp2023-panel-3j.csv'
       - '.github/workflows/test-diagnostic-3mp-panels.yml'
 
+concurrency:
+  group: diagnostic-3mp-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   panels:
     runs-on: ubuntu-24.04
@@ -34,6 +38,9 @@ jobs:
           assert d['quality']['all_panel_stats_complete'] is True
           assert d['quality']['same_panel_as_filosofi_demography_rpls'] is True
           assert d['quality']['causal_claims_included'] is False
+          assert d['execution']['io_workers']==4
+          assert d['execution']['parallel_io'] is True
+          assert d['execution']['duration_seconds']>0
           assert set(d['blocks'])=={'lovac','dvf','sitadel','insee_log1_vacant_profile'}
           assert d['blocks']['lovac']['stats']['vacancy_rate_pct']['panel_n']==15
           assert d['blocks']['dvf']['stats']['median_price_m2_eur_simple']['panel_n']==15
