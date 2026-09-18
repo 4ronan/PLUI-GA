@@ -1,4 +1,5 @@
 import csv, json, statistics
+import urllib.parse, urllib.request
 from pathlib import Path
 from diagnostic_runtime import target, commune_name, panel_peers, runtime_metadata
 
@@ -14,6 +15,69 @@ PANEL={TARGET:COMMUNE_NAME, **{c:c for c in PEER_CODES}}
 
 with SNAPSHOT.open(encoding='utf-8-sig', newline='') as f:
     rows=list(csv.DictReader(f))
+
+MELODI_URL='https://api.insee.fr/melodi/data/DS_RP_SERIE_HISTORIQUE'
+LIVE_FALLBACK_CODES=[]
+
+def _obs_value(obs):
+    measures=obs.get('measures') or {}
+    for key in ('OBS_VALUE_NIVEAU','OBS_VALUE'):
+        raw=measures.get(key)
+        if isinstance(raw, dict):
+            raw=raw.get('value')
+        if raw not in (None,''):
+            return raw
+    return None
+
+def fetch_commune_rows(code):
+    params=urllib.parse.urlencode({'GEO':f'COM-{code}','maxResult':5000})
+    req=urllib.request.Request(
+        f'{MELODI_URL}?{params}',
+        headers={'Accept':'application/json','User-Agent':'PLUI-GA-diagnostic/3JC'}
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=60) as response:
+            payload=json.load(response)
+    except Exception as exc:
+        raise RuntimeError(f'INSEE Melodi indisponible pour {code}: {exc}') from exc
+    observations=payload.get('observations') or []
+    fetched=[]
+    for obs in observations:
+        d=obs.get('dimensions') or {}
+        geo=str(d.get('GEO') or '')
+        geo_code=geo.split('-')[-1] if '-' in geo else geo
+        year=str(d.get('TIME_PERIOD') or '')
+        measure=str(d.get('RP_MEASURE') or '')
+        ocs=str(d.get('OCS') or '_T')
+        value=_obs_value(obs)
+        if geo_code!=code or year not in {'2017','2023'} or measure not in {'POP','DWELLINGS'} or value is None:
+            continue
+        fetched.append({
+            'GEO':code,
+            'GEO_OBJECT':str(d.get('GEO_OBJECT') or 'COM'),
+            'RP_MEASURE':measure,
+            'OCS':ocs,
+            'TIME_PERIOD':year,
+            'OBS_VALUE':str(value),
+        })
+    required=[
+        ('2017','POP','_T'),('2023','POP','_T'),
+        ('2017','DWELLINGS','DW_MAIN'),('2023','DWELLINGS','DW_MAIN'),
+        ('2023','DWELLINGS','DW_SEC_DW_OCC'),('2023','DWELLINGS','_T'),
+    ]
+    missing=[
+        (year,measure,ocs) for year,measure,ocs in required
+        if not any(r['TIME_PERIOD']==year and r['RP_MEASURE']==measure and r['OCS']==ocs for r in fetched)
+    ]
+    if missing:
+        raise RuntimeError(f'INSEE Melodi incomplet pour {code}; séries manquantes={missing}')
+    return fetched
+
+snapshot_codes={r.get('GEO','') for r in rows}
+for code in PANEL:
+    if code not in snapshot_codes:
+        rows.extend(fetch_commune_rows(code))
+        LIVE_FALLBACK_CODES.append(code)
 
 def val(code,year,measure,ocs=None):
     m=[r for r in rows if r['GEO']==code and r['TIME_PERIOD']==year and r['RP_MEASURE']==measure and (ocs is None or r['OCS']==ocs)]
@@ -127,7 +191,10 @@ contract={
         'percentile_rule':f'count(panel <= target) / {len(peers)} * 100',
         'quartile_rule':f'linear interpolation on the {len(peers)} peers, target excluded',
         'households_proxy':'residences principales du recensement',
-        'caution':'comparaisons de population à interpréter avec prudence autour du changement de questionnaire INSEE ; contexte résidentiel non causal'
+        'caution':'comparaisons de population à interpréter avec prudence autour du changement de questionnaire INSEE ; contexte résidentiel non causal',
+        'snapshot_path':str(SNAPSHOT),
+        'live_fallback_source':MELODI_URL,
+        'live_fallback_codes':LIVE_FALLBACK_CODES
     },
     'summary':summary,
     'runtime':runtime_metadata()
