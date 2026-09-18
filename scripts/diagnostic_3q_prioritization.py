@@ -17,14 +17,15 @@ if d.get('generation',{}).get('llm_used') is not False:
     raise RuntimeError('3P doit être déterministe')
 
 levers={x['id']:x for x in d.get('levers',[])}
-required={
+allowed={
  'L1_private_vacancy_monitoring',
  'L2_market_feasibility_check',
  'L3_construction_pipeline_review',
  'L4_social_housing_context_coordination',
 }
-if set(levers)!=required:
-    raise RuntimeError(f'Leviers 3P inattendus: {sorted(levers)}')
+unknown=set(levers)-allowed
+if unknown:
+    raise RuntimeError(f'Leviers 3P inconnus: {sorted(unknown)}')
 
 # 3Q ne calcule aucun score composite. Il classe seulement les sujets selon
 # leur rôle opérationnel déjà explicite dans 3P et leur proximité avec
