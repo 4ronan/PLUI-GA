@@ -238,7 +238,10 @@ def log1_profile(code):
 
 log1=[]
 for code,name in PANEL.items():
-    apt,mid=log1_profile(code)
+    try:
+        apt,mid=log1_profile(code)
+    except Exception:
+        apt,mid=None,None
     log1.append({'code':code,'name':name,'vacant_apartment_share_pct':apt,'vacant_1946_1990_share_pct':mid})
 
 blocks={
