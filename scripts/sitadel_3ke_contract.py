@@ -40,9 +40,7 @@ def norm(v):
 payload=fetch_json(URL)
 rows=rows_from_payload(payload)
 required={'ANNEE','COMM','LOG_AUT','LOG_COM','SDP_AUT','SDP_COM','TYPE_LGT'}
-if not rows:
-    rows=[]
-missing=required-set(rows[0].keys())
+missing=set() if not rows else required-set(rows[0].keys())
 if missing:
     raise RuntimeError(f'Colonnes Sitadel manquantes: {sorted(missing)}')
 rows=[r for r in rows if str(r.get('COMM'))==TARGET]
