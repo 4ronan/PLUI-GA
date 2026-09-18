@@ -1,10 +1,11 @@
 import json
 from pathlib import Path
+from diagnostic_runtime import target, runtime_metadata
 
 ASSEMBLY = Path('output/diagnostic-3kg-assembly.json')
 INTERP = Path('output/diagnostic-3l-interpretation.json')
 OUT = Path('output/diagnostic-3m-discriminants.json')
-TARGET = '16015'
+TARGET = target()
 
 
 def band(percentile):
@@ -20,7 +21,7 @@ def band(percentile):
     return 'typique', None
 
 
-def factor(fid, label, domain, value, median, percentile, evidence, universe, panel_n=15):
+def factor(fid, label, domain, value, median, percentile, evidence, universe, panel_n=None):
     direction, strength = band(percentile)
     return {
         'id': fid,
@@ -32,7 +33,7 @@ def factor(fid, label, domain, value, median, percentile, evidence, universe, pa
         'direction': direction,
         'strength': strength,
         'is_discriminant': strength is not None,
-        'reference_panel_n': panel_n,
+        'reference_panel_n': REFERENCE_N if panel_n is None else panel_n,
         'universe': universe,
         'evidence': evidence,
     }
@@ -55,6 +56,9 @@ filo = b['socioeconomic_context']['metrics']
 rpls = b['social_housing']
 rm = rpls['metrics']
 rp = rpls['panel']
+REFERENCE_N = int(rp.get('reference_n') or b['demography_housing'].get('quality',{}).get('panel_n_excluding_target') or 0)
+if REFERENCE_N <= 0:
+    raise RuntimeError('Panel de référence absent')
 
 candidates = [
     factor('population_change', 'Évolution de la population 2017-2023', 'demography_housing', demo['population_change_pct'], demo['medians_panel']['population_change_pct'], demo['percentiles']['population_change'], ['blocks.demography_housing.metrics.population_change_pct','blocks.demography_housing.metrics.medians_panel.population_change_pct','blocks.demography_housing.metrics.percentiles.population_change'], 'population communale'),
@@ -96,6 +100,7 @@ out = {
         'prix et volumes DVF',
         'dynamique Sitadel',
     ],
+    'runtime': runtime_metadata(),
     'quality': {
         'candidate_count': len(candidates),
         'discriminant_count': len(discriminants),
