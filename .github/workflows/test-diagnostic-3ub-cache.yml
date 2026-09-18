@@ -8,6 +8,10 @@ on:
       - 'scripts/*.py'
       - '.github/workflows/test-diagnostic-3ub-cache.yml'
 
+concurrency:
+  group: diagnostic-3ub-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   cache_roundtrip:
     runs-on: ubuntu-24.04
