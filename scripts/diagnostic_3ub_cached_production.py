@@ -105,7 +105,7 @@ def snapshot_publication(src_dir,dst_dir):
 
 def validate_cached_files(cache_pub,meta):
     expected=meta.get('files') or []
-    if len(expected)!=5:
+    if len(expected)!=5 or {x.get('name') for x in expected}!=set(PUBLISHED_NAMES):
         return False
     for item in expected:
         rel=item.get('name')
@@ -115,6 +115,19 @@ def validate_cached_files(cache_pub,meta):
         if p.stat().st_size!=item.get('bytes') or sha256_file(p)!=item.get('sha256'):
             return False
     return True
+
+def validate_cached_source_manifest(cache_dir,meta):
+    item=meta.get('source_manifest') or {}
+    p=cache_dir/'diagnostic-3u-manifest.json'
+    if not p.exists() or p.stat().st_size<=0:
+        return False
+    if p.stat().st_size!=item.get('bytes') or sha256_file(p)!=item.get('sha256'):
+        return False
+    try:
+        d=json.loads(p.read_text(encoding='utf-8'))
+    except Exception:
+        return False
+    return d.get('status')=='success' and d.get('territory')==TARGET
 
 started=time.monotonic()
 engine_sha=engine_fingerprint()
@@ -176,7 +189,8 @@ elif cache_meta:
     same_target=cache_meta.get('territory')==TARGET
     same_commune=cache_meta.get('commune_name')==COMMUNE and cache_meta.get('commune_sha256')==commune_signature
     files_ok=validate_cached_files(cache_pub,cache_meta)
-    if age_hours<=ttl_hours and same_engine and same_data and same_panel and same_target and same_commune and files_ok:
+    source_manifest_ok=validate_cached_source_manifest(cache_dir,cache_meta)
+    if age_hours<=ttl_hours and same_engine and same_data and same_panel and same_target and same_commune and files_ok and source_manifest_ok:
         cache_valid=True
         reason='valid_cache'
     elif age_hours>ttl_hours:
@@ -197,8 +211,7 @@ elif cache_meta:
 if cache_valid:
     restore_publication_atomically(cache_pub,PUBLISHED/TARGET)
     source_manifest=cache_dir/'diagnostic-3u-manifest.json'
-    if source_manifest.exists():
-        shutil.copy2(source_manifest,OUTPUT/'diagnostic-3u-manifest.json')
+    atomic_copy2(source_manifest,OUTPUT/'diagnostic-3u-manifest.json')
     manifest['cache']['hit']=True
     manifest['cache']['reason']=reason
     manifest['source_generation_manifest']=str(source_manifest)
@@ -235,6 +248,12 @@ else:
     cache_dir.mkdir(parents=True,exist_ok=True)
     snapshot_publication(PUBLISHED/TARGET,cache_pub)
     shutil.copy2(source_manifest_path,cache_dir/'diagnostic-3u-manifest.json')
+    cached_source_manifest=cache_dir/'diagnostic-3u-manifest.json'
+    source_manifest_meta={
+        'name':'diagnostic-3u-manifest.json',
+        'bytes':cached_source_manifest.stat().st_size,
+        'sha256':sha256_file(cached_source_manifest),
+    }
     file_meta=[]
     for p in sorted(cache_pub.iterdir()):
         if p.is_file():
@@ -251,6 +270,7 @@ else:
         'created_at':now_iso(),
         'created_at_epoch':time.time(),
         'files':file_meta,
+        'source_manifest':source_manifest_meta,
     }
     write_json(cache_meta_path,cache_meta)
     manifest['source_generation_manifest']=str(source_manifest_path.relative_to(ROOT))
