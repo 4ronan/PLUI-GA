@@ -1,12 +1,15 @@
 import json, html
 from pathlib import Path
+from diagnostic_runtime import target, commune_name, panel_peers, runtime_metadata
 
 P3O=Path('output/diagnostic-3o-synthesis.json')
 P3P=Path('output/diagnostic-3p-levers.json')
 P3Q=Path('output/diagnostic-3q-priorities.json')
 OUT_JSON=Path('output/diagnostic-3r-page.json')
 OUT_HTML=Path('output/diagnostic-3r-page.html')
-TARGET='16015'
+TARGET=target()
+COMMUNE_NAME=commune_name()
+REFERENCE_N=len(panel_peers())
 
 for p in (P3O,P3P,P3Q):
     if not p.exists() or p.stat().st_size==0:
@@ -69,7 +72,7 @@ page={
  'stage':'3R','territory':TARGET,
  'source_stages':['3O','3P','3Q'],
  'title':'Diagnostic territorial de la vacance des logements',
- 'subtitle':'Angoulême · code INSEE 16015',
+ 'subtitle':f'{COMMUNE_NAME} · code INSEE {TARGET}',
  'headline':o['headline'],
  'kpis':kpis,
  'discriminant_factors':[factor_card(x['id']) for x in o['discriminant_factors']],
@@ -78,12 +81,13 @@ page={
  'limits':o['limits'],
  'suppressed_levers':p.get('suppressed_levers',[]),
  'method':{
-   'panel_reference_n':15,
-   'comparison_rule':'Les qualificatifs relatifs reposent sur un panel de 15 communes comparables, cible exclue.',
+   'panel_reference_n':REFERENCE_N,
+   'comparison_rule':f'Les qualificatifs relatifs reposent sur un panel de {REFERENCE_N} communes comparables, cible exclue.',
    'hypotheses_rule':'Les hypothèses sont générées par règles déterministes à partir du diagnostic; aucune IA n’intervient.',
    'priority_rule':'L’ordre 3Q est un ordre de vérification, pas un classement d’efficacité.',
    'universe_rule':'LOVAC, INSEE RP et RPLS restent des univers distincts.'
  },
+ 'runtime':runtime_metadata(),
  'quality':{
    'kpi_count':len(kpis),
    'discriminant_factor_count':len(o['discriminant_factors']),
@@ -117,6 +121,8 @@ for x in page['discriminant_factors']:
     </article>'''
 
 hyp_html=''
+if not page['hypotheses']:
+    hyp_html='<article class="panel"><p class="muted">Aucune hypothèse n’est déclenchée par les règles déterministes pour ce territoire.</p></article>'
 for h in page['hypotheses']:
     hyp_html+=f'''<article class="panel">
       <div class="factor-head"><h3>{esc(h['title'])}</h3>{badge('Confiance '+h['confidence'])}</div>
@@ -126,6 +132,8 @@ for h in page['hypotheses']:
     </article>'''
 
 prio_html=''
+if not page['priorities']:
+    prio_html='<article class="panel"><p class="muted">Aucun ordre d’examen supplémentaire n’est déclenché par les leviers disponibles.</p></article>'
 for x in page['priorities']:
     prio_html+=f'''<article class="priority">
       <div class="priority-num">{x['order']}</div>
@@ -136,14 +144,15 @@ for x in page['priorities']:
     </article>'''
 
 limits_html=li(page['limits'])
-supp_html=li([x['reason'] for x in page['suppressed_levers']])
+supp_reasons=[x['reason'] for x in page['suppressed_levers']]
+supp_html=li(supp_reasons) if supp_reasons else '<li>Aucun levier n’est explicitement écarté par les garde-fous pour ce territoire.</li>'
 
 html_doc=f'''<!doctype html>
 <html lang="fr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{esc(page['title'])} — Angoulême</title>
+<title>{esc(page['title'])} — {esc(COMMUNE_NAME)}</title>
 <style>
 :root{{--bg:#f6f8fb;--card:#fff;--text:#172033;--muted:#667085;--line:#e5e7eb;--blue:#236fc1;--accent:#ffcb4a;}}
 *{{box-sizing:border-box}} body{{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;line-height:1.5}}
@@ -163,8 +172,8 @@ footer{{margin-top:40px;color:var(--muted);font-size:.85rem}} ul{{padding-left:1
 <section class="hero">
 <div class="eyebrow">Diagnostic déterministe · Étape 3R</div>
 <h1>{esc(page['title'])}</h1>
-<p class="summary"><strong>Angoulême</strong> · code INSEE 16015. La vacance privée n’est pas atypique dans le panel de communes comparables. Le diagnostic met toutefois en évidence plusieurs contextes discriminants qui justifient des vérifications ciblées avant toute action.</p>
-<p>{badge('Sans IA dans le moteur')} {badge('Panel de 15 communes')} {badge('Traçabilité complète')}</p>
+<p class="summary"><strong>{esc(COMMUNE_NAME)}</strong> · code INSEE {esc(TARGET)}. {esc(o['headline']['interpretation'])}</p>
+<p>{badge('Sans IA dans le moteur')} {badge(f'Panel de {REFERENCE_N} communes')} {badge('Traçabilité complète')}</p>
 </section>
 
 <h2>Indicateurs clés</h2><section class="grid">{kpi_html}</section>
