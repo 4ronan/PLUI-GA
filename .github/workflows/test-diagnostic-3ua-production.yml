@@ -5,7 +5,14 @@ on:
   push:
     branches: [vacants-rpls-d2]
     paths:
-      - 'scripts/*.py'
+      - 'scripts/diagnostic_runtime.py'
+      - 'scripts/diagnostic_3*.py'
+      - 'scripts/lovac_*.py'
+      - 'scripts/insee_*.py'
+      - 'scripts/dvf_*.py'
+      - 'scripts/sitadel_*.py'
+      - 'scripts/rpls_*.py'
+      - 'scripts/filosofi_*.py'
       - '.github/workflows/test-diagnostic-3ua-production.yml'
 
 concurrency:
