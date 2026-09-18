@@ -1,9 +1,10 @@
 import json
 from pathlib import Path
+from diagnostic_runtime import target, runtime_metadata
 
 IN = Path('output/diagnostic-3m2-discriminants.json')
 OUT = Path('output/diagnostic-3n-hypotheses.json')
-TARGET = '16015'
+TARGET = target()
 
 if not IN.exists() or IN.stat().st_size == 0:
     raise RuntimeError('Entrée 3M-2 absente ou vide')
@@ -168,6 +169,7 @@ out = {
     },
     'hypotheses': hypotheses,
     'guardrails': guardrails,
+    'runtime': runtime_metadata(),
     'quality': {
         'hypothesis_count': len(hypotheses),
         'guardrail_count': len(guardrails),
