@@ -150,9 +150,30 @@ started=time.monotonic()
 engine_sha=engine_fingerprint()
 data_sha=local_data_fingerprint()
 panel_signature=hashlib.sha256(','.join(PEERS).encode()).hexdigest()
+panel_selection_payload={
+    'algorithm':PANEL_SELECTION.get('algorithm'),
+    'requested_scale':PANEL_SELECTION.get('requested_scale'),
+    'effective_scale':PANEL_SELECTION.get('effective_scale'),
+    'panel_codes':PANEL_SELECTION.get('panel_codes') or PEERS,
+    'selected':[
+        {
+            'code':x.get('code'),
+            'density7':x.get('density7'),
+            'aav_category':x.get('aav_category'),
+            'aav_size':x.get('aav_size'),
+            'population_band':x.get('population_band'),
+        }
+        for x in (PANEL_SELECTION.get('selected') or [])
+    ],
+    'insee_density_sha256':((PANEL_SELECTION.get('source') or {}).get('insee_zonings') or {}).get('density_sha256'),
+    'insee_aav_sha256':((PANEL_SELECTION.get('source') or {}).get('insee_zonings') or {}).get('aav_sha256'),
+}
+panel_selection_signature=hashlib.sha256(
+    json.dumps(panel_selection_payload,ensure_ascii=False,sort_keys=True,separators=(',',':')).encode('utf-8')
+).hexdigest()
 commune_signature=hashlib.sha256(COMMUNE.encode('utf-8')).hexdigest()
 scale_signature=hashlib.sha256(COMPARISON_SCALE.encode('utf-8')).hexdigest()
-cache_key=f"{TARGET}-{commune_signature[:10]}-{scale_signature[:8]}-{panel_signature[:12]}-{engine_sha[:12]}-{data_sha[:12]}"
+cache_key=f"{TARGET}-{commune_signature[:10]}-{scale_signature[:8]}-{panel_signature[:12]}-{panel_selection_signature[:12]}-{engine_sha[:12]}-{data_sha[:12]}"
 cache_dir=CACHE_ROOT/cache_key
 cache_pub=cache_dir/'published'
 cache_meta_path=cache_dir/'cache-meta.json'
@@ -183,6 +204,7 @@ manifest={
         'engine_sha256':engine_sha,
         'local_data_sha256':data_sha,
         'panel_sha256':panel_signature,
+        'panel_selection_sha256':panel_selection_signature,
         'commune_sha256':commune_signature,
         'comparison_scale':COMPARISON_SCALE,
         'comparison_scale_sha256':scale_signature,
@@ -211,12 +233,13 @@ elif cache_meta:
     same_engine=cache_meta.get('engine_sha256')==engine_sha
     same_data=cache_meta.get('local_data_sha256')==data_sha
     same_panel=cache_meta.get('panel_codes')==PEERS
+    same_panel_selection=cache_meta.get('panel_selection_sha256')==panel_selection_signature
     same_target=cache_meta.get('territory')==TARGET
     same_commune=cache_meta.get('commune_name')==COMMUNE and cache_meta.get('commune_sha256')==commune_signature
     same_scale=cache_meta.get('comparison_scale')==COMPARISON_SCALE and cache_meta.get('comparison_scale_sha256')==scale_signature
     files_ok=validate_cached_files(cache_pub,cache_meta)
     source_manifest_ok=validate_cached_source_manifest(cache_dir,cache_meta)
-    if age_hours<=ttl_hours and same_engine and same_data and same_panel and same_target and same_commune and same_scale and files_ok and source_manifest_ok:
+    if age_hours<=ttl_hours and same_engine and same_data and same_panel and same_panel_selection and same_target and same_commune and same_scale and files_ok and source_manifest_ok:
         cache_valid=True
         reason='valid_cache'
     elif age_hours>ttl_hours:
@@ -227,6 +250,8 @@ elif cache_meta:
         reason='local_data_changed'
     elif not same_panel:
         reason='panel_changed'
+    elif not same_panel_selection:
+        reason='panel_selection_changed'
     elif not same_target:
         reason='territory_changed'
     elif not same_commune:
@@ -292,6 +317,7 @@ else:
         'commune_name':COMMUNE,
         'panel_codes':PEERS,
         'panel_sha256':panel_signature,
+        'panel_selection_sha256':panel_selection_signature,
         'commune_sha256':commune_signature,
         'comparison_scale':COMPARISON_SCALE,
         'comparison_scale_sha256':scale_signature,
