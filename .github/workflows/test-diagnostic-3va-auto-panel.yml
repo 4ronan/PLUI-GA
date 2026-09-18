@@ -7,6 +7,7 @@ on:
     paths:
       - 'scripts/diagnostic_runtime.py'
       - 'scripts/diagnostic_3v_panel_selector.py'
+      - 'scripts/diagnostic_3vd_insee_zonings.py'
       - '.github/workflows/test-diagnostic-3va-auto-panel.yml'
 
 concurrency:
@@ -64,8 +65,8 @@ jobs:
           first=json.load(open('/tmp/first-panel.json',encoding='utf-8'))
           second=json.load(open('output/diagnostic-3v-panel.json',encoding='utf-8'))
           for d in (first,second):
-              assert d['stage']=='3V-A'
-              assert d['algorithm']=='3V-A-structural-v1'
+              assert d['stage'] in {'3V-A','3V-D'}
+              assert d['algorithm'] in {'3V-A-structural-v1','3V-D-insee-typology-v2'}
               assert d['territory']==os.environ['DIAG_TERRITORY']
               assert d['target']['name']==os.environ['EXPECTED_NAME']
               assert d['effective_scale']==os.environ['EXPECTED_EFFECTIVE']
