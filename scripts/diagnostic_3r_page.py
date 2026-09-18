@@ -37,6 +37,13 @@ def fnum(v, digits=1, suffix=''):
 def esc(x):
     return html.escape(str(x), quote=True)
 
+def comparison_detail(x, median_digits=2, suffix=''):
+    if x.get('comparison_sufficient') is False:
+        n=x.get('reference_panel_n')
+        m=x.get('minimum_reference_panel_n')
+        return f"Panel insuffisant (n={n if n is not None else 'Indisponible'} ; minimum {m if m is not None else 'Indisponible'})"
+    return f"Panel médian {fnum(x.get('panel_median'),median_digits,suffix)} · percentile {fnum(x.get('percentile'),1)}"
+
 def factor_card(fid):
     x=factors[fid]
     direction={
@@ -47,7 +54,9 @@ def factor_card(fid):
       'id':fid,'label':x['label'],'value':x['value'],
       'panel_median':x['panel_median'],'percentile':x['percentile'],
       'direction':direction,'strength':x.get('strength'),
-      'universe':x['universe'],'reference_panel_n':x.get('reference_panel_n')
+      'universe':x['universe'],'reference_panel_n':x.get('reference_panel_n'),
+      'minimum_reference_panel_n':x.get('minimum_reference_panel_n'),
+      'comparison_sufficient':x.get('comparison_sufficient', True)
     }
 
 # Cartes KPI: uniquement des valeurs déjà matérialisées en 3O.
@@ -58,14 +67,14 @@ construction={x['id']:x for x in synth['construction_context']['comparators']}
 social={x['id']:x for x in synth['social_housing_context']['discriminants']}
 
 kpis=[
- {'label':'Vacance privée 2025','value':fnum(vac_cmp['private_vacancy_rate']['value'],2,'%'),'detail':f"Panel médian {fnum(vac_cmp['private_vacancy_rate']['panel_median'],2,'%')} · percentile {fnum(vac_cmp['private_vacancy_rate']['percentile'],1)}"},
- {'label':'Vacance > 2 ans 2025','value':fnum(vac_cmp['private_structural_vacancy_rate']['value'],2,'%'),'detail':f"Panel médian {fnum(vac_cmp['private_structural_vacancy_rate']['panel_median'],2,'%')} · percentile {fnum(vac_cmp['private_structural_vacancy_rate']['percentile'],1)}"},
- {'label':'Prix médian DVF 2025','value':fnum(market['value'],0,' €/m²'),'detail':f"Panel médian {fnum(market['panel_median'],0,' €/m²')} · percentile {fnum(market['percentile'],1)}"},
- {'label':'Niveau de vie médian','value':fnum(socio['median_income']['value'],0,' €'),'detail':f"Panel médian {fnum(socio['median_income']['panel_median'],0,' €')} · percentile {fnum(socio['median_income']['percentile'],1)}"},
- {'label':'Taux de pauvreté','value':fnum(socio['poverty_rate']['value'],1,'%'),'detail':f"Panel médian {fnum(socio['poverty_rate']['panel_median'],1,'%')} · percentile {fnum(socio['poverty_rate']['percentile'],1)}"},
- {'label':'Mises en chantier 2024','value':fnum(construction['sitadel_started_intensity']['value'],2,' / 1 000 hab.'),'detail':f"Panel médian {fnum(construction['sitadel_started_intensity']['panel_median'],2)} · percentile {fnum(construction['sitadel_started_intensity']['percentile'],1)}"},
- {'label':'Mobilité du parc social','value':fnum(social['social_mobility']['value'],2,'%'),'detail':f"Panel médian {fnum(social['social_mobility']['panel_median'],2,'%')} · percentile {fnum(social['social_mobility']['percentile'],1)}"},
- {'label':'Parc social en QPV','value':fnum(social['social_qpv_share']['value'],2,'%'),'detail':f"Panel médian {fnum(social['social_qpv_share']['panel_median'],2,'%')} · percentile {fnum(social['social_qpv_share']['percentile'],1)}"},
+ {'label':'Vacance privée 2025','value':fnum(vac_cmp['private_vacancy_rate']['value'],2,'%'),'detail':comparison_detail(vac_cmp['private_vacancy_rate'],2,'%')},
+ {'label':'Vacance > 2 ans 2025','value':fnum(vac_cmp['private_structural_vacancy_rate']['value'],2,'%'),'detail':comparison_detail(vac_cmp['private_structural_vacancy_rate'],2,'%')},
+ {'label':'Prix médian DVF 2025','value':fnum(market['value'],0,' €/m²'),'detail':comparison_detail(market,0,' €/m²')},
+ {'label':'Niveau de vie médian','value':fnum(socio['median_income']['value'],0,' €'),'detail':comparison_detail(socio['median_income'],0,' €')},
+ {'label':'Taux de pauvreté','value':fnum(socio['poverty_rate']['value'],1,'%'),'detail':comparison_detail(socio['poverty_rate'],1,'%')},
+ {'label':'Mises en chantier 2024','value':fnum(construction['sitadel_started_intensity']['value'],2,' / 1 000 hab.'),'detail':comparison_detail(construction['sitadel_started_intensity'],2)},
+ {'label':'Mobilité du parc social','value':fnum(social['social_mobility']['value'],2,'%'),'detail':comparison_detail(social['social_mobility'],2,'%')},
+ {'label':'Parc social en QPV','value':fnum(social['social_qpv_share']['value'],2,'%'),'detail':comparison_detail(social['social_qpv_share'],2,'%')},
 ]
 
 page={
@@ -82,7 +91,7 @@ page={
  'suppressed_levers':p.get('suppressed_levers',[]),
  'method':{
    'panel_reference_n':REFERENCE_N,
-   'comparison_rule':f'Le panel cible comprend {REFERENCE_N} communes comparables, cible exclue. L’effectif réellement disponible peut être inférieur selon la source et l’indicateur.',
+   'comparison_rule':f'Le panel cible comprend {REFERENCE_N} communes comparables, cible exclue. L’effectif réellement disponible peut être inférieur selon la source et l’indicateur ; un facteur n’est classé discriminant que si au moins deux tiers du panel demandé sont disponibles.',
    'hypotheses_rule':'Les hypothèses sont générées par règles déterministes à partir du diagnostic; aucune IA n’intervient.',
    'priority_rule':'L’ordre 3Q est un ordre de vérification, pas un classement d’efficacité.',
    'universe_rule':'LOVAC, INSEE RP et RPLS restent des univers distincts.'
