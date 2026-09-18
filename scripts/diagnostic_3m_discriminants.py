@@ -9,6 +9,8 @@ TARGET = target()
 
 
 def band(percentile):
+    if percentile is None:
+        return 'indisponible', None
     p = float(percentile)
     if p <= 10:
         return 'tres_faible', 'très marqué'
@@ -52,7 +54,9 @@ if interp.get('quality', {}).get('status') != 'ok':
 
 b = assembly['blocks']
 demo = b['demography_housing']['metrics']
-filo = b['socioeconomic_context']['metrics']
+filo_block = b['socioeconomic_context']
+filo = filo_block['metrics']
+filo_quality = filo_block.get('quality', {})
 rpls = b['social_housing']
 rm = rpls['metrics']
 rp = rpls['panel']
@@ -64,8 +68,8 @@ candidates = [
     factor('population_change', 'Évolution de la population 2017-2023', 'demography_housing', demo['population_change_pct'], demo['medians_panel']['population_change_pct'], demo['percentiles']['population_change'], ['blocks.demography_housing.metrics.population_change_pct','blocks.demography_housing.metrics.medians_panel.population_change_pct','blocks.demography_housing.metrics.percentiles.population_change'], 'population communale'),
     factor('households_change', 'Évolution des ménages 2017-2023', 'demography_housing', demo['households_change_pct'], demo['medians_panel']['households_change_pct'], demo['percentiles']['households_change'], ['blocks.demography_housing.metrics.households_change_pct','blocks.demography_housing.metrics.medians_panel.households_change_pct','blocks.demography_housing.metrics.percentiles.households_change'], 'ménages / résidences principales'),
     factor('secondary_homes_share', 'Part des résidences secondaires et logements occasionnels', 'demography_housing', demo['secondary_homes_share_pct'], demo['medians_panel']['secondary_homes_share_pct'], demo['percentiles']['secondary_homes_share'], ['blocks.demography_housing.metrics.secondary_homes_share_pct','blocks.demography_housing.metrics.medians_panel.secondary_homes_share_pct','blocks.demography_housing.metrics.percentiles.secondary_homes_share'], 'ensemble des logements du recensement'),
-    factor('median_income', 'Niveau de vie médian', 'socioeconomic_context', filo['niveau_de_vie_median'], filo['medians_panel']['revenu_median'], filo['percentiles']['revenu_median'], ['blocks.socioeconomic_context.metrics.niveau_de_vie_median','blocks.socioeconomic_context.metrics.medians_panel.revenu_median','blocks.socioeconomic_context.metrics.percentiles.revenu_median'], 'population fiscale communale'),
-    factor('poverty_rate', 'Taux de pauvreté', 'socioeconomic_context', filo['taux_pauvrete'], filo['medians_panel']['pauvrete'], filo['percentiles']['pauvrete'], ['blocks.socioeconomic_context.metrics.taux_pauvrete','blocks.socioeconomic_context.metrics.medians_panel.pauvrete','blocks.socioeconomic_context.metrics.percentiles.pauvrete'], 'population fiscale communale'),
+    factor('median_income', 'Niveau de vie médian', 'socioeconomic_context', filo['niveau_de_vie_median'], filo['medians_panel']['revenu_median'], filo['percentiles']['revenu_median'], ['blocks.socioeconomic_context.metrics.niveau_de_vie_median','blocks.socioeconomic_context.metrics.medians_panel.revenu_median','blocks.socioeconomic_context.metrics.percentiles.revenu_median'], 'population fiscale communale', filo_quality.get('panel_n_by_indicator',{}).get('MED_SL')),
+    factor('poverty_rate', 'Taux de pauvreté', 'socioeconomic_context', filo['taux_pauvrete'], filo['medians_panel']['pauvrete'], filo['percentiles']['pauvrete'], ['blocks.socioeconomic_context.metrics.taux_pauvrete','blocks.socioeconomic_context.metrics.medians_panel.pauvrete','blocks.socioeconomic_context.metrics.percentiles.pauvrete'], 'population fiscale communale', filo_quality.get('panel_n_by_indicator',{}).get('PR_MD60')),
     factor('social_vacancy', 'Vacance du parc social', 'social_housing', rm['vacance_sociale_pct'], rp['medians']['vacance_sociale_pct'], rp['percentiles']['vacance_sociale_pct'], ['blocks.social_housing.metrics.vacance_sociale_pct','blocks.social_housing.panel.medians.vacance_sociale_pct','blocks.social_housing.panel.percentiles.vacance_sociale_pct'], 'parc locatif social RPLS'),
     factor('social_mobility', 'Mobilité du parc social', 'social_housing', rm['mobilite_pct'], rp['medians']['mobilite_pct'], rp['percentiles']['mobilite_pct'], ['blocks.social_housing.metrics.mobilite_pct','blocks.social_housing.panel.medians.mobilite_pct','blocks.social_housing.panel.percentiles.mobilite_pct'], 'parc locatif social RPLS'),
     factor('social_qpv_share', 'Part du parc social en QPV', 'social_housing', rm['part_qpv_pct'], rp['medians']['part_qpv_pct'], rp['percentiles']['part_qpv_pct'], ['blocks.social_housing.metrics.part_qpv_pct','blocks.social_housing.panel.medians.part_qpv_pct','blocks.social_housing.panel.percentiles.part_qpv_pct'], 'parc locatif social RPLS'),
@@ -105,6 +109,7 @@ out = {
         'candidate_count': len(candidates),
         'discriminant_count': len(discriminants),
         'all_discriminants_have_panel': all(x['reference_panel_n'] > 0 for x in discriminants),
+        'unavailable_candidate_count': sum(1 for x in candidates if x['percentile'] is None),
         'causal_claims_included': False,
         'recommendations_included': False,
         'global_score_included': False,
