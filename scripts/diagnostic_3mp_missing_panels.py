@@ -86,9 +86,9 @@ def melodi_population_2023(code):
         if isinstance(raw,dict): raw=raw.get('value')
         v=num(raw)
         if v is not None: vals.append(v)
-    if len(vals)!=1:
+    if len(vals)>1:
         raise RuntimeError(f'Population 2023 Melodi non unique {code}: {len(vals)}')
-    return vals[0]
+    return vals[0] if vals else None
 
 pop2023={}
 for code in PANEL:
@@ -96,7 +96,10 @@ for code in PANEL:
     if len(m)==1:
         pop2023[code]=float(m[0]['OBS_VALUE'])
     elif len(m)==0:
-        pop2023[code]=melodi_population_2023(code)
+        try:
+            pop2023[code]=melodi_population_2023(code)
+        except Exception:
+            pop2023[code]=None
     else:
         raise RuntimeError(f'Population 2023 non unique {code}: {len(m)}')
 
@@ -188,9 +191,9 @@ for code,name in PANEL.items():
     sitadel.append({
         'code':code,'name':name,
         'authorized_2025_n':aut25,
-        'authorized_2025_per_1000_pop2023':(aut25/pop*1000 if aut25 is not None and pop>0 else None),
+        'authorized_2025_per_1000_pop2023':(aut25/pop*1000 if aut25 is not None and pop not in (None,0) else None),
         'started_2024_n':com24,
-        'started_2024_per_1000_pop2023':(com24/pop*1000 if com24 is not None and pop>0 else None)
+        'started_2024_per_1000_pop2023':(com24/pop*1000 if com24 is not None and pop not in (None,0) else None)
     })
 
 # 4. LOG1 : profil des logements vacants comparé entre communes du même panel.
