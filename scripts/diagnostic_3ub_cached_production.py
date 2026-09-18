@@ -1,5 +1,6 @@
 import hashlib
 import json
+import fcntl
 import os
 import shutil
 import subprocess
@@ -15,6 +16,12 @@ OUTPUT=ROOT/'output'
 PUBLISHED=OUTPUT/'published'
 CACHE_ROOT=Path(os.getenv('DIAG_CACHE_DIR', str(OUTPUT/'cache')))
 OUT_MANIFEST=OUTPUT/'diagnostic-3ub-manifest.json'
+LOCK_PATH=OUTPUT/'.diagnostic-production.lock'
+
+OUTPUT.mkdir(exist_ok=True)
+_lock_handle=LOCK_PATH.open('a+')
+fcntl.flock(_lock_handle.fileno(),fcntl.LOCK_EX)
+
 TARGET=target()
 COMMUNE=commune_name()
 PEERS=panel_peers()
@@ -130,6 +137,7 @@ manifest={
         'commune_sha256':commune_signature,
     },
     'source_generation_manifest':None,
+    'serialized_workspace':True,
     'started_at':now_iso(),
     'finished_at':None,
     'duration_seconds':None,
@@ -184,10 +192,12 @@ if cache_valid:
     manifest['status']='success'
 else:
     manifest['cache']['reason']=reason
+    child_env=os.environ.copy()
+    child_env['DIAG_PRODUCTION_LOCK_HELD']='1'
     proc=subprocess.run(
         [sys.executable,str(ROOT/'scripts/diagnostic_3u_production.py')],
         cwd=ROOT,
-        env=os.environ.copy(),
+        env=child_env,
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
