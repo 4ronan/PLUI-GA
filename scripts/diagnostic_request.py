@@ -1,6 +1,7 @@
 import argparse
 import json
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -17,7 +18,7 @@ def normalize_scale(value):
         'france':'france','national':'france','nationale':'france',
     }
     if raw not in aliases:
-        raise argparse.ArgumentTypeError('échelle attendue: département, région ou France')
+        raise ValueError('échelle attendue: département, région ou France')
     return aliases[raw]
 
 
@@ -26,14 +27,35 @@ def main():
         description='Générer un diagnostic territorial de vacance à partir du seul code INSEE et de l’échelle de comparaison.'
     )
     parser.add_argument('territory',help='Code INSEE communal à 5 caractères')
-    parser.add_argument('scale',type=normalize_scale,help='département, région ou France')
+    parser.add_argument('scale',help='département, région ou France')
     parser.add_argument('--force-refresh',action='store_true',help='ignorer un cache valide et recalculer')
     parser.add_argument('--no-cache',action='store_true',help='exécuter directement le pipeline sans cache')
     args=parser.parse_args()
 
+    territory=args.territory.strip().upper()
+    if not re.fullmatch(r'[0-9A-Z]{5}',territory):
+        print(json.dumps({
+            'status':'failure',
+            'phase':'input_validation',
+            'territory':territory,
+            'error':{'type':'invalid_territory','message':'code INSEE communal attendu sur 5 caractères alphanumériques'},
+        },ensure_ascii=False))
+        return 2
+    try:
+        scale=normalize_scale(args.scale)
+    except ValueError as exc:
+        print(json.dumps({
+            'status':'failure',
+            'phase':'input_validation',
+            'territory':territory,
+            'comparison_scale':scale,
+            'error':{'type':'invalid_scale','message':str(exc)},
+        },ensure_ascii=False))
+        return 2
+
     env=os.environ.copy()
-    env['DIAG_TERRITORY']=args.territory.strip().upper()
-    env['DIAG_COMPARISON_SCALE']=args.scale
+    env['DIAG_TERRITORY']=territory
+    env['DIAG_COMPARISON_SCALE']=scale
     for key in (
         'DIAG_COMMUNE_NAME','DIAG_COMMUNE_NAME_SOURCE',
         'DIAG_PANEL_CODES','DIAG_PANEL_SOURCE',
