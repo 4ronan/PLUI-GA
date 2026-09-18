@@ -77,6 +77,14 @@ def log1_period_text():
 
 demo_med = demom['medians_panel']
 demo_pct = demom['percentiles']
+
+def demo_text(label, value, median, percentile):
+    if value is None:
+        return f"{label} est indisponible pour la commune ; aucune valeur n’est imputée."
+    if median is None or percentile is None:
+        return f"{label} est de {pct(value)} %, mais le panel comparable disponible est insuffisant."
+    return f"{label} est de {pct(value)} %, contre une médiane de {pct(median)} % dans le panel (percentile {pct(percentile)})."
+
 filo_med = filom['medians_panel']
 filo_pct = filom['percentiles']
 rpls_med = rplsp['medians']
@@ -204,17 +212,17 @@ sections = [
         'statements': [
             statement(
                 'constat',
-                f"Entre 2017 et 2023, la population évolue de {pct(demom['population_change_pct'])} % tandis que le nombre de ménages progresse de {pct(demom['households_change_pct'])} %.",
+                demo_text("Entre 2017 et 2023, l’évolution de la population", demom['population_change_pct'], demo_med['population_change_pct'], demo_pct['population_change']) + " " + demo_text("Sur la même période, l’évolution du nombre de ménages", demom['households_change_pct'], demo_med['households_change_pct'], demo_pct['households_change']),
                 ['blocks.demography_housing.metrics.population_change_pct', 'blocks.demography_housing.metrics.households_change_pct']
             ),
             statement(
                 'comparaison',
-                f"La croissance des ménages est supérieure à la médiane du panel ({pct(demo_med['households_change_pct'])} %) et se situe au percentile empirique {pct(demo_pct['households_change'])}.",
+                demo_text("Évolution du nombre de ménages", demom['households_change_pct'], demo_med['households_change_pct'], demo_pct['households_change']),
                 ['blocks.demography_housing.metrics.households_change_pct', 'blocks.demography_housing.metrics.medians_panel.households_change_pct', 'blocks.demography_housing.metrics.percentiles.households_change']
             ),
             statement(
                 'comparaison',
-                f"La part des résidences secondaires et logements occasionnels est de {pct(demom['secondary_homes_share_pct'])} %, très proche de la médiane du panel ({pct(demo_med['secondary_homes_share_pct'])} % ; percentile {pct(demo_pct['secondary_homes_share'])}).",
+                demo_text("La part des résidences secondaires et logements occasionnels", demom['secondary_homes_share_pct'], demo_med['secondary_homes_share_pct'], demo_pct['secondary_homes_share']),
                 ['blocks.demography_housing.metrics.secondary_homes_share_pct', 'blocks.demography_housing.metrics.medians_panel.secondary_homes_share_pct', 'blocks.demography_housing.metrics.percentiles.secondary_homes_share']
             ),
             statement(
