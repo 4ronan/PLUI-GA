@@ -181,7 +181,10 @@ def select_panel():
 
     zoning_status='unavailable'
     zoning_metadata={}
+    disable_typology=str(os.getenv('DIAG_DISABLE_INSEE_PANEL_TYPOLOGY') or '').strip().lower() in {'1','true','yes','oui','on'}
     try:
+        if disable_typology:
+            raise RuntimeError('typologies Insee désactivées explicitement pour validation comparative')
         zoning=load_insee_zonings()
         zoning_by_code=zoning['by_code']
         zoning_metadata=zoning['metadata']
@@ -311,6 +314,7 @@ def select_panel():
                 or (candidate_band_counts[0]<PANEL_N and selected_band_counts[0]==candidate_band_counts[0])
             ),
             'insee_typology_enabled':typology_enabled,
+            'insee_typology_disabled_by_env':disable_typology,
             'algorithm':effective_algorithm,
             'status':'ok',
         },
