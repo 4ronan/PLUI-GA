@@ -8,6 +8,10 @@ on:
       - 'scripts/*.py'
       - '.github/workflows/test-diagnostic-3ua-production.yml'
 
+concurrency:
+  group: diagnostic-3ua-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   production_runner:
     name: "${{ matrix.name }} (${{ matrix.code }})"
