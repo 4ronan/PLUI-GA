@@ -7,6 +7,7 @@ on:
     paths:
       - 'scripts/diagnostic_runtime.py'
       - 'scripts/diagnostic_3v_panel_selector.py'
+      - 'scripts/diagnostic_3vd_insee_zonings.py'
       - 'scripts/diagnostic_3u_production.py'
       - 'scripts/diagnostic_3t_multiterritory_validate.py'
       - 'scripts/diagnostic_3r_page.py'
@@ -55,7 +56,7 @@ jobs:
           assert manifest['commune_name']=='Cognac'
           assert manifest['panel_reference_n']==15
           assert len(manifest['panel_codes'])==15
-          assert manifest['panel_selection']['algorithm']=='3V-A-structural-v1'
+          assert manifest['panel_selection']['algorithm'] in {'3V-A-structural-v1','3V-D-insee-typology-v2'}
           assert manifest['panel_selection']['requested_scale']=='france'
           assert manifest['panel_selection']['effective_scale']=='france'
           assert len(manifest['steps'])==18
@@ -68,9 +69,9 @@ jobs:
 
           assert page['subtitle']=='Cognac · code INSEE 16102'
           assert page['runtime']['commune_name_source']=='geo_api_auto'
-          assert page['runtime']['panel_source']=='3V-A-structural-v1'
+          assert page['runtime']['panel_source']==panel['algorithm']
           assert page['runtime']['comparison_scale']=='france'
-          assert page['method']['panel_source']=='3V-A-structural-v1'
+          assert page['method']['panel_source']==panel['algorithm']
           assert page['method']['comparison_scale_requested']=='france'
           assert page['method']['comparison_scale_effective']=='france'
           assert len(page['method']['panel_members'])==15
@@ -79,7 +80,7 @@ jobs:
           html=Path('output/published/16102/index.html').read_text(encoding='utf-8')
           assert '<strong>Cognac</strong> · code INSEE 16102.' in html
           assert 'Communes du panel de référence' in html
-          assert '3V-A-structural-v1' in html
+          assert panel['algorithm'] in html
           print('3VB_MINIMAL_PRODUCTION_OK',','.join(manifest['panel_codes']))
           PY
 
