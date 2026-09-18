@@ -26,7 +26,23 @@ if os.getenv("DIAG_PRODUCTION_LOCK_HELD") != "1":
     fcntl.flock(_lock_handle.fileno(), fcntl.LOCK_EX)
 
 TARGET = target()
-PANEL_SELECTION = ensure_runtime_panel()
+try:
+    PANEL_SELECTION = ensure_runtime_panel()
+except Exception as exc:
+    preflight = {
+        "stage": "3U-A",
+        "status": "failure",
+        "phase": "panel_selection",
+        "territory": TARGET,
+        "commune_name": os.getenv("DIAG_COMMUNE_NAME"),
+        "panel_reference_n": None,
+        "panel_codes": None,
+        "started_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "finished_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "error": {"type": type(exc).__name__, "message": str(exc)},
+    }
+    MANIFEST.write_text(json.dumps(preflight,ensure_ascii=False,indent=2),encoding="utf-8")
+    raise
 COMMUNE = commune_name()
 PEERS = panel_peers()
 
