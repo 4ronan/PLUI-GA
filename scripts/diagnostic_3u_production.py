@@ -64,7 +64,7 @@ def safe_slug(value):
 
 started = time.monotonic()
 started_at = now_iso()
-run_id = f"{TARGET}-{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}"
+run_id = f"{TARGET}-{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')}-{os.getpid()}"
 run_dir = RUNS / run_id
 log_dir = run_dir / "logs"
 log_dir.mkdir(parents=True, exist_ok=True)
