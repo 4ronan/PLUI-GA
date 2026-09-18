@@ -31,7 +31,7 @@ jobs:
           assert d['territory']=='16015'
           assert d['quality']['status']=='ok'
           assert d['quality']['reference_n']==15
-          assert d['quality']['all_panel_stats_n_15'] is True
+          assert d['quality']['all_panel_stats_complete'] is True
           assert d['quality']['same_panel_as_filosofi_demography_rpls'] is True
           assert d['quality']['causal_claims_included'] is False
           assert set(d['blocks'])=={'lovac','dvf','sitadel','insee_log1_vacant_profile'}
