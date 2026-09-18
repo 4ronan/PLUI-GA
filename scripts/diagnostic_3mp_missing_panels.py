@@ -167,14 +167,24 @@ def rows_from_payload(payload):
 
 sitadel=[]
 for code,name in PANEL.items():
-    p=TMP/f'sitadel-{code}.json'; curl(f'{SITADEL_BASE}/datafiles/{SITADEL_RID}/json?COMM=eq:{code}',p)
-    rr=rows_from_payload(json.loads(p.read_text(encoding='utf-8-sig')))
-    totals=[r for r in rr if str(r.get('COMM'))==code and str(r.get('TYPE_LGT'))=='Tous Logements']
-    def exact(year,field):
-        m=[r for r in totals if int(r['ANNEE'])==year]
-        if len(m)!=1: return None
-        return num(m[0].get(field))
-    aut25=exact(2025,'LOG_AUT'); com24=exact(2024,'LOG_COM'); pop=pop2023[code]
+    aut25=com24=None
+    try:
+        p=TMP/f'sitadel-{code}.json'
+        curl(f'{SITADEL_BASE}/datafiles/{SITADEL_RID}/json?COMM=eq:{code}',p)
+        rr=rows_from_payload(json.loads(p.read_text(encoding='utf-8-sig')))
+        totals=[r for r in rr if str(r.get('COMM'))==code and str(r.get('TYPE_LGT'))=='Tous Logements']
+        def exact(year,field):
+            m=[r for r in totals if int(r['ANNEE'])==year]
+            if len(m)!=1: return None
+            return num(m[0].get(field))
+        aut25=exact(2025,'LOG_AUT')
+        com24=exact(2024,'LOG_COM')
+    except Exception:
+        # Sitadel est contextuel : une indisponibilité ponctuelle pour une commune
+        # du panel doit réduire le n disponible, jamais fabriquer un zéro ni bloquer
+        # le diagnostic de la commune cible.
+        aut25=com24=None
+    pop=pop2023[code]
     sitadel.append({
         'code':code,'name':name,
         'authorized_2025_n':aut25,
