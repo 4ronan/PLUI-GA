@@ -2,11 +2,12 @@ import csv, io, json, math, statistics, subprocess, re
 from collections import defaultdict
 from pathlib import Path
 from urllib.parse import urlencode
+from diagnostic_runtime import target, commune_name, panel_peers, department_code, runtime_metadata
 
-TARGET='16015'
-PANEL={
-'16015':'Angoulême','47001':'Agen','19031':'Brive-la-Gaillarde','24037':'Bergerac','86066':'Châtellerault','16102':'Cognac','40088':'Dax','33243':'Libourne','47157':'Marmande','40192':'Mont-de-Marsan','79191':'Niort','24322':'Périgueux','17299':'Rochefort','17306':'Royan','17415':'Saintes','47323':'Villeneuve-sur-Lot'}
-PEERS=[c for c in PANEL if c!=TARGET]
+TARGET=target()
+COMMUNE_NAME=commune_name()
+PEERS=panel_peers()
+PANEL={TARGET:COMMUNE_NAME, **{c:c for c in PEERS}}
 OUT=Path('output/diagnostic-3mp-panels.json')
 TMP=Path('tmp_3mp_panels'); TMP.mkdir(exist_ok=True)
 
@@ -78,7 +79,7 @@ for code,name in PANEL.items():
 
 # 2. DVF 2025 : prix médian au m² des ventes résidentielles simples, même méthode que 3K-D.
 def dvf_summary(code):
-    dep=code[:2]
+    dep=department_code(code)
     p=TMP/f'dvf-{code}.csv'; curl(f'{DVF_BASE}/{dep}/{code}.csv',p)
     groups=defaultdict(list)
     with p.open(encoding='utf-8-sig',newline='') as f:
@@ -193,15 +194,15 @@ all_stats=[s for b in blocks.values() for s in b['stats'].values()]
 quality={
  'panel_codes':list(PANEL),
  'target_excluded_from_reference':True,
- 'reference_n':15,
+ 'reference_n':len(PEERS),
  'same_panel_as_filosofi_demography_rpls':True,
- 'percentile_rule':'count(peer <= target) / 15 * 100',
- 'all_panel_stats_n_15':all(s['panel_n']==15 for s in all_stats),
+ 'percentile_rule':f'count(peer <= target) / {len(PEERS)} * 100',
+ 'all_panel_stats_complete':all(s['panel_n']==len(PEERS) for s in all_stats),
  'missing_semantics':'absence/secret = null ou exclusion; jamais 0',
  'causal_claims_included':False,
- 'status':'ok' if all(s['panel_n']==15 for s in all_stats) else 'partial'
+ 'status':'ok' if all(s['panel_n']==len(PEERS) for s in all_stats) else 'partial'
 }
-out={'stage':'3M-P','territory':TARGET,'purpose':'matérialiser les panels manquants avant extension de la détection des facteurs discriminants','blocks':blocks,'quality':quality}
+out={'stage':'3M-P','territory':TARGET,'runtime':runtime_metadata(),'purpose':'matérialiser les panels manquants avant extension de la détection des facteurs discriminants','blocks':blocks,'quality':quality}
 if quality['status']!='ok': raise RuntimeError(json.dumps(quality,ensure_ascii=False))
 OUT.parent.mkdir(exist_ok=True)
 OUT.write_text(json.dumps(out,ensure_ascii=False,indent=2),encoding='utf-8')
