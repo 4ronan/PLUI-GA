@@ -49,6 +49,29 @@ STEPS = [
     ("3T-M", "scripts/diagnostic_3t_multiterritory_validate.py"),
 ]
 
+EXPECTED_OUTPUTS = {
+    "scripts/lovac_3kb_contract.py": ["output/lovac-3kb-contract.json"],
+    "scripts/insee_log1_3kc_contract.py": ["output/insee-log1-3kc-contract.json"],
+    "scripts/dvf_3kd_contract.py": ["output/dvf-3kd-contract.json"],
+    "scripts/sitadel_3ke_contract.py": ["output/sitadel-3ke-contract.json"],
+    "scripts/rpls_3kf_contract.py": ["output/rpls-3kf-contract.json"],
+    "scripts/insee_3jc_contract.py": ["output/insee-3jc-contract.json"],
+    "scripts/filosofi_panel_contract_3icde.py": ["output/filosofi-3icde-panel.json"],
+    "scripts/diagnostic_3kg_assembly.py": ["output/diagnostic-3kg-assembly.json"],
+    "scripts/diagnostic_3l_interpretation.py": ["output/diagnostic-3l-interpretation.json"],
+    "scripts/diagnostic_3m_discriminants.py": ["output/diagnostic-3m-discriminants.json"],
+    "scripts/diagnostic_3mp_missing_panels.py": ["output/diagnostic-3mp-panels.json"],
+    "scripts/diagnostic_3m2_discriminants_extended.py": ["output/diagnostic-3m2-discriminants.json"],
+    "scripts/diagnostic_3n_hypotheses.py": ["output/diagnostic-3n-hypotheses.json"],
+    "scripts/diagnostic_3o_synthesis.py": ["output/diagnostic-3o-synthesis.json"],
+    "scripts/diagnostic_3p_levers.py": ["output/diagnostic-3p-levers.json"],
+    "scripts/diagnostic_3q_prioritization.py": ["output/diagnostic-3q-priorities.json"],
+    "scripts/diagnostic_3r_page.py": [
+        "output/diagnostic-3r-page.json",
+        "output/diagnostic-3r-page.html",
+    ],
+}
+
 FINAL_FILES = [
     OUTPUT / "diagnostic-3r-page.json",
     OUTPUT / "diagnostic-3r-page.html",
@@ -120,6 +143,11 @@ write_manifest()
 
 try:
     for index, (stage, script) in enumerate(STEPS, start=1):
+        expected_paths=[ROOT / p for p in EXPECTED_OUTPUTS.get(script, [])]
+        for path in expected_paths:
+            if path.exists():
+                path.unlink()
+
         stage_started = time.monotonic()
         stamp = now_iso()
         proc = subprocess.run(
@@ -131,6 +159,12 @@ try:
             stderr=subprocess.STDOUT,
         )
         duration = round(time.monotonic() - stage_started, 3)
+        missing_outputs=[
+            str(path.relative_to(ROOT))
+            for path in expected_paths
+            if not path.exists() or path.stat().st_size == 0
+        ]
+        step_ok = proc.returncode == 0 and not missing_outputs
         log_path = log_dir / f"{index:02d}-{stage.replace('/', '-')}.log"
         log_path.write_text(proc.stdout or "", encoding="utf-8")
         step = {
@@ -140,14 +174,18 @@ try:
             "started_at": stamp,
             "duration_seconds": duration,
             "return_code": proc.returncode,
-            "status": "success" if proc.returncode == 0 else "failure",
+            "status": "success" if step_ok else "failure",
             "log": str(log_path.relative_to(ROOT)),
+            "expected_outputs": [str(path.relative_to(ROOT)) for path in expected_paths],
+            "missing_outputs": missing_outputs,
         }
         manifest["steps"].append(step)
         write_manifest()
         if proc.returncode != 0:
             tail = "\n".join((proc.stdout or "").splitlines()[-30:])
             raise RuntimeError(f"Échec {stage} ({script})\n{tail}")
+        if missing_outputs:
+            raise RuntimeError(f"Échec {stage}: sorties fraîches absentes ou vides: {missing_outputs}")
 
     for path in FINAL_FILES:
         if not path.exists() or path.stat().st_size == 0:
