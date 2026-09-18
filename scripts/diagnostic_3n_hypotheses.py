@@ -61,6 +61,9 @@ def hypothesis(hid, title, statement, factor_ids, applicability, cautions):
                 'percentile': x['percentile'],
                 'direction': x['direction'],
                 'is_discriminant': x['is_discriminant'],
+                'comparison_sufficient': x.get('comparison_sufficient', True),
+                'reference_panel_n': x.get('reference_panel_n'),
+                'minimum_reference_panel_n': x.get('minimum_reference_panel_n'),
                 'universe': x['universe'],
             }
             for x in factors
@@ -131,13 +134,13 @@ priv, structural, apt, age = require(
 )
 
 guardrails = []
-if not priv['is_discriminant'] and not structural['is_discriminant']:
+if priv.get('comparison_sufficient', True) and structural.get('comparison_sufficient', True) and not priv['is_discriminant'] and not structural['is_discriminant']:
     guardrails.append({
         'id': 'G1_no_relative_excess_private_vacancy',
         'statement': "Le script ne génère aucune hypothèse de sur-vacance privée relative : ni le taux de vacance privée ni le taux de vacance de plus de deux ans ne sont discriminants dans le panel.",
         'evidence_factor_ids': ['private_vacancy_rate', 'private_structural_vacancy_rate']
     })
-if apt.get('percentile') is not None and age.get('percentile') is not None and not apt['is_discriminant'] and not age['is_discriminant']:
+if apt.get('comparison_sufficient', True) and age.get('comparison_sufficient', True) and apt.get('percentile') is not None and age.get('percentile') is not None and not apt['is_discriminant'] and not age['is_discriminant']:
     guardrails.append({
         'id': 'G2_no_atypical_vacant_profile',
         'statement': "Le script ne génère aucune hypothèse fondée sur un profil atypique des logements vacants : la part des appartements et la part des logements construits entre 1946 et 1990 ne sont pas discriminantes dans le panel.",
@@ -165,6 +168,7 @@ out = {
         'global_score_allowed': False,
         'confidence_definition': 'faible=1 domaine diagnostique; moyen=2; élevé=3 ou plus; mesure la convergence, pas la causalité',
         'missing_data_rule': 'une règle dont un indicateur requis est absent ne doit pas être évaluée comme vraie',
+        'insufficient_panel_rule': 'un facteur à panel insuffisant ne peut ni déclencher une hypothèse ni justifier un garde-fou de normalité',
         'universe_separation_rule': 'LOVAC, INSEE RP et RPLS restent des univers distincts',
     },
     'hypotheses': hypotheses,
