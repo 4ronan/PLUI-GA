@@ -1,0 +1,115 @@
+name: Test diagnostic 3T-D core data policy
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [vacants-rpls-d2]
+    paths:
+      - 'scripts/diagnostic_3kg_assembly.py'
+      - '.github/workflows/test-diagnostic-3td-core-data-policy.yml'
+
+jobs:
+  lovac_core_required:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        case:
+          - id: missing_vacancy_rate
+            key: vacancy_rate_pct
+            expected: taux de vacance privée 2025
+          - id: missing_structural_rate
+            key: structural_vacancy_rate_pct
+            expected: taux de vacance privée >2 ans 2025
+          - id: missing_vacant_2026
+            key: vacant_all_count_2026
+            expected: nombre de logements vacants 2026
+          - id: missing_structural_count_2026
+            key: vacant_gt2y_count_2026
+            expected: nombre de logements vacants >2 ans 2026
+    env:
+      DIAG_TERRITORY: '16015'
+      DIAG_COMMUNE_NAME: 'Angoulême'
+      DIAG_PANEL_CODES: '16102,19031,47001,24322,40192,79191,86066,33243,17299,40088,24037,17415,17306,47323,47157'
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Générer les contrats nécessaires
+        run: |
+          set -euo pipefail
+          python scripts/lovac_3kb_contract.py
+          python scripts/insee_log1_3kc_contract.py
+          python scripts/dvf_3kd_contract.py
+          python scripts/sitadel_3ke_contract.py
+          python scripts/rpls_3kf_contract.py
+          python scripts/insee_3jc_contract.py
+          python scripts/filosofi_panel_contract_3icde.py
+
+      - name: Invalider une donnée cœur LOVAC
+        env:
+          CORE_KEY: ${{ matrix.case.key }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          p=Path('output/lovac-3kb-contract.json')
+          d=json.loads(p.read_text(encoding='utf-8'))
+          d['metrics'][os.environ['CORE_KEY']]=None
+          p.write_text(json.dumps(d,ensure_ascii=False,indent=2),encoding='utf-8')
+          print('3TD_CORE_GAP_INJECTED', os.environ['CORE_KEY'])
+          PY
+
+      - name: Vérifier le blocage explicite
+        env:
+          EXPECTED_LABEL: ${{ matrix.case.expected }}
+        run: |
+          set +e
+          python scripts/diagnostic_3kg_assembly.py >3td.log 2>&1
+          code=$?
+          set -e
+          cat 3td.log
+          test "$code" -ne 0
+          grep -F "LOVAC_CORE_UNAVAILABLE" 3td.log
+          grep -F "$EXPECTED_LABEL" 3td.log
+          test ! -f output/diagnostic-3kg-assembly.json
+          echo "3TD_CORE_BLOCK_OK"
+
+  policy_metadata:
+    runs-on: ubuntu-24.04
+    env:
+      DIAG_TERRITORY: '16015'
+      DIAG_COMMUNE_NAME: 'Angoulême'
+      DIAG_PANEL_CODES: '16102,19031,47001,24322,40192,79191,86066,33243,17299,40088,24037,17415,17306,47323,47157'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Générer un assemblage valide
+        run: |
+          set -euo pipefail
+          python scripts/lovac_3kb_contract.py
+          python scripts/insee_log1_3kc_contract.py
+          python scripts/dvf_3kd_contract.py
+          python scripts/sitadel_3ke_contract.py
+          python scripts/rpls_3kf_contract.py
+          python scripts/insee_3jc_contract.py
+          python scripts/filosofi_panel_contract_3icde.py
+          python scripts/diagnostic_3kg_assembly.py
+      - name: Vérifier la politique de disponibilité
+        run: |
+          python - <<'PY'
+          import json
+          d=json.load(open('output/diagnostic-3kg-assembly.json',encoding='utf-8'))
+          p=d['data_availability_policy']
+          assert p['vacancy_private']=='required_core'
+          assert p['real_estate_market']=='contextual_partial_allowed'
+          assert p['construction']=='contextual_partial_allowed'
+          assert p['socioeconomic_context']=='contextual_missing_values_allowed'
+          assert all(c['availability_policy']==p[c['block']] for c in d['checks'])
+          print('3TD_POLICY_METADATA_OK')
+          PY
