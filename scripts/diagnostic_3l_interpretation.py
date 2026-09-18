@@ -67,6 +67,13 @@ filo_pct = filom['percentiles']
 rpls_med = rplsp['medians']
 rpls_pct = rplsp['percentiles']
 
+def rpls_text(label, value, median, percentile):
+    if value is None:
+        return f"{label} : donnée RPLS indisponible pour la commune ; aucune valeur n’est imputée."
+    if median is None or percentile is None:
+        return f"{label} : {pct(value)} %. La comparaison au panel RPLS est insuffisante ou indisponible."
+    return f"{label} : {pct(value)} %, contre une médiane de {pct(median)} % dans le panel (percentile {pct(percentile)})."
+
 def socio_text(label, value, median, percentile, unit=''):
     if value is None:
         return f"{label} est indisponible pour la commune (secret statistique ou donnée non diffusée) ; aucune valeur n’est imputée et aucun percentile communal n’est calculé."
@@ -250,22 +257,22 @@ sections = [
         'statements': [
             statement(
                 'comparaison',
-                f"La vacance du parc social est de {pct(rplsm['vacance_sociale_pct'])} %, contre une médiane de {pct(rpls_med['vacance_sociale_pct'])} % dans le panel (percentile {pct(rpls_pct['vacance_sociale_pct'])}).",
+                rpls_text("Vacance du parc social", rplsm['vacance_sociale_pct'], rpls_med['vacance_sociale_pct'], rpls_pct['vacance_sociale_pct']),
                 ['blocks.social_housing.metrics.vacance_sociale_pct', 'blocks.social_housing.panel.medians.vacance_sociale_pct', 'blocks.social_housing.panel.percentiles.vacance_sociale_pct']
             ),
             statement(
                 'comparaison',
-                f"La mobilité du parc social atteint {pct(rplsm['mobilite_pct'])} %, contre {pct(rpls_med['mobilite_pct'])} % dans le panel (percentile {pct(rpls_pct['mobilite_pct'])}).",
+                rpls_text("Mobilité du parc social", rplsm['mobilite_pct'], rpls_med['mobilite_pct'], rpls_pct['mobilite_pct']),
                 ['blocks.social_housing.metrics.mobilite_pct', 'blocks.social_housing.panel.medians.mobilite_pct', 'blocks.social_housing.panel.percentiles.mobilite_pct']
             ),
             statement(
                 'comparaison',
-                f"{pct(rplsm['part_qpv_pct'])} % du parc social est situé en QPV, contre {pct(rpls_med['part_qpv_pct'])} % dans le panel (percentile {pct(rpls_pct['part_qpv_pct'])}).",
+                rpls_text("Part du parc social située en QPV", rplsm['part_qpv_pct'], rpls_med['part_qpv_pct'], rpls_pct['part_qpv_pct']),
                 ['blocks.social_housing.metrics.part_qpv_pct', 'blocks.social_housing.panel.medians.part_qpv_pct', 'blocks.social_housing.panel.percentiles.part_qpv_pct']
             ),
             statement(
                 'comparaison',
-                f"Les logements sociaux âgés de 40 ans ou plus représentent {pct(rplsm['part_age_40_plus_pct'])} % du parc, contre {pct(rpls_med['part_age_40_plus_pct'])} % dans le panel (percentile {pct(rpls_pct['part_age_40_plus_pct'])}).",
+                rpls_text("Part du parc social âgé de 40 ans ou plus", rplsm['part_age_40_plus_pct'], rpls_med['part_age_40_plus_pct'], rpls_pct['part_age_40_plus_pct']),
                 ['blocks.social_housing.metrics.part_age_40_plus_pct', 'blocks.social_housing.panel.medians.part_age_40_plus_pct', 'blocks.social_housing.panel.percentiles.part_age_40_plus_pct']
             ),
             statement(
