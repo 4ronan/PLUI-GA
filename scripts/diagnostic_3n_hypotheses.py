@@ -32,6 +32,9 @@ def require(*ids):
 def independent_domains(factors):
     return sorted({x['domain'] for x in factors})
 
+def comparisons_sufficient(*factors):
+    return all(x.get('comparison_sufficient', True) for x in factors)
+
 
 def confidence_from_domains(domains):
     # Niveau de confiance = convergence diagnostique, jamais probabilité causale.
@@ -80,7 +83,7 @@ hypotheses = []
 # Déclenchement uniquement si les trois constats sont réellement présents dans 3M-2
 # avec les directions attendues. Aucun savoir externe n'est consulté.
 mi, pov, price = require('median_income', 'poverty_rate', 'dvf_median_price_m2')
-if mi['direction'] in {'faible', 'tres_faible'} and pov['direction'] in {'eleve', 'tres_eleve'} and price['direction'] in {'faible', 'tres_faible'}:
+if comparisons_sufficient(mi, pov, price) and mi['direction'] in {'faible', 'tres_faible'} and pov['direction'] in {'eleve', 'tres_eleve'} and price['direction'] in {'faible', 'tres_faible'}:
     hypotheses.append(hypothesis(
         'H1_socioeconomic_market_convergence',
         'Convergence entre fragilité socio-économique et faible niveau de prix immobiliers',
@@ -96,7 +99,7 @@ if mi['direction'] in {'faible', 'tres_faible'} and pov['direction'] in {'eleve'
 
 # Règle H2 — autorisations / mises en chantier.
 aut, started = require('sitadel_authorized_intensity', 'sitadel_started_intensity')
-if started['direction'] in {'faible', 'tres_faible'} and aut['percentile'] is not None and 25 < float(aut['percentile']) < 75:
+if comparisons_sufficient(aut, started) and started['direction'] in {'faible', 'tres_faible'} and aut['percentile'] is not None and 25 < float(aut['percentile']) < 75:
     hypotheses.append(hypothesis(
         'H2_construction_pipeline_gap',
         'Décalage diagnostique entre autorisations et mises en chantier',
@@ -112,7 +115,7 @@ if started['direction'] in {'faible', 'tres_faible'} and aut['percentile'] is no
 
 # Règle H3 — configuration du parc social; explicitement non transférable au parc privé.
 mob, qpv, svac = require('social_mobility', 'social_qpv_share', 'social_vacancy')
-if mob['direction'] in {'eleve', 'tres_eleve'} and qpv['direction'] in {'eleve', 'tres_eleve'} and not svac['is_discriminant']:
+if comparisons_sufficient(mob, qpv, svac) and mob['direction'] in {'eleve', 'tres_eleve'} and qpv['direction'] in {'eleve', 'tres_eleve'} and not svac['is_discriminant']:
     hypotheses.append(hypothesis(
         'H3_social_housing_configuration',
         'Configuration spécifique du parc social',
