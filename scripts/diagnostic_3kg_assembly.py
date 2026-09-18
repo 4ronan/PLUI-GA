@@ -29,6 +29,16 @@ def load_contract(path, nested=None):
 
 blocks = {name: load_contract(path, nested) for name, (path, nested) in SOURCES.items()}
 
+DATA_AVAILABILITY_POLICY = {
+    'vacancy_private': 'required_core',
+    'vacant_stock_profile': 'contextual',
+    'real_estate_market': 'contextual_partial_allowed',
+    'construction': 'contextual_partial_allowed',
+    'social_housing': 'contextual',
+    'demography_housing': 'contextual',
+    'socioeconomic_context': 'contextual_missing_values_allowed',
+}
+
 checks = []
 for name, block in blocks.items():
     territory = str(block.get('territory', ''))
@@ -50,6 +60,7 @@ for name, block in blocks.items():
         'scope': block.get('scope'),
         'role': block.get('role'),
         'quality_status': (block.get('quality') or {}).get('status'),
+        'availability_policy': DATA_AVAILABILITY_POLICY[name],
     })
 
 # Verrous minimaux des contrats déjà validés.
@@ -57,8 +68,15 @@ lovac = blocks['vacancy_private']
 lovac_metrics = lovac.get('metrics', {})
 if lovac_metrics.get('latest_compatible_rate_year') != 2025:
     raise RuntimeError('LOVAC: dernière année de taux compatible attendue = 2025')
-if lovac_metrics.get('vacant_all_count_2026') is None:
-    raise RuntimeError('LOVAC: nombre vacant 2026 indisponible pour la commune cible')
+required_lovac_metrics = {
+    'vacancy_rate_pct': 'taux de vacance privée 2025',
+    'structural_vacancy_rate_pct': 'taux de vacance privée >2 ans 2025',
+    'vacant_all_count_2026': 'nombre de logements vacants 2026',
+    'vacant_gt2y_count_2026': 'nombre de logements vacants >2 ans 2026',
+}
+missing_core = [label for key,label in required_lovac_metrics.items() if lovac_metrics.get(key) is None]
+if missing_core:
+    raise RuntimeError('LOVAC_CORE_UNAVAILABLE: ' + '; '.join(missing_core))
 
 log1 = blocks['vacant_stock_profile']
 if log1.get('year') != 2023:
@@ -94,6 +112,7 @@ assembly = {
         'construction',
         'social_housing',
     ],
+    'data_availability_policy': DATA_AVAILABILITY_POLICY,
     'methodological_boundaries': {
         'lovac_role': 'source principale pour la vacance privée et la vacance durable >2 ans',
         'insee_log1_role': 'profil du parc vacant au recensement; univers distinct de LOVAC',
