@@ -51,6 +51,7 @@ jobs:
           assert manifest['panel_reference_n']==15
           assert len(manifest['steps'])==18
           assert all(x['status']=='success' and x['return_code']==0 for x in manifest['steps'])
+          assert all(x.get('missing_outputs')==[] for x in manifest['steps'])
           assert manifest['generation']['llm_used'] is False
           assert manifest['diagnostic_summary']['kpi_count']==8
           assert len(manifest['outputs'])==5
