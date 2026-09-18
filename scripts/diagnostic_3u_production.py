@@ -10,6 +10,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from diagnostic_runtime import target, commune_name, panel_peers, runtime_metadata
+from diagnostic_3v_panel_selector import ensure_runtime_panel
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "output"
@@ -25,6 +26,7 @@ if os.getenv("DIAG_PRODUCTION_LOCK_HELD") != "1":
     fcntl.flock(_lock_handle.fileno(), fcntl.LOCK_EX)
 
 TARGET = target()
+PANEL_SELECTION = ensure_runtime_panel()
 COMMUNE = commune_name()
 PEERS = panel_peers()
 
@@ -117,6 +119,11 @@ manifest = {
     "commune_name": COMMUNE,
     "panel_reference_n": len(PEERS),
     "panel_codes": PEERS,
+    "panel_selection": {
+        "algorithm": PANEL_SELECTION.get("algorithm"),
+        "requested_scale": PANEL_SELECTION.get("requested_scale"),
+        "effective_scale": PANEL_SELECTION.get("effective_scale"),
+    },
     "runtime": runtime_metadata(),
     "git": {
         "sha": os.getenv("GITHUB_SHA"),
