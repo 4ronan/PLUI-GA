@@ -7,12 +7,14 @@ import urllib.request
 from pathlib import Path
 
 from diagnostic_runtime import target, comparison_scale
+from diagnostic_3vd_insee_zonings import load_insee_zonings
 
 API_BASE='https://geo.api.gouv.fr'
 FIELDS='nom,code,codeDepartement,codeRegion,population,surface'
 OUT=Path('output/diagnostic-3v-panel.json')
 PANEL_N=15
-ALGORITHM='3V-A-structural-v1'
+ALGORITHM='3V-D-insee-typology-v2'
+FALLBACK_ALGORITHM='3V-A-structural-v1'
 
 
 def _fetch_json(url):
@@ -85,7 +87,29 @@ def _scope_sequence(requested):
     return ['france']
 
 
-def _candidate_rank(row,target_row):
+def _aav_role_distance(a,b):
+    if not a or not b:
+        return 9
+    if a==b:
+        return 0
+    poles={'11','12','13'}
+    if a in poles and b in poles:
+        return 1
+    if (a in poles and b=='20') or (b in poles and a=='20'):
+        return 2
+    if '30' in {a,b}:
+        return 3
+    return 2
+
+
+def _ordinal_distance(a,b,missing=9):
+    try:
+        return abs(int(a)-int(b))
+    except (TypeError,ValueError):
+        return missing
+
+
+def _candidate_rank(row,target_row,typology_enabled):
     pop_ratio=row['population']/target_row['population']
     density_ratio=row['density_index']/target_row['density_index']
     pop_distance=abs(math.log(pop_ratio))
@@ -101,18 +125,39 @@ def _candidate_rank(row,target_row):
         population_band=2
 
     structural_distance=0.65*pop_distance + 0.35*density_distance
-    return (
-        population_band,
-        structural_distance,
-        pop_distance,
-        density_distance,
-        row['code'],
-    ), {
+    density7_distance=_ordinal_distance(row.get('density7'),target_row.get('density7'))
+    aav_role_distance=_aav_role_distance(row.get('aav_category'),target_row.get('aav_category'))
+    aav_size_distance=_ordinal_distance(row.get('aav_size'),target_row.get('aav_size'))
+
+    if typology_enabled:
+        rank_key=(
+            density7_distance,
+            aav_role_distance,
+            aav_size_distance,
+            population_band,
+            structural_distance,
+            pop_distance,
+            density_distance,
+            row['code'],
+        )
+    else:
+        rank_key=(
+            population_band,
+            structural_distance,
+            pop_distance,
+            density_distance,
+            row['code'],
+        )
+
+    return rank_key, {
         'population_ratio':pop_ratio,
         'population_log_distance':pop_distance,
         'density_log_distance':density_distance,
         'structural_distance':structural_distance,
         'population_band':population_band,
+        'density7_distance':density7_distance if typology_enabled else None,
+        'aav_role_distance':aav_role_distance if typology_enabled else None,
+        'aav_size_distance':aav_size_distance if typology_enabled else None,
     }
 
 
@@ -133,6 +178,19 @@ def select_panel():
                 rows.append(clean)
 
     by_code={r['code']:r for r in rows}
+
+    zoning_status='unavailable'
+    zoning_metadata={}
+    try:
+        zoning=load_insee_zonings()
+        zoning_by_code=zoning['by_code']
+        zoning_metadata=zoning['metadata']
+        for code,row in by_code.items():
+            row.update(zoning_by_code.get(code,{}))
+        zoning_status='available'
+    except Exception as exc:
+        zoning_metadata={'error':f'{type(exc).__name__}: {exc}'}
+
     target_row=by_code.get(target_code)
     if not target_row:
         raise RuntimeError(f'Commune cible {target_code} absente ou sans population/surface exploitable dans geo.api.gouv.fr')
@@ -154,9 +212,16 @@ def select_panel():
     if chosen_scope is None or candidates is None:
         raise RuntimeError(f'Moins de {PANEL_N} communes comparables valides, même après élargissement à la France')
 
+    typology_enabled=(
+        zoning_status=='available'
+        and bool(target_row.get('density7'))
+        and bool(target_row.get('aav_category'))
+        and bool(target_row.get('aav_size'))
+    )
+
     ranked=[]
     for row in candidates:
-        key,metrics=_candidate_rank(row,target_row)
+        key,metrics=_candidate_rank(row,target_row,typology_enabled)
         ranked.append((key,row,metrics))
     ranked.sort(key=lambda x:x[0])
 
@@ -171,17 +236,31 @@ def select_panel():
             'population':row['population'],
             'surface':row['surface'],
             'density_index':row['density_index'],
+            'density7':row.get('density7'),
+            'density7_label':row.get('density7_label'),
+            'aav_category':row.get('aav_category'),
+            'aav_code':row.get('aav_code'),
+            'aav_name':row.get('aav_name'),
+            'aav_size':row.get('aav_size'),
+            'aav_detailed_size':row.get('aav_detailed_size'),
             **metrics,
         })
 
+    effective_algorithm=ALGORITHM if typology_enabled else FALLBACK_ALGORITHM
     result={
-        'stage':'3V-A',
-        'algorithm':ALGORITHM,
+        'stage':'3V-D' if typology_enabled else '3V-A',
+        'algorithm':effective_algorithm,
         'source':{
-            'name':'API Découpage administratif - communes',
-            'producer':'DINUM / Etalab',
-            'url':url,
-            'fields':['nom','code','codeDepartement','codeRegion','population','surface'],
+            'administrative':{
+                'name':'API Découpage administratif - communes',
+                'producer':'DINUM / Etalab',
+                'url':url,
+                'fields':['nom','code','codeDepartement','codeRegion','population','surface'],
+            },
+            'insee_zonings':{
+                'status':zoning_status,
+                **zoning_metadata,
+            },
         },
         'territory':target_code,
         'target':target_row,
@@ -193,11 +272,22 @@ def select_panel():
             'target_excluded':True,
             'population_preference':'70-130 % de la population cible, puis 50-200 %, puis reste de l’échelle',
             'structural_distance':'0.65 * abs(log(population_ratio)) + 0.35 * abs(log(density_ratio))',
-            'tie_break':'population_band, structural_distance, population_distance, density_distance, code INSEE',
+            'typology_priority':(
+                'distance DENS7, puis rôle AAV, puis tranche de taille AAV, puis bande de population et distance structurelle'
+                if typology_enabled else
+                'zonages Insee indisponibles: repli sur bande de population puis distance structurelle 3V-A'
+            ),
+            'tie_break':(
+                'density7_distance, aav_role_distance, aav_size_distance, population_band, structural_distance, population_distance, density_distance, code INSEE'
+                if typology_enabled else
+                'population_band, structural_distance, population_distance, density_distance, code INSEE'
+            ),
             'administrative_scope_fallback':'department -> region -> france; region -> france; france',
             'llm_used':False,
             'global_score_used':False,
-            'selection_metric_note':'La distance structurelle sert uniquement à choisir les communes de référence; elle n’évalue ni ne classe la commune cible.',
+            'selection_metric_note':'Les distances servent uniquement à choisir les communes de référence; elles n’évaluent ni ne classent la commune cible.',
+            'insee_density_role':'DENS7/LIBDENS7 de la grille communale de densité Insee au 01/01/2026',
+            'insee_aav_role':'CATEAAV2020 et TAAV2017 de la base AAV 2020 au 01/01/2026',
         },
         'selected':selected,
         'panel_codes':[x['code'] for x in selected],
@@ -208,6 +298,8 @@ def select_panel():
             'all_have_population':all(x['population']>0 for x in selected),
             'all_have_surface':all(x['surface']>0 for x in selected),
             'deterministic_sort':True,
+            'insee_typology_enabled':typology_enabled,
+            'algorithm':effective_algorithm,
             'status':'ok',
         },
     }
@@ -218,11 +310,11 @@ def ensure_runtime_panel():
     explicit=os.getenv('DIAG_PANEL_CODES')
     if explicit and explicit.strip():
         explicit_codes=[x.strip().upper() for x in explicit.split(',') if x.strip()]
-        if os.getenv('DIAG_PANEL_SOURCE')==ALGORITHM and OUT.exists() and OUT.stat().st_size>0:
+        if os.getenv('DIAG_PANEL_SOURCE') in {ALGORITHM,FALLBACK_ALGORITHM} and OUT.exists() and OUT.stat().st_size>0:
             try:
                 prior=json.loads(OUT.read_text(encoding='utf-8'))
                 if (
-                    prior.get('algorithm')==ALGORITHM
+                    prior.get('algorithm')==os.getenv('DIAG_PANEL_SOURCE')
                     and str(prior.get('territory'))==target()
                     and prior.get('panel_codes')==explicit_codes
                 ):
@@ -243,7 +335,7 @@ def ensure_runtime_panel():
     result=select_panel()
     codes=result['panel_codes']
     os.environ['DIAG_PANEL_CODES']=','.join(codes)
-    os.environ['DIAG_PANEL_SOURCE']=ALGORITHM
+    os.environ['DIAG_PANEL_SOURCE']=result['algorithm']
     if not os.getenv('DIAG_COMMUNE_NAME'):
         os.environ['DIAG_COMMUNE_NAME']=result['target']['name']
         os.environ['DIAG_COMMUNE_NAME_SOURCE']='geo_api_auto'
