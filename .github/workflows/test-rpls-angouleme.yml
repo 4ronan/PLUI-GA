@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - vacants-rpls-d2
+    paths:
+      - 'scripts/test_rpls_angouleme.R'
+      - '.github/workflows/test-rpls-angouleme.yml'
   workflow_dispatch:
 
 jobs:
