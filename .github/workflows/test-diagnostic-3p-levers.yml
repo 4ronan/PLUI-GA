@@ -8,6 +8,9 @@ on:
       - 'scripts/diagnostic_3p_levers.py'
       - 'scripts/diagnostic_3o_synthesis.py'
       - 'scripts/diagnostic_3n_hypotheses.py'
+      - 'scripts/diagnostic_3m2_discriminants_extended.py'
+      - 'scripts/diagnostic_3mp_missing_panels.py'
+      - 'scripts/rpls_3kf_contract.py'
       - '.github/workflows/test-diagnostic-3p-levers.yml'
 
 jobs:
