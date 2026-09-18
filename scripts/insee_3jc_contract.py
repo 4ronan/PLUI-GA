@@ -219,7 +219,11 @@ contract={
         'caution':'comparaisons de population à interpréter avec prudence autour du changement de questionnaire INSEE ; contexte résidentiel non causal',
         'snapshot_path':str(SNAPSHOT),
         'live_fallback_source':MELODI_URL,
-        'live_fallback_codes':LIVE_FALLBACK_CODES
+        'live_fallback_codes':LIVE_FALLBACK_CODES,
+        'status':'ok' if (
+            not any(st['value'] is None for st in (s_pop,s_hh,s_sec))
+            and all(st['panel_n']==len(peers) for st in (s_pop,s_hh,s_sec))
+        ) else 'partial'
     },
     'summary':summary,
     'runtime':runtime_metadata()
