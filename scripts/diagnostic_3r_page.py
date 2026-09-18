@@ -47,7 +47,7 @@ def factor_card(fid):
       'id':fid,'label':x['label'],'value':x['value'],
       'panel_median':x['panel_median'],'percentile':x['percentile'],
       'direction':direction,'strength':x.get('strength'),
-      'universe':x['universe']
+      'universe':x['universe'],'reference_panel_n':x.get('reference_panel_n')
     }
 
 # Cartes KPI: uniquement des valeurs déjà matérialisées en 3O.
@@ -82,7 +82,7 @@ page={
  'suppressed_levers':p.get('suppressed_levers',[]),
  'method':{
    'panel_reference_n':REFERENCE_N,
-   'comparison_rule':f'Les qualificatifs relatifs reposent sur un panel de {REFERENCE_N} communes comparables, cible exclue.',
+   'comparison_rule':f'Le panel cible comprend {REFERENCE_N} communes comparables, cible exclue. L’effectif réellement disponible peut être inférieur selon la source et l’indicateur.',
    'hypotheses_rule':'Les hypothèses sont générées par règles déterministes à partir du diagnostic; aucune IA n’intervient.',
    'priority_rule':'L’ordre 3Q est un ordre de vérification, pas un classement d’efficacité.',
    'universe_rule':'LOVAC, INSEE RP et RPLS restent des univers distincts.'
@@ -117,7 +117,7 @@ for x in page['discriminant_factors']:
       <div class="factor-head"><strong>{esc(x['label'])}</strong>{badge(x['direction'])}</div>
       <div class="factor-value">{fnum(x['value'],2)}</div>
       <div class="bar"><span style="width:{pct}%"></span></div>
-      <div class="muted">Percentile {fnum(x['percentile'],1)} · médiane panel {fnum(x['panel_median'],2)} · {esc(x['universe'])}</div>
+      <div class="muted">Percentile {fnum(x['percentile'],1)} · médiane panel {fnum(x['panel_median'],2)} · n={esc(x.get('reference_panel_n') if x.get('reference_panel_n') is not None else 'Indisponible')} · {esc(x['universe'])}</div>
     </article>'''
 
 hyp_html=''
