@@ -1,0 +1,86 @@
+name: Test diagnostic 3T-I Sitadel denominator missingness
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [vacants-rpls-d2]
+    paths:
+      - 'scripts/diagnostic_3mp_missing_panels.py'
+      - 'scripts/diagnostic_3m2_discriminants_extended.py'
+      - 'scripts/diagnostic_3r_page.py'
+      - '.github/workflows/test-diagnostic-3ti-sitadel-denominator.yml'
+
+env:
+  DIAG_TERRITORY: '16015'
+  DIAG_COMMUNE_NAME: 'Angoulême'
+  DIAG_PANEL_CODES: '16102,19031,47001,24322,40192,79191,86066,33243,17299,40088,24037,17415,17306,47323,47157'
+
+jobs:
+  missing_sitadel_population_denominator:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Générer jusqu'à 3M-P
+        run: |
+          set -euo pipefail
+          export PYTHONPATH="$PWD/scripts:${PYTHONPATH:-}"
+          python scripts/lovac_3kb_contract.py
+          python scripts/insee_log1_3kc_contract.py
+          python scripts/dvf_3kd_contract.py
+          python scripts/sitadel_3ke_contract.py
+          python scripts/rpls_3kf_contract.py
+          python scripts/insee_3jc_contract.py
+          python scripts/filosofi_panel_contract_3icde.py
+          python scripts/diagnostic_3kg_assembly.py
+          python scripts/diagnostic_3l_interpretation.py
+          python scripts/diagnostic_3m_discriminants.py
+          python scripts/diagnostic_3mp_missing_panels.py
+
+      - name: Simuler un dénominateur population Sitadel indisponible
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('output/diagnostic-3mp-panels.json')
+          d=json.loads(p.read_text(encoding='utf-8'))
+          b=d['blocks']['sitadel']
+          for key in ('authorized_2025_per_1000_pop2023','started_2024_per_1000_pop2023'):
+              st=b['stats'][key]
+              st['target']=None
+              st['percentile']=None
+          d['quality']['status']='partial'
+          d['quality']['all_panel_stats_complete']=False
+          p.write_text(json.dumps(d,ensure_ascii=False,indent=2),encoding='utf-8')
+          print('3TI_SITADEL_DENOMINATOR_GAP_INJECTED')
+          PY
+
+      - name: Terminer le diagnostic
+        run: |
+          set -euo pipefail
+          export PYTHONPATH="$PWD/scripts:${PYTHONPATH:-}"
+          python scripts/diagnostic_3m2_discriminants_extended.py
+          python scripts/diagnostic_3n_hypotheses.py
+          python scripts/diagnostic_3o_synthesis.py
+          python scripts/diagnostic_3p_levers.py
+          python scripts/diagnostic_3q_prioritization.py
+          python scripts/diagnostic_3r_page.py
+
+      - name: Vérifier l'absence d'imputation
+        run: |
+          python - <<'PY'
+          import json
+          m=json.load(open('output/diagnostic-3m2-discriminants.json',encoding='utf-8'))
+          r=json.load(open('output/diagnostic-3r-page.json',encoding='utf-8'))
+          f={x['id']:x for x in m['discriminant_factors']+m['non_discriminant_comparators']}
+          for key in ('sitadel_authorized_intensity','sitadel_started_intensity'):
+              assert f[key]['value'] is None
+              assert f[key]['percentile'] is None
+              assert f[key]['is_discriminant'] is False
+          assert r['quality']['status']=='ok'
+          assert r['kpis'][5]['value']=='Indisponible'
+          print('3TI_SITADEL_DENOMINATOR_OK')
+          PY
