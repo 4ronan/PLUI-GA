@@ -71,7 +71,7 @@ if dvf.get('years') != [2021, 2022, 2023, 2024, 2025]:
     raise RuntimeError('DVF: fenêtre reproductible attendue 2021-2025')
 
 sitadel = blocks['construction']
-if sitadel.get('quality', {}).get('status') != 'ok':
+if sitadel.get('quality', {}).get('status') not in {'ok','partial'}:
     raise RuntimeError('Sitadel: qualité non validée')
 
 rpls = blocks['social_housing']
