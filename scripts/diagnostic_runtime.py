@@ -1,4 +1,4 @@
-import os, re
+import os, re, math
 
 DEFAULT_TARGET='16015'
 DEFAULT_COMMUNE_NAME='Angoulême'
@@ -28,6 +28,12 @@ def panel_peers():
     if len(codes)!=15 or len(set(codes))!=15:
         raise RuntimeError(f'DIAG_PANEL_CODES doit contenir exactement 15 communes distinctes; reçu={len(codes)}')
     return codes
+
+def minimum_comparable_panel_n(requested_n=None):
+    n=len(panel_peers()) if requested_n is None else int(requested_n)
+    if n <= 0:
+        return 0
+    return math.ceil(n * 2 / 3)
 
 def department_code(code=None):
     c=(code or target()).upper()
