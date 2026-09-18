@@ -47,6 +47,13 @@ jobs:
           assert second['cache']['hit'] is True
           assert second['cache']['reason']=='valid_cache'
           assert first['cache']['key']==second['cache']['key']
+          meta=json.load(open(Path('output/cache')/second['cache']['key']/'cache-meta.json',encoding='utf-8'))
+          sm=meta.get('source_manifest') or {}
+          sm_path=Path('output/cache')/second['cache']['key']/'diagnostic-3u-manifest.json'
+          assert sm_path.exists() and sm_path.stat().st_size==sm.get('bytes')
+          assert hashlib.sha256(sm_path.read_bytes()).hexdigest()==sm.get('sha256')
+          source=json.load(open(sm_path,encoding='utf-8'))
+          assert source['status']=='success' and source['territory']=='16102'
           assert first['cache'].get('local_data_sha256')
           assert second['cache'].get('local_data_sha256')==first['cache']['local_data_sha256']
           before=hashlib.sha256(Path('/tmp/first-diagnostic.json').read_bytes()).hexdigest()
