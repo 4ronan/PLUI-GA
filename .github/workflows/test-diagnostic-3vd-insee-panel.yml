@@ -21,7 +21,7 @@ jobs:
       matrix:
         include:
           - code: '16102'
-            scale: 'france'
+            scale: 'departement'
             expected_name: 'Cognac'
           - code: '2A004'
             scale: 'region'
@@ -57,6 +57,13 @@ jobs:
           assert d['target']['name']==os.environ['EXPECTED_NAME']
           assert d['quality']['status']=='ok'
           assert d['quality']['insee_typology_enabled'] is True
+          assert d['quality']['population_band_priority_respected'] is True
+          candidate_bands=d['quality']['candidate_population_band_counts']
+          selected_bands=d['quality']['selected_population_band_counts']
+          if candidate_bands['0']>=15:
+              assert selected_bands['0']==15
+          else:
+              assert selected_bands['0']==candidate_bands['0']
           src=d['source']['insee_zonings']
           assert src['status']=='available'
           assert src['density_commune_n']>30000
