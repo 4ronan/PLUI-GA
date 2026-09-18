@@ -25,7 +25,7 @@ def band(percentile):
 
 def factor(fid, label, domain, value, median, percentile, evidence, universe, panel_n=None):
     effective_n = REFERENCE_N if panel_n is None else int(panel_n or 0)
-    minimum_n = minimum_comparable_panel_n(len(assembly.get('runtime_panel_codes', [])) or 15)
+    minimum_n = minimum_comparable_panel_n()
     if percentile is not None and effective_n < minimum_n:
         direction, strength = 'panel_insuffisant', None
     else:
