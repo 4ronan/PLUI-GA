@@ -56,7 +56,7 @@ levers=[]
 # L1 — Vacance privée non atypique : pas de stratégie de réduction massive déclenchée automatiquement.
 pv=comparators.get('private_vacancy_rate')
 ps=comparators.get('private_structural_vacancy_rate')
-if pv and ps and not pv.get('is_discriminant') and not ps.get('is_discriminant'):
+if pv and ps and pv.get('comparison_sufficient', True) and ps.get('comparison_sufficient', True) and not pv.get('is_discriminant') and not ps.get('is_discriminant'):
     levers.append(lever(
         'L1_private_vacancy_monitoring',
         'Qualifier et localiser la vacance privée avant toute intervention ciblée',
@@ -143,10 +143,15 @@ profile_non_discriminant = profile_reading=='profil des logements vacants non di
 profile_unavailable = profile_reading=='profil des logements vacants indisponible ou non comparable'
 
 suppressed_levers=[]
-if pv and ps and not pv.get('is_discriminant') and not ps.get('is_discriminant'):
+if pv and ps and pv.get('comparison_sufficient', True) and ps.get('comparison_sufficient', True) and not pv.get('is_discriminant') and not ps.get('is_discriminant'):
     suppressed_levers.append({
         'id':'S1_mass_private_vacancy_reduction',
-        'reason':'non déclenché car vacance privée et vacance >2 ans non discriminantes dans le panel'
+        'reason':'non déclenché car vacance privée et vacance >2 ans non discriminantes dans un panel suffisamment renseigné'
+    })
+elif pv and ps and (not pv.get('comparison_sufficient', True) or not ps.get('comparison_sufficient', True)):
+    suppressed_levers.append({
+        'id':'S1_mass_private_vacancy_reduction',
+        'reason':'non déclenché car la comparaison de la vacance privée au panel est insuffisante'
     })
 if profile_non_discriminant:
     suppressed_levers.append({
@@ -181,6 +186,7 @@ out={
         'priority_assignment_allowed':False,
         'automatic_prescription_allowed':False,
         'no_mass_private_vacancy_action_if_not_discriminant':True,
+        'no_normality_guardrail_if_panel_insufficient':True,
         'no_stock_profile_targeting_if_profile_not_discriminant':True,
         'universe_separation_rule':'LOVAC, INSEE RP et RPLS restent distincts',
     },
