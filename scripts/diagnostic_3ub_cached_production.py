@@ -29,15 +29,31 @@ def sha256_file(path):
             h.update(chunk)
     return h.hexdigest()
 
-def engine_fingerprint():
+def fingerprint_files(paths):
     h=hashlib.sha256()
-    files=sorted((ROOT/'scripts').glob('*.py'))
-    for p in files:
-        h.update(str(p.relative_to(ROOT)).encode())
+    for p in sorted(paths, key=lambda x:str(x)):
+        rel=str(p.relative_to(ROOT))
+        h.update(rel.encode())
         h.update(b'\0')
-        h.update(p.read_bytes())
+        if p.exists() and p.is_file():
+            h.update(p.read_bytes())
+        else:
+            h.update(b'<MISSING>')
         h.update(b'\0')
     return h.hexdigest()
+
+def engine_fingerprint():
+    return fingerprint_files((ROOT/'scripts').glob('*.py'))
+
+def local_data_fingerprint():
+    # Snapshots locaux qui influencent directement le diagnostic et doivent
+    # invalider immédiatement le cache lorsqu'ils changent.
+    files=[
+        ROOT/'data/rpls-2025-communes.csv',
+        ROOT/'data/rpls-2025-checks.json',
+        ROOT/'data/insee-rp2023-panel-3j.csv',
+    ]
+    return fingerprint_files(files)
 
 def now_iso():
     return datetime.now(timezone.utc).isoformat().replace('+00:00','Z')
@@ -66,9 +82,10 @@ def validate_cached_files(cache_pub,meta):
 
 started=time.monotonic()
 engine_sha=engine_fingerprint()
+data_sha=local_data_fingerprint()
 panel_signature=hashlib.sha256(','.join(PEERS).encode()).hexdigest()
 commune_signature=hashlib.sha256(COMMUNE.encode('utf-8')).hexdigest()
-cache_key=f"{TARGET}-{commune_signature[:10]}-{panel_signature[:12]}-{engine_sha[:12]}"
+cache_key=f"{TARGET}-{commune_signature[:10]}-{panel_signature[:12]}-{engine_sha[:12]}-{data_sha[:12]}"
 cache_dir=CACHE_ROOT/cache_key
 cache_pub=cache_dir/'published'
 cache_meta_path=cache_dir/'cache-meta.json'
@@ -92,6 +109,7 @@ manifest={
         'hit':False,
         'reason':None,
         'engine_sha256':engine_sha,
+        'local_data_sha256':data_sha,
         'panel_sha256':panel_signature,
         'commune_sha256':commune_signature,
     },
@@ -116,17 +134,20 @@ if force_refresh:
 elif cache_meta:
     age_hours=(now_epoch-float(cache_meta.get('created_at_epoch',0)))/3600
     same_engine=cache_meta.get('engine_sha256')==engine_sha
+    same_data=cache_meta.get('local_data_sha256')==data_sha
     same_panel=cache_meta.get('panel_codes')==PEERS
     same_target=cache_meta.get('territory')==TARGET
     same_commune=cache_meta.get('commune_name')==COMMUNE and cache_meta.get('commune_sha256')==commune_signature
     files_ok=validate_cached_files(cache_pub,cache_meta)
-    if age_hours<=ttl_hours and same_engine and same_panel and same_target and same_commune and files_ok:
+    if age_hours<=ttl_hours and same_engine and same_data and same_panel and same_target and same_commune and files_ok:
         cache_valid=True
         reason='valid_cache'
     elif age_hours>ttl_hours:
         reason='expired'
     elif not same_engine:
         reason='engine_changed'
+    elif not same_data:
+        reason='local_data_changed'
     elif not same_panel:
         reason='panel_changed'
     elif not same_target:
@@ -187,6 +208,7 @@ else:
         'panel_sha256':panel_signature,
         'commune_sha256':commune_signature,
         'engine_sha256':engine_sha,
+        'local_data_sha256':data_sha,
         'created_at':now_iso(),
         'created_at_epoch':time.time(),
         'files':file_meta,
