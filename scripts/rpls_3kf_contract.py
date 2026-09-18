@@ -80,12 +80,24 @@ with CSV_PATH.open('r',encoding='utf-8-sig',newline='') as fh:
             rows[code]=r
 
 missing=sorted(set(PANEL_CODES)-set(rows))
-if missing:
-    raise RuntimeError(f'Panel RPLS incomplet: {missing}')
 
-panel={code:metrics(r) for code,r in rows.items()}
+empty_metrics={
+    'stock_social_actif':None,
+    'logements_vacants':None,
+    'vacance_sociale_pct':None,
+    'vacance_plus_3_mois_n':None,
+    'vacance_plus_3_mois_pct_stock':None,
+    'vacance_plus_3_mois_pct_vacants':None,
+    'mobilite_pct':None,
+    'part_qpv_pct':None,
+    'part_collectif_pct':None,
+    'part_age_40_plus_pct':None,
+    'part_age_60_plus_pct':None,
+}
+panel={code:(metrics(rows[code]) if code in rows else dict(empty_metrics)) for code in PANEL_CODES}
 t=panel[TARGET]
-peers=[panel[c] for c in PEER_CODES]
+available_peer_codes=[c for c in PEER_CODES if c in rows]
+peers=[panel[c] for c in available_peer_codes]
 
 keys=['vacance_sociale_pct','mobilite_pct','part_qpv_pct','part_age_40_plus_pct']
 medians={k:quantile_linear([x[k] for x in peers],.5) for k in keys}
@@ -147,8 +159,11 @@ contract={
         'codes':PANEL_CODES,
         'target_excluded_from_reference':True,
         'reference_n':len(peers),
-        'percentile_rule':f'count(peer <= target) / {len(peers)} * 100',
-        'quartile_rule':f'linear interpolation on the {len(peers)} peers, target excluded',
+        'requested_reference_n':len(PEER_CODES),
+        'available_peer_codes':available_peer_codes,
+        'missing_peer_codes':[c for c in PEER_CODES if c not in rows],
+        'percentile_rule':'count(available peer <= target) / n_available * 100',
+        'quartile_rule':'linear interpolation on available peers, target excluded',
         'medians':medians,
         'percentiles':percentiles,
     },
@@ -157,9 +172,11 @@ contract={
         'snapshot_unique_communes':checks.get('unique_communes'),
         'snapshot_duplicate_commune_rows':checks.get('duplicate_commune_rows'),
         'panel_complete':len(rows)==len(PANEL_CODES),
+        'target_available':TARGET in rows,
+        'missing_codes':missing,
         'missing_semantics':'valeur absente, supprimée ou secrète = null/exclue, jamais 0',
         'vacance_plus_3_mois_rule':'nb_ls_vacant_3 décrit la vacance sociale de plus de 3 mois; ne pas l’assimiler à la vacance LOVAC de plus de 2 ans',
-        'status':'ok'
+        'status':'ok' if not missing else 'partial'
     },
     'runtime':runtime_metadata()
 }
