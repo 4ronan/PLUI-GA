@@ -129,7 +129,7 @@ page={
    'panel_source':panel_algorithm,
    'comparison_scale_requested':RUNTIME.get('comparison_scale'),
    'comparison_scale_effective':panel_effective_scale,
-   'comparison_rule':f'Le panel cible comprend {REFERENCE_N} communes comparables, cible exclue. L’effectif réellement disponible peut être inférieur selon la source et l’indicateur ; un facteur n’est classé discriminant que si au moins deux tiers du panel demandé sont disponibles.',
+   'comparison_rule':f'Le panel cible comprend {REFERENCE_N} communes comparables, cible exclue. L’effectif réellement disponible peut être inférieur selon la source et l’indicateur ; un facteur n’est classé discriminant que si au moins deux tiers du panel demandé sont disponibles. Les percentiles et la qualification discriminante sont conditionnels à la composition de ce panel : un autre panel admissible peut modifier certains facteurs sans que cela constitue une preuve causale.',
    'hypotheses_rule':'Les hypothèses sont générées par règles déterministes à partir du diagnostic; aucune IA n’intervient.',
    'priority_rule':'L’ordre 3Q est un ordre de vérification, pas un classement d’efficacité.',
    'universe_rule':'LOVAC, INSEE RP et RPLS restent des univers distincts.',
