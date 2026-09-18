@@ -56,6 +56,39 @@ jobs:
           print('3UB_CACHE_OK',first['duration_seconds'],second['duration_seconds'])
           PY
 
+      - name: Vérifier l'isolation par nom de commune
+        run: |
+          DIAG_COMMUNE_NAME='Cognac Test' python scripts/diagnostic_3ub_cached_production.py
+          cp output/diagnostic-3ub-manifest.json /tmp/renamed.json
+          cp output/published/16102/diagnostic.json /tmp/renamed-diagnostic.json
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          renamed=json.load(open('/tmp/renamed.json',encoding='utf-8'))
+          page=json.load(open('/tmp/renamed-diagnostic.json',encoding='utf-8'))
+          assert renamed['status']=='success'
+          assert renamed['cache']['hit'] is False
+          assert renamed['cache']['reason']=='cache_absent'
+          assert page['subtitle']=='Cognac Test · code INSEE 16102'
+          cache_dirs=[p for p in Path('output/cache').iterdir() if p.is_dir()]
+          assert len(cache_dirs)>=2
+          print('3UD_COMMUNE_CACHE_ISOLATION_OK',renamed['cache']['key'])
+          PY
+
+      - name: Vérifier le retour au cache original
+        run: |
+          python scripts/diagnostic_3ub_cached_production.py
+          python - <<'PY'
+          import json
+          d=json.load(open('output/diagnostic-3ub-manifest.json',encoding='utf-8'))
+          page=json.load(open('output/published/16102/diagnostic.json',encoding='utf-8'))
+          assert d['cache']['hit'] is True
+          assert d['cache']['reason']=='valid_cache'
+          assert page['subtitle']=='Cognac · code INSEE 16102'
+          print('3UD_ORIGINAL_CACHE_RESTORED_OK')
+          PY
+
       - name: Publier les preuves 3U-B
         uses: actions/upload-artifact@v4
         with:
