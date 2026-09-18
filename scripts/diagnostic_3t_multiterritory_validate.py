@@ -47,6 +47,13 @@ assert isinstance(d["limits"], list) and d["limits"]
 assert isinstance(d["suppressed_levers"], list)
 assert all(k.get("label") and isinstance(k.get("value"), str) and isinstance(k.get("detail"), str) for k in d["kpis"])
 
+for factor in d["discriminant_factors"]:
+    assert factor.get("comparison_sufficient") is True
+    assert isinstance(factor.get("reference_panel_n"), int)
+    assert isinstance(factor.get("minimum_reference_panel_n"), int)
+    assert factor["minimum_reference_panel_n"] == 10
+    assert factor["reference_panel_n"] >= factor["minimum_reference_panel_n"]
+
 needle=f"<strong>{NAME}</strong> · code INSEE {TARGET}."
 assert needle in h
 assert f"<title>{d['title']} — {NAME}</title>" in h
@@ -65,5 +72,6 @@ print(json.dumps({
     "kpis":quality["kpi_count"],
     "discriminants":quality["discriminant_factor_count"],
     "hypotheses":quality["hypothesis_count"],
-    "priorities":quality["priority_count"]
+    "priorities":quality["priority_count"],
+    "panel_sufficiency_validated":True
 }, ensure_ascii=False))
