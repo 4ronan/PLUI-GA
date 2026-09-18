@@ -5,7 +5,7 @@ on:
   push:
     branches: [vacants-rpls-d2]
     paths:
-      - 'scripts/diagnostic_3ub_cached_production.py'
+      - 'scripts/*.py'
       - '.github/workflows/test-diagnostic-3ub-cache.yml'
 
 jobs:
