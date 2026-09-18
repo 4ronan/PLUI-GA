@@ -100,10 +100,10 @@ def _candidate_rank(row,target_row):
     else:
         population_band=2
 
-    structural_score=0.65*pop_distance + 0.35*density_distance
+    structural_distance=0.65*pop_distance + 0.35*density_distance
     return (
         population_band,
-        structural_score,
+        structural_distance,
         pop_distance,
         density_distance,
         row['code'],
@@ -111,7 +111,7 @@ def _candidate_rank(row,target_row):
         'population_ratio':pop_ratio,
         'population_log_distance':pop_distance,
         'density_log_distance':density_distance,
-        'structural_score':structural_score,
+        'structural_distance':structural_distance,
         'population_band':population_band,
     }
 
@@ -192,11 +192,12 @@ def select_panel():
             'panel_n':PANEL_N,
             'target_excluded':True,
             'population_preference':'70-130 % de la population cible, puis 50-200 %, puis reste de l’échelle',
-            'structural_score':'0.65 * abs(log(population_ratio)) + 0.35 * abs(log(density_ratio))',
-            'tie_break':'population_band, structural_score, population_distance, density_distance, code INSEE',
+            'structural_distance':'0.65 * abs(log(population_ratio)) + 0.35 * abs(log(density_ratio))',
+            'tie_break':'population_band, structural_distance, population_distance, density_distance, code INSEE',
             'administrative_scope_fallback':'department -> region -> france; region -> france; france',
             'llm_used':False,
             'global_score_used':False,
+            'selection_metric_note':'La distance structurelle sert uniquement à choisir les communes de référence; elle n’évalue ni ne classe la commune cible.',
         },
         'selected':selected,
         'panel_codes':[x['code'] for x in selected],
