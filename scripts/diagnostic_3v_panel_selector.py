@@ -226,6 +226,7 @@ def ensure_runtime_panel():
             'quality':{'status':'explicit_override'},
         }
 
+    scale_was_explicit=bool(os.getenv('DIAG_COMPARISON_SCALE'))
     result=select_panel()
     codes=result['panel_codes']
     os.environ['DIAG_PANEL_CODES']=','.join(codes)
@@ -234,6 +235,7 @@ def ensure_runtime_panel():
         os.environ['DIAG_COMMUNE_NAME']=result['target']['name']
         os.environ['DIAG_COMMUNE_NAME_SOURCE']='geo_api_auto'
     os.environ['DIAG_COMPARISON_SCALE']=result['requested_scale']
+    os.environ['DIAG_COMPARISON_SCALE_SOURCE']='env' if scale_was_explicit else 'transition_default'
 
     OUT.parent.mkdir(exist_ok=True)
     OUT.write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
