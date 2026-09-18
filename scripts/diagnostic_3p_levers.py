@@ -140,6 +140,18 @@ if has_hypothesis('H3_social_housing_configuration'):
 profile=d.get('synthesis',{}).get('vacant_stock_profile',{})
 profile_non_discriminant = profile.get('reading')=='profil des logements vacants non discriminant dans le panel'
 
+suppressed_levers=[]
+if pv and ps and not pv.get('is_discriminant') and not ps.get('is_discriminant'):
+    suppressed_levers.append({
+        'id':'S1_mass_private_vacancy_reduction',
+        'reason':'non déclenché car vacance privée et vacance >2 ans non discriminantes dans le panel'
+    })
+if profile_non_discriminant:
+    suppressed_levers.append({
+        'id':'S2_target_by_vacant_dwelling_profile',
+        'reason':'non déclenché car profil INSEE des logements vacants non discriminant dans le panel'
+    })
+
 out={
     'stage':'3P',
     'territory':TARGET,
@@ -166,16 +178,7 @@ out={
         'universe_separation_rule':'LOVAC, INSEE RP et RPLS restent distincts',
     },
     'levers':levers,
-    'suppressed_levers':[
-        {
-            'id':'S1_mass_private_vacancy_reduction',
-            'reason':'non déclenché car vacance privée et vacance >2 ans non discriminantes dans le panel'
-        },
-        {
-            'id':'S2_target_by_vacant_dwelling_profile',
-            'reason':'non déclenché car profil INSEE des logements vacants non discriminant dans le panel'
-        }
-    ],
+    'suppressed_levers':suppressed_levers,
     'runtime':runtime_metadata(),
     'quality':{
         'lever_count':len(levers),
@@ -186,7 +189,7 @@ out={
         'automatic_prescriptions_included':False,
         'llm_used':False,
         'external_knowledge_lookup_used':False,
-        'profile_guardrail_respected':profile_non_discriminant,
+        'profile_guardrail_respected':(profile_non_discriminant and any(x['id']=='S2_target_by_vacant_dwelling_profile' for x in suppressed_levers)) or (not profile_non_discriminant and not any(x['id']=='S2_target_by_vacant_dwelling_profile' for x in suppressed_levers)),
         'status':'ok'
     }
 }
