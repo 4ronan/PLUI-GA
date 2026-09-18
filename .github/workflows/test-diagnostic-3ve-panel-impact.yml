@@ -1,0 +1,120 @@
+name: Test diagnostic 3V-E panel impact
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [vacants-rpls-d2]
+    paths:
+      - 'scripts/diagnostic_3v_panel_selector.py'
+      - 'scripts/diagnostic_3vd_insee_zonings.py'
+      - 'scripts/diagnostic_3u_production.py'
+      - '.github/workflows/test-diagnostic-3ve-panel-impact.yml'
+
+concurrency:
+  group: diagnostic-3ve-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  compare_panels:
+    runs-on: ubuntu-24.04
+    env:
+      DIAG_TERRITORY: '16102'
+      DIAG_COMPARISON_SCALE: 'france'
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Générer Cognac avec le fallback 3V-A
+        run: |
+          export PYTHONPATH="$PWD/scripts:${PYTHONPATH:-}"
+          DIAG_DISABLE_INSEE_PANEL_TYPOLOGY=1 python scripts/diagnostic_3u_production.py
+          mkdir -p /tmp/fallback
+          cp output/diagnostic-3v-panel.json /tmp/fallback/panel.json
+          cp output/diagnostic-3u-manifest.json /tmp/fallback/manifest.json
+          cp output/published/16102/diagnostic.json /tmp/fallback/diagnostic.json
+          cp output/published/16102/synthesis.json /tmp/fallback/synthesis.json
+
+      - name: Générer Cognac avec 3V-D
+        run: |
+          export PYTHONPATH="$PWD/scripts:${PYTHONPATH:-}"
+          python scripts/diagnostic_3u_production.py
+          mkdir -p /tmp/enriched
+          cp output/diagnostic-3v-panel.json /tmp/enriched/panel.json
+          cp output/diagnostic-3u-manifest.json /tmp/enriched/manifest.json
+          cp output/published/16102/diagnostic.json /tmp/enriched/diagnostic.json
+          cp output/published/16102/synthesis.json /tmp/enriched/synthesis.json
+
+      - name: Comparer les deux diagnostics sans classement
+        run: |
+          python - <<'PY'
+          import json
+
+          def load(root,name):
+              return json.load(open(f'/tmp/{root}/{name}.json',encoding='utf-8'))
+
+          fp=load('fallback','panel')
+          ep=load('enriched','panel')
+          fm=load('fallback','manifest')
+          em=load('enriched','manifest')
+          fd=load('fallback','diagnostic')
+          ed=load('enriched','diagnostic')
+
+          assert fp['algorithm']=='3V-A-structural-v1'
+          assert fp['quality']['insee_typology_enabled'] is False
+          assert fp['quality']['insee_typology_disabled_by_env'] is True
+          assert ep['algorithm']=='3V-D-insee-typology-v2'
+          assert ep['quality']['insee_typology_enabled'] is True
+          assert ep['quality']['population_band_priority_respected'] is True
+
+          for panel in (fp,ep):
+              assert panel['territory']=='16102'
+              assert panel['requested_scale']=='france'
+              assert panel['effective_scale']=='france'
+              assert len(panel['panel_codes'])==15
+              assert len(set(panel['panel_codes']))==15
+              assert '16102' not in panel['panel_codes']
+
+          assert fp['panel_codes']!=ep['panel_codes']
+          intersection=sorted(set(fp['panel_codes']) & set(ep['panel_codes']))
+
+          for manifest,page in ((fm,fd),(em,ed)):
+              assert manifest['status']=='success'
+              assert manifest['steps'][-1]['stage']=='3T-M'
+              assert manifest['steps'][-1]['status']=='success'
+              assert page['quality']['status']=='ok'
+              assert page['quality']['kpi_count']==8
+              assert page['territory']=='16102'
+
+          assert fd['runtime']['panel_source']=='3V-A-structural-v1'
+          assert ed['runtime']['panel_source']=='3V-D-insee-typology-v2'
+          assert all(x.get('density7') and x.get('aav_category') for x in ep['selected'])
+
+          result={
+              'status':'3VE_OK',
+              'territory':'16102',
+              'scale':'france',
+              'panel_intersection_n':len(intersection),
+              'fallback_only':sorted(set(fp['panel_codes'])-set(ep['panel_codes'])),
+              'enriched_only':sorted(set(ep['panel_codes'])-set(fp['panel_codes'])),
+              'fallback_discriminants':fd['quality']['discriminant_factor_count'],
+              'enriched_discriminants':ed['quality']['discriminant_factor_count'],
+              'fallback_hypotheses':fd['quality']['hypothesis_count'],
+              'enriched_hypotheses':ed['quality']['hypothesis_count'],
+              'fallback_priorities':fd['quality']['priority_count'],
+              'enriched_priorities':ed['quality']['priority_count'],
+              'fallback_headline':fd['headline']['interpretation'],
+              'enriched_headline':ed['headline']['interpretation'],
+          }
+          print(json.dumps(result,ensure_ascii=False))
+          PY
+
+      - name: Publier les preuves 3V-E
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostic-3ve-cognac-panel-impact
+          path: |
+            /tmp/fallback/
+            /tmp/enriched/
