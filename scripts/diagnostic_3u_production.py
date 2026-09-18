@@ -1,5 +1,6 @@
 import hashlib
 import json
+import fcntl
 import os
 import shutil
 import subprocess
@@ -15,6 +16,13 @@ OUTPUT = ROOT / "output"
 RUNS = OUTPUT / "runs"
 PUBLISHED = OUTPUT / "published"
 MANIFEST = OUTPUT / "diagnostic-3u-manifest.json"
+LOCK_PATH = OUTPUT / ".diagnostic-production.lock"
+
+OUTPUT.mkdir(exist_ok=True)
+_lock_handle = None
+if os.getenv("DIAG_PRODUCTION_LOCK_HELD") != "1":
+    _lock_handle = LOCK_PATH.open("a+")
+    fcntl.flock(_lock_handle.fileno(), fcntl.LOCK_EX)
 
 TARGET = target()
 COMMUNE = commune_name()
@@ -93,6 +101,7 @@ manifest = {
     },
     "generation": {
         "mode": "deterministic_pipeline",
+        "serialized_workspace": True,
         "llm_used": False,
         "external_knowledge_generation": False,
     },
