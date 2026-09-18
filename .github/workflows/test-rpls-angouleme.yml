@@ -23,9 +23,21 @@ jobs:
 
       - name: Telecharger les sources publiques propre.rpls
         run: |
-          curl --fail --location --retry 3 \
-            "https://gitlab-forge.din.developpement-durable.gouv.fr/api/v4/projects/28046/repository/archive.tar.gz?sha=HEAD" \
-            -o propre-rpls.tar.gz
+          url="https://gitlab-forge.din.developpement-durable.gouv.fr/api/v4/projects/28046/repository/archive.tar.gz?sha=HEAD"
+          rm -f propre-rpls.tar.gz
+          for attempt in 1 2 3 4 5; do
+            echo "Téléchargement RPLS — tentative $attempt/5"
+            if curl --fail --location --retry 3 --retry-all-errors --retry-delay 5 \
+              --connect-timeout 60 --speed-time 180 --speed-limit 1024 \
+              --continue-at - "$url" -o propre-rpls.tar.gz; then
+              break
+            fi
+            if [ "$attempt" = "5" ]; then
+              echo "Échec du téléchargement après 5 tentatives" >&2
+              exit 1
+            fi
+            sleep 10
+          done
           mkdir -p vendor/propre-rpls
           tar -xzf propre-rpls.tar.gz -C vendor/propre-rpls --strip-components=1
           echo "Fichiers de donnees trouves :"
