@@ -61,5 +61,5 @@ def runtime_metadata():
         'commune_name_source':os.getenv('DIAG_COMMUNE_NAME_SOURCE') or ('env' if os.getenv('DIAG_COMMUNE_NAME') else 'transition_default'),
         'panel_source':os.getenv('DIAG_PANEL_SOURCE') or ('env' if os.getenv('DIAG_PANEL_CODES') else 'transition_default'),
         'comparison_scale':comparison_scale(),
-        'comparison_scale_source':'env' if os.getenv('DIAG_COMPARISON_SCALE') else 'transition_default',
+        'comparison_scale_source':os.getenv('DIAG_COMPARISON_SCALE_SOURCE') or ('env' if os.getenv('DIAG_COMPARISON_SCALE') else 'transition_default'),
     }
