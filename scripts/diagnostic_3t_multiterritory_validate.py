@@ -22,8 +22,8 @@ assert d["source_stages"] == ["3O","3P","3Q"]
 
 runtime=d["runtime"]
 assert runtime["territory_source"] == "env"
-assert runtime["commune_name_source"] == "env"
-assert runtime["panel_source"] == "env"
+assert runtime["commune_name_source"] in {"env","geo_api_auto"}
+assert runtime["panel_source"] in {"env","3V-A-structural-v1"}
 
 method=d["method"]
 assert method["panel_reference_n"] == 15
@@ -73,5 +73,7 @@ print(json.dumps({
     "discriminants":quality["discriminant_factor_count"],
     "hypotheses":quality["hypothesis_count"],
     "priorities":quality["priority_count"],
-    "panel_sufficiency_validated":True
+    "panel_sufficiency_validated":True,
+    "panel_source":runtime["panel_source"],
+    "comparison_scale":runtime.get("comparison_scale")
 }, ensure_ascii=False))
