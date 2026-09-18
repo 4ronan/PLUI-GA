@@ -27,16 +27,17 @@ def fnum(v):
 
 
 def download(year):
-    # Fichier Geo-DVF communal : léger, stable et directement adapté au moteur territorial.
+    # Une commune sans fichier ou sans mutation sur un millésime est un cas de donnée
+    # indisponible, pas une raison de faire échouer tout le diagnostic.
     url=f'{LATEST}/{year}/communes/{DEPT}/{TARGET}.csv'
     path=TMP/f'{year}-{TARGET}.csv'
-    subprocess.run([
+    p=subprocess.run([
         'curl','--http1.1','--fail','--location','--show-error','--silent',
-        '--retry','5','--retry-all-errors','--retry-delay','2',
+        '--retry','3','--retry-all-errors','--retry-delay','2',
         '--connect-timeout','30','--max-time','180',
         '--output',str(path),url
-    ],check=True)
-    return url,path
+    ])
+    return url, (path if p.returncode==0 and path.exists() else None)
 
 
 def mutation_rows(path):
@@ -123,10 +124,25 @@ series=[]
 for year in YEARS:
     url,path=download(year)
     urls.append(url)
+    if path is None:
+        series.append({
+            'year':year,
+            'residential_sale_mutations_n':0,
+            'simple_residential_sale_mutations_n':0,
+            'median_transaction_value_eur_simple':None,
+            'median_price_m2_eur_simple':None,
+            'houses':{'n':0,'median_price_m2_eur':None},
+            'apartments':{'n':0,'median_price_m2_eur':None},
+            'availability':'file_unavailable'
+        })
+        continue
     groups=mutation_rows(path)
-    series.append(summarize_year(year,groups))
+    row=summarize_year(year,groups)
+    row['availability']='ok' if row['residential_sale_mutations_n']>0 else 'no_residential_sale'
+    series.append(row)
 
-latest=max((x for x in series if x['residential_sale_mutations_n']>0),key=lambda x:x['year'])
+available=[x for x in series if x['residential_sale_mutations_n']>0]
+latest=max(available,key=lambda x:x['year']) if available else None
 contract={
     'source':'DVF géolocalisées (Etalab / data.gouv.fr)',
     'source_kind':'static_geo_dvf_commune_csv',
@@ -150,12 +166,12 @@ contract={
     },
     'series':series,
     'selected_metrics':{
-        'latest_year':latest['year'],
-        'residential_sale_mutations_n':latest['residential_sale_mutations_n'],
-        'simple_residential_sale_mutations_n':latest['simple_residential_sale_mutations_n'],
-        'median_price_m2_eur_simple':latest['median_price_m2_eur_simple'],
-        'house_median_price_m2_eur':latest['houses']['median_price_m2_eur'],
-        'apartment_median_price_m2_eur':latest['apartments']['median_price_m2_eur']
+        'latest_year':latest['year'] if latest else None,
+        'residential_sale_mutations_n':latest['residential_sale_mutations_n'] if latest else None,
+        'simple_residential_sale_mutations_n':latest['simple_residential_sale_mutations_n'] if latest else None,
+        'median_price_m2_eur_simple':latest['median_price_m2_eur_simple'] if latest else None,
+        'house_median_price_m2_eur':latest['houses']['median_price_m2_eur'] if latest else None,
+        'apartment_median_price_m2_eur':latest['apartments']['median_price_m2_eur'] if latest else None
     },
     'runtime':runtime_metadata(),
     'quality':{
@@ -163,11 +179,11 @@ contract={
         'complex_mutations_excluded_from_price_m2':True,
         'missing_semantics':'absence de valeur = null, jamais 0',
         'year_window_status':'2021-2025 stable/reproductible; 2020 explicitement hors contrat',
+        'available_years':[x['year'] for x in series if x['residential_sale_mutations_n']>0],
+        'missing_or_empty_years':[x['year'] for x in series if x['residential_sale_mutations_n']==0],
         'status':'ok' if all(x['residential_sale_mutations_n']>0 for x in series) else 'partial'
     }
 }
-if contract['quality']['status']!='ok':
-    raise RuntimeError(json.dumps(contract['quality'],ensure_ascii=False))
 OUT.parent.mkdir(exist_ok=True)
 OUT.write_text(json.dumps(contract,ensure_ascii=False,indent=2),encoding='utf-8')
 print(json.dumps(contract,ensure_ascii=False,indent=2))
