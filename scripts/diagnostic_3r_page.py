@@ -27,7 +27,17 @@ if panel_meta_path.exists() and panel_meta_path.stat().st_size>0:
             panel_effective_scale=panel_meta.get('effective_scale') or panel_effective_scale
             panel_algorithm=panel_meta.get('algorithm') or panel_algorithm
             panel_members=[
-                {'code':x.get('code'),'name':x.get('name'),'rank':x.get('rank')}
+                {
+                    'code':x.get('code'),
+                    'name':x.get('name'),
+                    'rank':x.get('rank'),
+                    'density7':x.get('density7'),
+                    'density7_label':x.get('density7_label'),
+                    'aav_category':x.get('aav_category'),
+                    'aav_name':x.get('aav_name'),
+                    'aav_size':x.get('aav_size'),
+                    'population_ratio':x.get('population_ratio'),
+                }
                 for x in panel_meta.get('selected',[])
             ]
     except Exception:
@@ -182,8 +192,27 @@ for x in page['priorities']:
 limits_html=li(page['limits'])
 supp_reasons=[x['reason'] for x in page['suppressed_levers']]
 supp_html=li(supp_reasons) if supp_reasons else '<li>Aucun levier n’est explicitement écarté par les garde-fous pour ce territoire.</li>'
+aav_labels={
+    '11':'commune-centre',
+    '12':'autre commune du pôle principal',
+    '13':'commune d’un pôle secondaire',
+    '20':'commune de la couronne',
+    '30':'hors attraction des villes',
+}
+def panel_member_text(x):
+    base=f'{x.get("name") or "Commune"} · {x.get("code")}'
+    details=[]
+    if x.get('density7_label'):
+        details.append(str(x['density7_label']))
+    if x.get('aav_category'):
+        role=aav_labels.get(str(x['aav_category']),f"AAV catégorie {x['aav_category']}")
+        if x.get('aav_name') and str(x.get('aav_category'))!='30':
+            role+=f" · {x['aav_name']}"
+        details.append(role)
+    return base + (f" — {' · '.join(details)}" if details else '')
+
 panel_members_html=''.join(
-    f'<li>{esc(x.get("name") or "Commune")} · {esc(x.get("code"))}</li>'
+    f'<li>{esc(panel_member_text(x))}</li>'
     for x in page['method']['panel_members']
 )
 
