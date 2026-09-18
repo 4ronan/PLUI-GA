@@ -205,6 +205,9 @@ result = {
     "contract": contract,
 }
 
-out = OUT / "filosofi-3icde-angouleme-panel.json"
-out.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
+out = OUT / "filosofi-3icde-panel.json"
+payload = json.dumps(result, ensure_ascii=False, indent=2)
+out.write_text(payload, encoding="utf-8")
+# Alias temporaire pour les workflows de non-régression antérieurs.
+(OUT / "filosofi-3icde-angouleme-panel.json").write_text(payload, encoding="utf-8")
 print(json.dumps(result, ensure_ascii=False, indent=2))
