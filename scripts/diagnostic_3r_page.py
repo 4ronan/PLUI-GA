@@ -131,7 +131,8 @@ page={
    'comparison_rule':f'Le panel cible comprend {REFERENCE_N} communes comparables, cible exclue. L’effectif réellement disponible peut être inférieur selon la source et l’indicateur ; un facteur n’est classé discriminant que si au moins deux tiers du panel demandé sont disponibles.',
    'hypotheses_rule':'Les hypothèses sont générées par règles déterministes à partir du diagnostic; aucune IA n’intervient.',
    'priority_rule':'L’ordre 3Q est un ordre de vérification, pas un classement d’efficacité.',
-   'universe_rule':'LOVAC, INSEE RP et RPLS restent des univers distincts.'
+   'universe_rule':'LOVAC, INSEE RP et RPLS restent des univers distincts.',
+   'panel_typology_rule':'Les typologies Insee DENS7 et AAV servent uniquement à sélectionner les communes de référence. Elles ne sont ni des facteurs discriminants, ni des hypothèses, ni des leviers du diagnostic.'
  },
  'runtime':RUNTIME,
  'quality':{
@@ -273,6 +274,7 @@ footer{{margin-top:40px;color:var(--muted);font-size:.85rem}} ul{{padding-left:1
 <p><strong>Hypothèses :</strong> {esc(page['method']['hypotheses_rule'])}</p>
 <p><strong>Priorités :</strong> {esc(page['method']['priority_rule'])}</p>
 <p><strong>Univers statistiques :</strong> {esc(page['method']['universe_rule'])}</p>
+<p><strong>Typologies du panel :</strong> {esc(page['method']['panel_typology_rule'])}</p>
 </section>
 
 <footer>Page générée automatiquement à partir des sorties validées 3O, 3P et 3Q. Aucune IA ni connaissance externe n’intervient dans la génération du diagnostic.</footer>
