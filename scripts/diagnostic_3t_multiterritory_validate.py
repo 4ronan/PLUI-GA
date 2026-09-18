@@ -28,6 +28,9 @@ assert runtime["panel_source"] in {"env","3V-A-structural-v1","3V-D-insee-typolo
 method=d["method"]
 assert method["panel_reference_n"] == 15
 assert "15 communes comparables" in method["comparison_rule"]
+assert "uniquement à sélectionner les communes de référence" in method["panel_typology_rule"]
+assert all("aav" not in str(x.get("id","")).lower() and "dens7" not in str(x.get("id","")).lower() for x in d["discriminant_factors"])
+assert all("aav" not in str(x.get("id","")).lower() and "dens7" not in str(x.get("id","")).lower() for x in d["hypotheses"])
 
 quality=d["quality"]
 assert quality["status"] == "ok"
