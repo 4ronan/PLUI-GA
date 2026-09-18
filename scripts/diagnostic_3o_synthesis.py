@@ -1,11 +1,12 @@
 import json
 from pathlib import Path
+from diagnostic_runtime import target, runtime_metadata
 
 P3L=Path('output/diagnostic-3l-interpretation.json')
 P3M2=Path('output/diagnostic-3m2-discriminants.json')
 P3N=Path('output/diagnostic-3n-hypotheses.json')
 OUT=Path('output/diagnostic-3o-synthesis.json')
-TARGET='16015'
+TARGET=target()
 
 for p in (P3L,P3M2,P3N):
     if not p.exists() or p.stat().st_size==0:
@@ -148,6 +149,7 @@ out={
         'ranking_allowed':False,
         'universe_separation_rule':'LOVAC, INSEE RP et RPLS restent distincts',
     },
+    'runtime':runtime_metadata(),
     'quality':{
         'synthesis_block_count':len(synthesis),
         'all_7_domains_present':len(synthesis)==7,
