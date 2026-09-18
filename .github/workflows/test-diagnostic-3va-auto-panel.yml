@@ -9,6 +9,10 @@ on:
       - 'scripts/diagnostic_3v_panel_selector.py'
       - '.github/workflows/test-diagnostic-3va-auto-panel.yml'
 
+concurrency:
+  group: diagnostic-3va-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   auto_panel:
     runs-on: ubuntu-24.04
