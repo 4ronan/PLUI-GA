@@ -41,13 +41,11 @@ payload=fetch_json(URL)
 rows=rows_from_payload(payload)
 required={'ANNEE','COMM','LOG_AUT','LOG_COM','SDP_AUT','SDP_COM','TYPE_LGT'}
 if not rows:
-    raise RuntimeError('Aucune ligne Sitadel')
+    rows=[]
 missing=required-set(rows[0].keys())
 if missing:
     raise RuntimeError(f'Colonnes Sitadel manquantes: {sorted(missing)}')
 rows=[r for r in rows if str(r.get('COMM'))==TARGET]
-if not rows:
-    raise RuntimeError('Aucune ligne pour la commune cible')
 
 total_rows=[]
 by_type={}
@@ -69,11 +67,11 @@ for r in rows:
 total_rows=sorted(total_rows,key=lambda x:x['year'])
 years=[x['year'] for x in total_rows]
 expected=list(range(2013,2026))
-if years!=expected:
-    raise RuntimeError(f'Millésimes inattendus: {years}')
-
-latest_authorized=max((x for x in total_rows if x['authorized_dwellings'] is not None),key=lambda x:x['year'])
-latest_started=max((x for x in total_rows if x['started_dwellings'] is not None),key=lambda x:x['year'])
+missing_years=[y for y in expected if y not in years]
+latest_authorized_rows=[x for x in total_rows if x['authorized_dwellings'] is not None]
+latest_started_rows=[x for x in total_rows if x['started_dwellings'] is not None]
+latest_authorized=max(latest_authorized_rows,key=lambda x:x['year']) if latest_authorized_rows else None
+latest_started=max(latest_started_rows,key=lambda x:x['year']) if latest_started_rows else None
 
 # Contrôle de cohérence des sous-types seulement lorsque toutes les valeurs sont publiées.
 reconciliation=[]
@@ -112,10 +110,10 @@ contract={
     'series':total_rows,
     'by_type':by_type,
     'selected_metrics':{
-        'latest_authorized_year':latest_authorized['year'],
-        'latest_authorized_dwellings':latest_authorized['authorized_dwellings'],
-        'latest_started_year':latest_started['year'],
-        'latest_started_dwellings':latest_started['started_dwellings'],
+        'latest_authorized_year':latest_authorized['year'] if latest_authorized else None,
+        'latest_authorized_dwellings':latest_authorized['authorized_dwellings'] if latest_authorized else None,
+        'latest_started_year':latest_started['year'] if latest_started else None,
+        'latest_started_dwellings':latest_started['started_dwellings'] if latest_started else None,
     },
     'method':{
         'type_filter_for_main_series':'TYPE_LGT = Tous Logements',
@@ -131,8 +129,12 @@ contract={
         'expected_years':expected,
         'reconciliation':reconciliation,
         'missing_semantics':'absence/null = indisponible, jamais 0',
-        'latest_started_lags_latest_authorized':latest_started['year']<latest_authorized['year'],
-        'status':'ok'
+        'missing_years':missing_years,
+        'latest_started_lags_latest_authorized':(
+            None if latest_started is None or latest_authorized is None
+            else latest_started['year']<latest_authorized['year']
+        ),
+        'status':'ok' if not missing_years and latest_authorized and latest_started else 'partial'
     }
 }
 OUT.parent.mkdir(exist_ok=True)
