@@ -23,6 +23,7 @@ if panel_meta_path.exists() and panel_meta_path.stat().st_size>0:
         if (
             str(panel_meta.get('territory'))==TARGET
             and panel_meta.get('panel_codes')==PANEL_CODES
+            and panel_meta.get('algorithm')==RUNTIME.get('panel_source')
         ):
             panel_effective_scale=panel_meta.get('effective_scale') or panel_effective_scale
             panel_algorithm=panel_meta.get('algorithm') or panel_algorithm
