@@ -1,4 +1,5 @@
 import csv, io, json, math, statistics, subprocess, re
+import urllib.parse, urllib.request
 from collections import defaultdict
 from pathlib import Path
 from urllib.parse import urlencode
@@ -51,13 +52,46 @@ def stats(rows,key):
     return {'target':t,'panel_n':len(peers),'panel_median':statistics.median(peers),'panel_q1':qlin(peers,.25),'panel_q3':qlin(peers,.75),'percentile':percentile(t,peers)}
 
 # Population 2023, utilisée uniquement pour normaliser Sitadel sur un dénominateur commun.
+# Le snapshot historique accélère le panel initial; une commune absente est récupérée
+# ponctuellement via Melodi au lieu d'être rejetée.
 with POP_SNAPSHOT.open(encoding='utf-8-sig',newline='') as f:
     poprows=list(csv.DictReader(f))
+
+def melodi_population_2023(code):
+    params=urllib.parse.urlencode({'GEO':f'COM-{code}','TIME_PERIOD':'2023','RP_MEASURE':'POP','maxResult':100})
+    req=urllib.request.Request(
+        f'https://api.insee.fr/melodi/data/DS_RP_SERIE_HISTORIQUE?{params}',
+        headers={'Accept':'application/json','User-Agent':'PLUI-GA-diagnostic/3MP'}
+    )
+    with urllib.request.urlopen(req,timeout=60) as response:
+        payload=json.load(response)
+    vals=[]
+    for obs in payload.get('observations') or []:
+        d=obs.get('dimensions') or {}
+        geo=str(d.get('GEO') or '')
+        geo_code=geo.split('-')[-1] if '-' in geo else geo
+        if geo_code!=code or str(d.get('TIME_PERIOD'))!='2023' or str(d.get('RP_MEASURE'))!='POP':
+            continue
+        if str(d.get('OCS') or '_T')!='_T':
+            continue
+        measures=obs.get('measures') or {}
+        raw=measures.get('OBS_VALUE_NIVEAU',measures.get('OBS_VALUE'))
+        if isinstance(raw,dict): raw=raw.get('value')
+        v=num(raw)
+        if v is not None: vals.append(v)
+    if len(vals)!=1:
+        raise RuntimeError(f'Population 2023 Melodi non unique {code}: {len(vals)}')
+    return vals[0]
+
 pop2023={}
 for code in PANEL:
     m=[r for r in poprows if r['GEO']==code and r['TIME_PERIOD']=='2023' and r['RP_MEASURE']=='POP' and r['OCS']=='_T']
-    if len(m)!=1: raise RuntimeError(f'Population 2023 non unique {code}: {len(m)}')
-    pop2023[code]=float(m[0]['OBS_VALUE'])
+    if len(m)==1:
+        pop2023[code]=float(m[0]['OBS_VALUE'])
+    elif len(m)==0:
+        pop2023[code]=melodi_population_2023(code)
+    else:
+        raise RuntimeError(f'Population 2023 non unique {code}: {len(m)}')
 
 # 1. LOVAC : même fichier national, même millésime et même dénominateur pour les 16 communes.
 lp=TMP/'lovac.csv'; curl(LOVAC_URL,lp); raw=lp.read_bytes()
