@@ -1,6 +1,7 @@
-import csv, io, json, math, statistics, subprocess, re
+import csv, io, json, math, statistics, subprocess, re, os, time
 import urllib.parse, urllib.request
 from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from urllib.parse import urlencode
 from diagnostic_runtime import target, commune_name, panel_peers, department_code, runtime_metadata
@@ -19,6 +20,18 @@ SITADEL_BASE='https://data.statistiques.developpement-durable.gouv.fr/dido/api/v
 LOG1_DATASET='DS_RP_TD_LOGEMENT_CARACT_PRINC'
 LOG1_BASE='https://api.insee.fr/melodi/data'
 POP_SNAPSHOT=Path('data/insee-rp2023-panel-3j.csv')
+IO_WORKERS=max(1,min(8,int(os.getenv('DIAG_3MP_WORKERS','4'))))
+STARTED=time.monotonic()
+
+
+def ordered_map(fn,items):
+    items=list(items)
+    if not items:
+        return []
+    if IO_WORKERS==1:
+        return [fn(x) for x in items]
+    with ThreadPoolExecutor(max_workers=min(IO_WORKERS,len(items))) as executor:
+        return list(executor.map(fn,items))
 
 
 def curl(url,path):
@@ -91,17 +104,24 @@ def melodi_population_2023(code):
     return vals[0] if vals else None
 
 pop2023={}
+missing_population_codes=[]
 for code in PANEL:
     m=[r for r in poprows if r['GEO']==code and r['TIME_PERIOD']=='2023' and r['RP_MEASURE']=='POP' and r['OCS']=='_T']
     if len(m)==1:
         pop2023[code]=float(m[0]['OBS_VALUE'])
     elif len(m)==0:
-        try:
-            pop2023[code]=melodi_population_2023(code)
-        except Exception:
-            pop2023[code]=None
+        missing_population_codes.append(code)
     else:
         raise RuntimeError(f'Population 2023 non unique {code}: {len(m)}')
+
+def population_row(code):
+    try:
+        return code,melodi_population_2023(code)
+    except Exception:
+        return code,None
+
+for code,value in ordered_map(population_row,missing_population_codes):
+    pop2023[code]=value
 
 # 1. LOVAC : même fichier national, même millésime et même dénominateur pour les 16 communes.
 lp=TMP/'lovac.csv'; curl(LOVAC_URL,lp); raw=lp.read_bytes()
@@ -160,13 +180,15 @@ def dvf_summary(code):
         if area and area>0: simple.append(vals[0]/area)
     return residential, (statistics.median(simple) if simple else None), len(simple)
 
-dvf=[]
-for code,name in PANEL.items():
+def dvf_row(item):
+    code,name=item
     try:
         n,med,ns=dvf_summary(code)
     except Exception:
         n,med,ns=0,None,0
-    dvf.append({'code':code,'name':name,'residential_sale_mutations_n':n,'simple_sales_n':ns,'median_price_m2_eur_simple':med})
+    return {'code':code,'name':name,'residential_sale_mutations_n':n,'simple_sales_n':ns,'median_price_m2_eur_simple':med}
+
+dvf=ordered_map(dvf_row,PANEL.items())
 
 # 3. Sitadel : années fixes pour rendre les comparaisons homogènes.
 def rows_from_payload(payload):
@@ -177,8 +199,8 @@ def rows_from_payload(payload):
             if isinstance(v,list): return [r for r in v if isinstance(r,dict)]
     raise RuntimeError('Sitadel structure inconnue')
 
-sitadel=[]
-for code,name in PANEL.items():
+def sitadel_row(item):
+    code,name=item
     aut25=com24=None
     try:
         p=TMP/f'sitadel-{code}.json'
@@ -197,13 +219,15 @@ for code,name in PANEL.items():
         # le diagnostic de la commune cible.
         aut25=com24=None
     pop=pop2023[code]
-    sitadel.append({
+    return {
         'code':code,'name':name,
         'authorized_2025_n':aut25,
         'authorized_2025_per_1000_pop2023':(aut25/pop*1000 if aut25 is not None and pop not in (None,0) else None),
         'started_2024_n':com24,
         'started_2024_per_1000_pop2023':(com24/pop*1000 if com24 is not None and pop not in (None,0) else None)
-    })
+    }
+
+sitadel=ordered_map(sitadel_row,PANEL.items())
 
 # 4. LOG1 : profil des logements vacants comparé entre communes du même panel.
 def flatten(obj,prefix=''):
@@ -248,13 +272,15 @@ def log1_profile(code):
     if total in (None,0) or None in (apt,p1,p2): raise RuntimeError(f'LOG1 incomplet {code}')
     return apt/total*100,(p1+p2)/total*100
 
-log1=[]
-for code,name in PANEL.items():
+def log1_row(item):
+    code,name=item
     try:
         apt,mid=log1_profile(code)
     except Exception:
         apt,mid=None,None
-    log1.append({'code':code,'name':name,'vacant_apartment_share_pct':apt,'vacant_1946_1990_share_pct':mid})
+    return {'code':code,'name':name,'vacant_apartment_share_pct':apt,'vacant_1946_1990_share_pct':mid}
+
+log1=ordered_map(log1_row,PANEL.items())
 
 blocks={
  'lovac':{'year':2025,'rows':lovac,'stats':{'vacancy_rate_pct':stats(lovac,'vacancy_rate_pct'),'structural_vacancy_rate_pct':stats(lovac,'structural_vacancy_rate_pct')},'limit':'Comparaison du parc privé LOVAC sur un même millésime; ne pas fusionner avec les univers INSEE ou RPLS.'},
@@ -276,7 +302,17 @@ quality={
  'causal_claims_included':False,
  'status':'ok' if all(s['panel_n']==len(PEERS) for s in all_stats) else 'partial'
 }
-out={'stage':'3M-P','territory':TARGET,'runtime':runtime_metadata(),'purpose':'matérialiser les panels manquants avant extension de la détection des facteurs discriminants','blocks':blocks,'quality':quality}
+out={
+ 'stage':'3M-P','territory':TARGET,'runtime':runtime_metadata(),
+ 'purpose':'matérialiser les panels manquants avant extension de la détection des facteurs discriminants',
+ 'execution':{
+   'io_workers':IO_WORKERS,
+   'parallel_io':IO_WORKERS>1,
+   'duration_seconds':round(time.monotonic()-STARTED,3),
+   'ordering_rule':'executor.map conserve l’ordre PANEL; les statistiques et sorties restent déterministes à données source identiques'
+ },
+ 'blocks':blocks,'quality':quality
+}
 OUT.parent.mkdir(exist_ok=True)
 OUT.write_text(json.dumps(out,ensure_ascii=False,indent=2),encoding='utf-8')
 print(json.dumps({'quality':quality,'target_stats':{k:v['stats'] for k,v in blocks.items()}},ensure_ascii=False,indent=2))
