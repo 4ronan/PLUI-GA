@@ -1,9 +1,11 @@
 import json
 from pathlib import Path
+from diagnostic_runtime import target, commune_name, runtime_metadata
 
 IN = Path('output/diagnostic-3kg-assembly.json')
 OUT = Path('output/diagnostic-3l-interpretation.json')
-TARGET = '16015'
+TARGET = target()
+COMMUNE_NAME = commune_name()
 
 
 def pct(x):
@@ -114,7 +116,7 @@ sections = [
         'statements': [
             statement(
                 'constat',
-                f"En 2025, DVF recense {int(dvfm['residential_sale_mutations_n'])} mutations résidentielles à Angoulême. Sur les ventes résidentielles simples retenues, le prix médian est de {eur(dvfm['median_price_m2_eur_simple'])} €/m².",
+                f"En 2025, DVF recense {int(dvfm['residential_sale_mutations_n'])} mutations résidentielles à {COMMUNE_NAME}. Sur les ventes résidentielles simples retenues, le prix médian est de {eur(dvfm['median_price_m2_eur_simple'])} €/m².",
                 ['blocks.real_estate_market.selected_metrics.residential_sale_mutations_n', 'blocks.real_estate_market.selected_metrics.median_price_m2_eur_simple']
             ),
             statement(
@@ -245,6 +247,7 @@ out = {
         'comparison_rule': 'une comparaison n’est formulée que lorsqu’un panel de référence est déjà présent dans le contrat source',
     },
     'sections': sections,
+    'runtime': runtime_metadata(),
     'quality': {
         'section_count': len(sections),
         'all_canonical_blocks_interpreted': len(sections) == 7,
