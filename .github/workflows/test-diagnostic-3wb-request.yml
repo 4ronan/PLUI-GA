@@ -25,10 +25,24 @@ jobs:
         run: |
           python scripts/diagnostic_request.py --help >/tmp/help.txt
           grep -q 'code INSEE' /tmp/help.txt
-          if python scripts/diagnostic_request.py 16102 invalide >/tmp/invalid.txt 2>&1; then
+          if python scripts/diagnostic_request.py 16102 invalide >/tmp/invalid-scale.json 2>&1; then
             echo "Une échelle invalide aurait dû être rejetée" >&2
             exit 1
           fi
+          if python scripts/diagnostic_request.py ABC france >/tmp/invalid-code.json 2>&1; then
+            echo "Un code INSEE invalide aurait dû être rejeté" >&2
+            exit 1
+          fi
+          python - <<'PY'
+          import json
+          scale=json.load(open('/tmp/invalid-scale.json',encoding='utf-8'))
+          code=json.load(open('/tmp/invalid-code.json',encoding='utf-8'))
+          assert scale['status']=='failure' and scale['phase']=='input_validation'
+          assert scale['error']['type']=='invalid_scale'
+          assert code['status']=='failure' and code['phase']=='input_validation'
+          assert code['error']['type']=='invalid_territory'
+          print('3WC_INPUT_VALIDATION_OK')
+          PY
 
       - name: Premier appel minimal
         run: |
