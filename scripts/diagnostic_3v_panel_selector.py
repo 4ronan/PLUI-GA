@@ -220,8 +220,10 @@ def select_panel():
     )
 
     ranked=[]
+    candidate_band_counts={0:0,1:0,2:0}
     for row in candidates:
         key,metrics=_candidate_rank(row,target_row,typology_enabled)
+        candidate_band_counts[metrics['population_band']]+=1
         ranked.append((key,row,metrics))
     ranked.sort(key=lambda x:x[0])
 
@@ -245,6 +247,10 @@ def select_panel():
             'aav_detailed_size':row.get('aav_detailed_size'),
             **metrics,
         })
+
+    selected_band_counts={0:0,1:0,2:0}
+    for x in selected:
+        selected_band_counts[x['population_band']]+=1
 
     effective_algorithm=ALGORITHM if typology_enabled else FALLBACK_ALGORITHM
     result={
@@ -298,6 +304,12 @@ def select_panel():
             'all_have_population':all(x['population']>0 for x in selected),
             'all_have_surface':all(x['surface']>0 for x in selected),
             'deterministic_sort':True,
+            'candidate_population_band_counts':{str(k):v for k,v in candidate_band_counts.items()},
+            'selected_population_band_counts':{str(k):v for k,v in selected_band_counts.items()},
+            'population_band_priority_respected':(
+                (candidate_band_counts[0]>=PANEL_N and selected_band_counts[0]==PANEL_N)
+                or (candidate_band_counts[0]<PANEL_N and selected_band_counts[0]==candidate_band_counts[0])
+            ),
             'insee_typology_enabled':typology_enabled,
             'algorithm':effective_algorithm,
             'status':'ok',
