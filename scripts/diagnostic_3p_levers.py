@@ -1,9 +1,10 @@
 import json
 from pathlib import Path
+from diagnostic_runtime import target, runtime_metadata
 
 IN=Path('output/diagnostic-3o-synthesis.json')
 OUT=Path('output/diagnostic-3p-levers.json')
-TARGET='16015'
+TARGET=target()
 
 if not IN.exists() or IN.stat().st_size==0:
     raise RuntimeError('Entrée 3O absente ou vide')
@@ -175,6 +176,7 @@ out={
             'reason':'non déclenché car profil INSEE des logements vacants non discriminant dans le panel'
         }
     ],
+    'runtime':runtime_metadata(),
     'quality':{
         'lever_count':len(levers),
         'all_levers_have_triggers':all(bool(x['trigger_ids']) for x in levers),
