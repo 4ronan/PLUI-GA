@@ -73,10 +73,12 @@ with zipfile.ZipFile(zip_path) as z:
 missing = []
 for code in wanted_codes:
     for m in MEASURES:
-        if m not in rows[code] or rows[code][m] is None:
+        if m not in rows[code]:
+            rows[code][m] = None
             missing.append(f"{code}/{m}")
-if missing:
-    raise RuntimeError(f"Mesures manquantes: {missing}")
+
+# Filosofi peut masquer certaines valeurs au titre du secret statistique.
+# Une valeur absente reste None et n'est jamais transformée en zéro.
 
 def q_linear(values, p):
     xs = sorted(values)
@@ -91,16 +93,24 @@ def q_linear(values, p):
     return xs[lo] + (xs[hi] - xs[lo]) * (h - lo)
 
 def stats_for(measure):
-    panel_values = [rows[c][measure] for c in PANEL]
-    target = rows[TARGET][measure]
+    panel_values = [rows[c][measure] for c in PANEL if rows[c][measure] is not None]
+    target_value = rows[TARGET][measure]
+    if not panel_values:
+        return {
+            "target": target_value,
+            "panel_min": None, "panel_q1": None, "panel_median": None,
+            "panel_q3": None, "panel_max": None, "percentile_empirique": None,
+            "panel_n": 0,
+        }
+    percentile = None if target_value is None else 100.0 * sum(v <= target_value for v in panel_values) / len(panel_values)
     return {
-        "target": target,
+        "target": target_value,
         "panel_min": min(panel_values),
         "panel_q1": q_linear(panel_values, 0.25),
         "panel_median": statistics.median(panel_values),
         "panel_q3": q_linear(panel_values, 0.75),
         "panel_max": max(panel_values),
-        "percentile_empirique": 100.0 * sum(v <= target for v in panel_values) / len(panel_values),
+        "percentile_empirique": percentile,
         "panel_n": len(panel_values),
     }
 
@@ -108,6 +118,8 @@ income = stats_for("MED_SL")
 poverty = stats_for("PR_MD60")
 
 def relative_label(p, low, mid, high):
+    if p is None:
+        return "Indisponible (secret statistique ou donnée non diffusée)"
     if p < 25:
         return low
     if p >= 75:
@@ -133,11 +145,23 @@ signals = [
     },
 ]
 
-summary = (
+def fmt_value(v, digits=1):
+    return None if v is None else f"{v:.{digits}f}"
+
+income_text = (
     f"À {COMMUNE_NAME}, le niveau de vie médian est de {income['target']:.0f} € par unité de consommation "
     f"(médiane du panel : {income['panel_median']:.0f} € ; percentile empirique : {income['percentile_empirique']:.1f} %). "
+    if income['target'] is not None and income['panel_median'] is not None and income['percentile_empirique'] is not None
+    else f"À {COMMUNE_NAME}, le niveau de vie médian n'est pas disponible avec un panel comparable suffisant. "
+)
+poverty_text = (
     f"Le taux de pauvreté atteint {poverty['target']:.1f} % "
     f"(médiane du panel : {poverty['panel_median']:.1f} % ; percentile empirique : {poverty['percentile_empirique']:.1f} %). "
+    if poverty['target'] is not None and poverty['panel_median'] is not None and poverty['percentile_empirique'] is not None
+    else "Le taux de pauvreté n'est pas diffusé pour la commune ou ne permet pas de comparaison robuste ; il est conservé comme indisponible et n'est pas assimilé à zéro. "
+)
+summary = (
+    income_text + poverty_text +
     "Ces indicateurs décrivent le contexte socio-économique du territoire. Ils ne permettent pas d'expliquer directement la vacance privée ni d'attribuer une situation socio-économique aux logements vacants."
 )
 
@@ -164,8 +188,17 @@ contract = {
     },
     "quality": {
         "panel_n_excluding_target": len(PANEL),
-        "percentile_rule": f"count(panel <= target) / {len(PANEL)} * 100",
-        "quartile_rule": f"linear interpolation on the {len(PANEL)} peers, target excluded",
+        "panel_n_by_indicator": {
+            "MED_SL": income["panel_n"],
+            "PR_MD60": poverty["panel_n"],
+        },
+        "target_missing_indicators": [
+            code for code, stat in (("MED_SL", income), ("PR_MD60", poverty))
+            if stat["target"] is None
+        ],
+        "missing_semantics": "secret statistique / absence = null et exclusion de la comparaison; jamais 0",
+        "percentile_rule": f"count(panel <= target) / n_disponible * 100",
+        "quartile_rule": "linear interpolation on available peers, target excluded",
         "year": 2021,
     },
     "summary": summary,
