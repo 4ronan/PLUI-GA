@@ -83,38 +83,56 @@ def select_exact(rows, *, build_end, tdw):
 
 payload=fetch_json(DATA_URL)
 row_path,rows=find_rows(payload)
-if not rows: raise RuntimeError('Aucune observation Melodi')
 
-# LOG1 2023 porte sur les logements construits avant 2021. Dans Melodi,
-# l'agrégat de cette population est codé BUILD_END=Y_LT2021 (et non _T).
-# Les profils par période et par type sont donc reconstruits dans ce même univers.
+# LOG1 est un contexte descriptif distinct de LOVAC. Une absence de diffusion
+# ou une sélection incomplète reste donc indisponible (null) et ne bloque pas
+# le diagnostic cœur. En revanche, une incohérence arithmétique sur un profil
+# entièrement disponible reste bloquante.
+selection_errors=[]
 by_period=[]
 for code,label in PERIODS:
-    v=select_exact(rows,build_end=code,tdw='_T')
+    try:
+        v=select_exact(rows,build_end=code,tdw='_T') if rows else None
+    except RuntimeError as e:
+        v=None
+        selection_errors.append(str(e))
     by_period.append({'code':code,'label':label,'value':v})
 
 by_type=[]
 for code,label in TYPES:
-    v=select_exact(rows,build_end='Y_LT2021',tdw=code)
+    try:
+        v=select_exact(rows,build_end='Y_LT2021',tdw=code) if rows else None
+    except RuntimeError as e:
+        v=None
+        selection_errors.append(str(e))
     by_type.append({'code':code,'label':label,'value':v})
 
-period_sum=sum(x['value'] for x in by_period if x['value'] is not None)
-type_sum=sum(x['value'] for x in by_type if x['value'] is not None)
-
-# Contrôle supplémentaire sur l'agrégat publié, lorsqu'il existe.
 try:
-    published_total=select_exact(rows,build_end='Y_LT2021',tdw='_T')
-except RuntimeError:
+    published_total=select_exact(rows,build_end='Y_LT2021',tdw='_T') if rows else None
+except RuntimeError as e:
     published_total=None
+    selection_errors.append(str(e))
 
-total=published_total if published_total is not None else period_sum
+period_values=[x['value'] for x in by_period]
+type_values=[x['value'] for x in by_type]
+period_complete=all(v is not None for v in period_values)
+type_complete=all(v is not None for v in type_values)
+period_sum=sum(period_values) if period_complete else None
+type_sum=sum(type_values) if type_complete else None
+
+total=published_total
+if total is None and period_complete:
+    total=period_sum
+
 for x in by_period:
-    x['share_pct']=None if total in (None,0) else x['value']/total*100
+    x['share_pct']=None if total in (None,0) or x['value'] is None else x['value']/total*100
 for x in by_type:
-    x['share_pct']=None if total in (None,0) else x['value']/total*100
+    x['share_pct']=None if total in (None,0) or x['value'] is None else x['value']/total*100
 
-period_delta=period_sum-total
-type_delta=type_sum-total
+period_delta=None if period_sum is None or total is None else period_sum-total
+type_delta=None if type_sum is None or total is None else type_sum-total
+complete_profile=total not in (None,0) and period_complete and type_complete
+inconsistent=complete_profile and (abs(period_delta)>0.05 or abs(type_delta)>0.05)
 contract={
  'source':'Insee RP2023 - DS_RP_TD_LOGEMENT_CARACT_PRINC',
  'dataset':DATASET,
@@ -149,10 +167,13 @@ contract={
    'period_sum_delta_vs_total':period_delta,
    'type_sum_delta_vs_total':type_delta,
    'tolerance_abs':0.05,
-   'status':'ok' if abs(period_delta)<=0.05 and abs(type_delta)<=0.05 else 'inconsistent'
+   'target_profile_available':complete_profile,
+   'selection_errors':selection_errors,
+   'missing_semantics':'absence ou non-diffusion = null, jamais 0',
+   'status':'inconsistent' if inconsistent else ('ok' if complete_profile else 'partial')
  }
 }
-if contract['quality']['status']!='ok':
+if contract['quality']['status']=='inconsistent':
     raise RuntimeError(json.dumps(contract['quality'],ensure_ascii=False))
 OUT.parent.mkdir(exist_ok=True)
 OUT.write_text(json.dumps(contract,ensure_ascii=False,indent=2),encoding='utf-8')
