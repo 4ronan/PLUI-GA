@@ -116,10 +116,19 @@ lookup={str(r.get('CODGEO_26','')).strip():r for r in lrows}
 lovac=[]
 for code,name in PANEL.items():
     r=lookup.get(code)
-    if not r: raise RuntimeError(f'LOVAC commune absente {code}')
-    stock=num(r.get('ff_pp_total_25')); vac=num(r.get('pp_vacant_25')); gt2=num(r.get('pp_vacant_plus_2ans_25'))
-    if stock in (None,0) or vac is None or gt2 is None: raise RuntimeError(f'LOVAC 2025 incomplet {code}')
-    lovac.append({'code':code,'name':name,'vacancy_rate_pct':vac/stock*100,'structural_vacancy_rate_pct':gt2/stock*100})
+    stock=vac=gt2=None
+    if r:
+        stock=num(r.get('ff_pp_total_25'))
+        vac=num(r.get('pp_vacant_25'))
+        gt2=num(r.get('pp_vacant_plus_2ans_25'))
+    available=stock not in (None,0) and vac is not None and gt2 is not None
+    if code==TARGET and not available:
+        raise RuntimeError(f'LOVAC_CORE_UNAVAILABLE pour la commune cible {code}')
+    lovac.append({
+        'code':code,'name':name,
+        'vacancy_rate_pct':vac/stock*100 if available else None,
+        'structural_vacancy_rate_pct':gt2/stock*100 if available else None
+    })
 
 # 2. DVF 2025 : prix médian au m² des ventes résidentielles simples, même méthode que 3K-D.
 def dvf_summary(code):
