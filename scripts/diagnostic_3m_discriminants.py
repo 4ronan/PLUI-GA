@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from diagnostic_runtime import target, runtime_metadata
+from diagnostic_runtime import target, runtime_metadata, minimum_comparable_panel_n
 
 ASSEMBLY = Path('output/diagnostic-3kg-assembly.json')
 INTERP = Path('output/diagnostic-3l-interpretation.json')
@@ -24,7 +24,12 @@ def band(percentile):
 
 
 def factor(fid, label, domain, value, median, percentile, evidence, universe, panel_n=None):
-    direction, strength = band(percentile)
+    effective_n = REFERENCE_N if panel_n is None else int(panel_n or 0)
+    minimum_n = minimum_comparable_panel_n(len(assembly.get('runtime_panel_codes', [])) or 15)
+    if percentile is not None and effective_n < minimum_n:
+        direction, strength = 'panel_insuffisant', None
+    else:
+        direction, strength = band(percentile)
     return {
         'id': fid,
         'label': label,
@@ -35,7 +40,9 @@ def factor(fid, label, domain, value, median, percentile, evidence, universe, pa
         'direction': direction,
         'strength': strength,
         'is_discriminant': strength is not None,
-        'reference_panel_n': REFERENCE_N if panel_n is None else panel_n,
+        'reference_panel_n': effective_n,
+        'minimum_reference_panel_n': minimum_n,
+        'comparison_sufficient': effective_n >= minimum_n,
         'universe': universe,
         'evidence': evidence,
     }
@@ -98,6 +105,8 @@ out = {
         'recommendations_allowed': False,
         'comparison_required': True,
         'no_panel_rule': 'un indicateur sans panel comparable n’est pas classé comme discriminant en 3M',
+        'minimum_comparable_panel_rule': 'au moins deux tiers du panel demandé doivent être disponibles pour classer un facteur comme discriminant',
+        'minimum_comparable_panel_n': minimum_comparable_panel_n(15),
     },
     'discriminant_factors': discriminants,
     'non_discriminant_comparators': non_discriminants,
@@ -113,6 +122,7 @@ out = {
         'discriminant_count': len(discriminants),
         'all_discriminants_have_panel': all(x['reference_panel_n'] > 0 for x in discriminants),
         'unavailable_candidate_count': sum(1 for x in candidates if x['percentile'] is None),
+        'insufficient_panel_candidate_count': sum(1 for x in candidates if not x.get('comparison_sufficient', False)),
         'causal_claims_included': False,
         'recommendations_included': False,
         'global_score_included': False,
