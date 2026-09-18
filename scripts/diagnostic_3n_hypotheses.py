@@ -137,7 +137,7 @@ if not priv['is_discriminant'] and not structural['is_discriminant']:
         'statement': "Le script ne génère aucune hypothèse de sur-vacance privée relative : ni le taux de vacance privée ni le taux de vacance de plus de deux ans ne sont discriminants dans le panel.",
         'evidence_factor_ids': ['private_vacancy_rate', 'private_structural_vacancy_rate']
     })
-if not apt['is_discriminant'] and not age['is_discriminant']:
+if apt.get('percentile') is not None and age.get('percentile') is not None and not apt['is_discriminant'] and not age['is_discriminant']:
     guardrails.append({
         'id': 'G2_no_atypical_vacant_profile',
         'statement': "Le script ne génère aucune hypothèse fondée sur un profil atypique des logements vacants : la part des appartements et la part des logements construits entre 1946 et 1990 ne sont pas discriminantes dans le panel.",
