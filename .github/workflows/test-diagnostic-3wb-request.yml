@@ -6,6 +6,13 @@ on:
     branches: [vacants-rpls-d2]
     paths:
       - 'scripts/diagnostic_request.py'
+      - 'scripts/diagnostic_runtime.py'
+      - 'scripts/diagnostic_3v_panel_selector.py'
+      - 'scripts/diagnostic_3vd_insee_zonings.py'
+      - 'scripts/diagnostic_3u_production.py'
+      - 'scripts/diagnostic_3ub_cached_production.py'
+      - 'scripts/diagnostic_3t_multiterritory_validate.py'
+      - 'scripts/diagnostic_3r_page.py'
       - '.github/workflows/test-diagnostic-3wb-request.yml'
 
 concurrency:
