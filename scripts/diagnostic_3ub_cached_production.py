@@ -67,6 +67,22 @@ def copy_tree(src,dst):
         shutil.rmtree(dst)
     shutil.copytree(src,dst)
 
+def atomic_copy2(src,dst):
+    dst.parent.mkdir(parents=True,exist_ok=True)
+    tmp=dst.with_name(f".{dst.name}.{os.getpid()}.tmp")
+    shutil.copy2(src,tmp)
+    os.replace(tmp,dst)
+
+def restore_publication_atomically(src_dir,dst_dir):
+    dst_dir.mkdir(parents=True,exist_ok=True)
+    expected={p.name for p in src_dir.iterdir() if p.is_file()}
+    for p in src_dir.iterdir():
+        if p.is_file():
+            atomic_copy2(p,dst_dir/p.name)
+    for p in list(dst_dir.iterdir()):
+        if p.is_file() and p.name not in expected:
+            p.unlink()
+
 def validate_cached_files(cache_pub,meta):
     expected=meta.get('files') or []
     if len(expected)!=5:
@@ -158,7 +174,7 @@ elif cache_meta:
         reason='cache_integrity_failure'
 
 if cache_valid:
-    copy_tree(cache_pub,PUBLISHED/TARGET)
+    restore_publication_atomically(cache_pub,PUBLISHED/TARGET)
     source_manifest=cache_dir/'diagnostic-3u-manifest.json'
     if source_manifest.exists():
         shutil.copy2(source_manifest,OUTPUT/'diagnostic-3u-manifest.json')
