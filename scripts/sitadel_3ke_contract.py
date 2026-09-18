@@ -1,9 +1,10 @@
 import json, subprocess
 from pathlib import Path
+from diagnostic_runtime import target, runtime_metadata
 
 DATASET_ID='6513ee3a3b05e5cd969c270f'
 RID='9c90a880-4ba0-49b4-b99d-d7dd6c810dd0'
-TARGET='16015'
+TARGET=target()
 BASE='https://data.statistiques.developpement-durable.gouv.fr/dido/api/v1'
 URL=f'{BASE}/datafiles/{RID}/json?COMM=eq:{TARGET}'
 OUT=Path('output/sitadel-3ke-contract.json')
@@ -124,6 +125,7 @@ contract={
         'warning':'Séries annuelles communales non estimées. Une valeur absente signifie indisponible et n’est jamais convertie en zéro. Les données récentes peuvent être incomplètes lorsque les déclarations ne sont pas encore toutes reçues.',
         'sitadel3_transition_note':'Le changement de système Sitadel2 vers Sitadel3 doit être traité comme une vigilance méthodologique pour les comparaisons temporelles récentes.'
     },
+    'runtime':runtime_metadata(),
     'quality':{
         'years':years,
         'expected_years':expected,

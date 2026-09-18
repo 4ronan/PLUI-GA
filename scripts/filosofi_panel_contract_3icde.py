@@ -5,30 +5,17 @@ import statistics
 import subprocess
 import zipfile
 from pathlib import Path
+from diagnostic_runtime import target, commune_name, panel_peers, runtime_metadata
 
 SOURCE_PAGE = "https://www.insee.fr/fr/statistiques/7756729"
 ZIP_URL = "https://www.insee.fr/fr/statistiques/fichier/7756729/base-cc-filosofi-2021-geo2025_csv.zip"
 TIME_PERIOD = "2021"
 GEO_OBJECT = "COM"
-TARGET = "16015"
-PANEL = {
-    "47001": "Agen",
-    "19031": "Brive-la-Gaillarde",
-    "24037": "Bergerac",
-    "86066": "Châtellerault",
-    "16102": "Cognac",
-    "40088": "Dax",
-    "33243": "Libourne",
-    "47157": "Marmande",
-    "40192": "Mont-de-Marsan",
-    "79191": "Niort",
-    "24322": "Périgueux",
-    "17299": "Rochefort",
-    "17306": "Royan",
-    "17415": "Saintes",
-    "47323": "Villeneuve-sur-Lot",
-}
-NAMES = {TARGET: "Angoulême", **PANEL}
+TARGET = target()
+COMMUNE_NAME = commune_name()
+PEER_CODES = panel_peers()
+PANEL = {c: c for c in PEER_CODES}
+NAMES = {TARGET: COMMUNE_NAME, **PANEL}
 MEASURES = {
     "MED_SL": "niveau_de_vie_median",
     "PR_MD60": "taux_pauvrete",
@@ -147,7 +134,7 @@ signals = [
 ]
 
 summary = (
-    f"À Angoulême, le niveau de vie médian est de {income['target']:.0f} € par unité de consommation "
+    f"À {COMMUNE_NAME}, le niveau de vie médian est de {income['target']:.0f} € par unité de consommation "
     f"(médiane du panel : {income['panel_median']:.0f} € ; percentile empirique : {income['percentile_empirique']:.1f} %). "
     f"Le taux de pauvreté atteint {poverty['target']:.1f} % "
     f"(médiane du panel : {poverty['panel_median']:.1f} % ; percentile empirique : {poverty['percentile_empirique']:.1f} %). "
@@ -177,11 +164,12 @@ contract = {
     },
     "quality": {
         "panel_n_excluding_target": len(PANEL),
-        "percentile_rule": "count(panel <= target) / 15 * 100",
-        "quartile_rule": "linear interpolation on the 15 peers, target excluded",
+        "percentile_rule": f"count(panel <= target) / {len(PANEL)} * 100",
+        "quartile_rule": f"linear interpolation on the {len(PANEL)} peers, target excluded",
         "year": 2021,
     },
     "summary": summary,
+    "runtime": runtime_metadata(),
 }
 
 result = {

@@ -1,9 +1,10 @@
 import csv, io, json, re, subprocess
+from diagnostic_runtime import target, runtime_metadata
 from pathlib import Path
 
 DATASET_PAGE='https://www.data.gouv.fr/datasets/logements-vacants-du-parc-prive-par-commune-departement-region-france-de-2020-a-2026'
 RESOURCE_URL='https://www.data.gouv.fr/api/1/datasets/r/2e0417b4-902d-4c60-90e7-bf5df148cb87'
-TARGET='16015'
+TARGET=target()
 
 Path('tmp_3kb').mkdir(exist_ok=True)
 raw_path=Path('tmp_3kb/lovac.csv')
@@ -41,7 +42,7 @@ code_field=code_candidates[0]
 
 matches=[r for r in rows if str(r.get(code_field,'')).strip()==TARGET]
 if len(matches)!=1:
-    raise RuntimeError(f'Angoulême non unique avec {code_field}: {len(matches)}')
+    raise RuntimeError(f'Commune {TARGET} non unique avec {code_field}: {len(matches)}')
 r=matches[0]
 
 def to_num(v):
@@ -145,6 +146,7 @@ contract={
         'breaks_in_series':['GMBI autour de 2023','1767Biscom en 2025'],
         'short_vacancy_rule':'<=2 ans = vacants totaux - vacants >2 ans si les deux sont disponibles'
     },
+    'runtime':runtime_metadata(),
     'schema_audit':{
         'fields':fields,
         'classified_fields':{f'{fam}_{y}':fs for (fam,y),fs in classified.items()}

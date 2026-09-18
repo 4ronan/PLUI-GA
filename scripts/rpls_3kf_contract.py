@@ -1,9 +1,11 @@
 import csv, json, math, statistics
 from pathlib import Path
+from diagnostic_runtime import target, panel_peers, runtime_metadata
 
-TARGET='16015'
+TARGET=target()
 YEAR=2025
-PANEL_CODES=['16015','19031','47001','24322','40192','79191','86066','33243','17299','40088','24037','17415','16102','17306','47323','47157']
+PEER_CODES=panel_peers()
+PANEL_CODES=[TARGET,*PEER_CODES]
 CSV_PATH=Path('data/rpls-2025-communes.csv')
 CHECKS_PATH=Path('data/rpls-2025-checks.json')
 OUT=Path('output/rpls-3kf-contract.json')
@@ -64,7 +66,7 @@ def metrics(r):
     }
 
 checks=json.loads(CHECKS_PATH.read_text(encoding='utf-8'))
-if checks.get('duplicate_commune_rows') != 0 or checks.get('angouleme_rows') != 1:
+if checks.get('duplicate_commune_rows') != 0:
     raise RuntimeError(f'Précontrôles RPLS invalides: {checks}')
 
 rows={}
@@ -83,7 +85,7 @@ if missing:
 
 panel={code:metrics(r) for code,r in rows.items()}
 t=panel[TARGET]
-peers=[panel[c] for c in PANEL_CODES if c != TARGET]
+peers=[panel[c] for c in PEER_CODES]
 
 keys=['vacance_sociale_pct','mobilite_pct','part_qpv_pct','part_age_40_plus_pct']
 medians={k:quantile_linear([x[k] for x in peers],.5) for k in keys}
@@ -145,8 +147,8 @@ contract={
         'codes':PANEL_CODES,
         'target_excluded_from_reference':True,
         'reference_n':len(peers),
-        'percentile_rule':'count(peer <= target) / 15 * 100',
-        'quartile_rule':'linear interpolation on the 15 peers, target excluded',
+        'percentile_rule':f'count(peer <= target) / {len(peers)} * 100',
+        'quartile_rule':f'linear interpolation on the {len(peers)} peers, target excluded',
         'medians':medians,
         'percentiles':percentiles,
     },
@@ -158,20 +160,10 @@ contract={
         'missing_semantics':'valeur absente, supprimée ou secrète = null/exclue, jamais 0',
         'vacance_plus_3_mois_rule':'nb_ls_vacant_3 décrit la vacance sociale de plus de 3 mois; ne pas l’assimiler à la vacance LOVAC de plus de 2 ans',
         'status':'ok'
-    }
+    },
+    'runtime':runtime_metadata()
 }
 
-# Verrous sur les valeurs déjà validées à l’étape 3H.
-assert abs(t['vacance_sociale_pct']-1.703975944)<0.01
-assert abs(t['mobilite_pct']-9.61)<0.02
-assert abs(t['part_qpv_pct']-56.92)<0.02
-assert abs(t['part_age_40_plus_pct']-66.84)<0.02
-assert abs(t['part_collectif_pct']-90.98)<0.02
-assert abs(percentiles['vacance_sociale_pct']-40.0)<0.01
-assert abs(percentiles['mobilite_pct']-86.6666666667)<0.01
-assert abs(percentiles['part_qpv_pct']-93.3333333333)<0.01
-assert abs(percentiles['part_age_40_plus_pct']-73.3333333333)<0.01
-
-OUT.parent.mkdir(exist_ok=True)
+# Les valeurs Angoulême sont contrôlées dans les tests de non-régression, pas dans le contrat générique.\n\nOUT.parent.mkdir(exist_ok=True)
 OUT.write_text(json.dumps(contract,ensure_ascii=False,indent=2),encoding='utf-8')
 print(json.dumps(contract,ensure_ascii=False,indent=2))

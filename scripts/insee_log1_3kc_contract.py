@@ -2,9 +2,10 @@ import json
 import subprocess
 from pathlib import Path
 from urllib.parse import urlencode
+from diagnostic_runtime import target, runtime_metadata
 
 DATASET='DS_RP_TD_LOGEMENT_CARACT_PRINC'
-TARGET='16015'
+TARGET=target()
 YEAR='2023'
 BASE='https://api.insee.fr/melodi'
 DATA_URL=f'{BASE}/data/{DATASET}?{urlencode({"GEO":f"COM-{TARGET}","TIME_PERIOD":YEAR,"maxResult":5000})}'
@@ -137,6 +138,7 @@ contract={
    'by_construction_period':by_period,
    'by_dwelling_type':by_type,
  },
+ 'runtime':runtime_metadata(),
  'quality':{
    'construction_codes':[c for c,_ in PERIODS],
    'dwelling_type_codes':[c for c,_ in TYPES],

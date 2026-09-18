@@ -1,12 +1,16 @@
 import csv, json, statistics
 from pathlib import Path
+from diagnostic_runtime import target, commune_name, panel_peers, runtime_metadata
 
 SNAPSHOT=Path('data/insee-rp2023-panel-3j.csv')
 OUT=Path('output')
 OUT.mkdir(exist_ok=True)
 
-PANEL={
-'16015':'Angoulême','47001':'Agen','19031':'Brive-la-Gaillarde','24037':'Bergerac','86066':'Châtellerault','16102':'Cognac','40088':'Dax','33243':'Libourne','47157':'Marmande','40192':'Mont-de-Marsan','79191':'Niort','24322':'Périgueux','17299':'Rochefort','17306':'Royan','17415':'Saintes','47323':'Villeneuve-sur-Lot'}
+TARGET=target()
+COMMUNE_NAME=commune_name()
+PEER_CODES=panel_peers()
+PANEL={TARGET:COMMUNE_NAME, **{c:c for c in PEER_CODES}}
+
 
 with SNAPSHOT.open(encoding='utf-8-sig', newline='') as f:
     rows=list(csv.DictReader(f))
@@ -33,7 +37,7 @@ for code,name in PANEL.items():
     rp17=val(code,'2017','DWELLINGS','DW_MAIN'); rp23=val(code,'2023','DWELLINGS','DW_MAIN')
     rs23=val(code,'2023','DWELLINGS','DW_SEC_DW_OCC'); total23=val(code,'2023','DWELLINGS','_T')
     communes.append({
-        'code':code,'name':name,'is_target':code=='16015',
+        'code':code,'name':name,'is_target':code==TARGET,
         'population_change_pct':pct_change(p17,p23),
         'households_change_pct':pct_change(rp17,rp23),
         'secondary_share_pct':rs23/total23*100 if total23 else None
@@ -84,7 +88,7 @@ signals=[
 ]
 
 summary=(
-    f"Entre 2017 et 2023, la population d’Angoulême évolue de {s_pop['value']:.1f} % "
+    f"Entre 2017 et 2023, la population de {COMMUNE_NAME} évolue de {s_pop['value']:.1f} % "
     f"(médiane du panel : {s_pop['panel_median']:.1f} % ; percentile : {s_pop['percentile']:.1f} %). "
     f"Le nombre de ménages progresse de {s_hh['value']:.1f} % "
     f"(médiane du panel : {s_hh['panel_median']:.1f} % ; percentile : {s_hh['percentile']:.1f} %). "
@@ -95,7 +99,7 @@ summary=(
 
 contract={
     'source':'INSEE - Recensement de la population 2023, séries historiques',
-    'territory':'16015',
+    'territory':TARGET,
     'scope':'dynamique démographique et pression résidentielle',
     'role':'contexte structurel',
     'merge_with_lovac':False,
@@ -119,13 +123,14 @@ contract={
         }
     },
     'quality':{
-        'panel_n_excluding_target':15,
-        'percentile_rule':'count(panel <= target) / 15 * 100',
-        'quartile_rule':'linear interpolation on the 15 peers, target excluded',
+        'panel_n_excluding_target':len(peers),
+        'percentile_rule':f'count(panel <= target) / {len(peers)} * 100',
+        'quartile_rule':f'linear interpolation on the {len(peers)} peers, target excluded',
         'households_proxy':'residences principales du recensement',
         'caution':'comparaisons de population à interpréter avec prudence autour du changement de questionnaire INSEE ; contexte résidentiel non causal'
     },
-    'summary':summary
+    'summary':summary,
+    'runtime':runtime_metadata()
 }
 
 out=OUT/'insee-3jc-contract.json'

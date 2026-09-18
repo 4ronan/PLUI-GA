@@ -1,9 +1,10 @@
 import csv, json, math, statistics, subprocess
 from collections import defaultdict
 from pathlib import Path
+from diagnostic_runtime import target, department_code, runtime_metadata
 
-TARGET='16015'
-DEPT='16'
+TARGET=target()
+DEPT=department_code(TARGET)
 # Fenêtre volontairement limitée aux millésimes encore exposés de façon stable
 # par Geo-DVF /latest. Le millésime 2020 n'est plus publié dans cette arborescence
 # et n'est donc pas utilisé dans le contrat reproductible.
@@ -138,9 +139,9 @@ contract={
     'years':YEARS,
     'urls':urls,
     'method':{
-        'download_strategy':'CSV Geo-DVF communal 16015 depuis /latest ; fenêtre reproductible 2021-2025',
+        'download_strategy':f'CSV Geo-DVF communal {TARGET} depuis /latest ; fenêtre reproductible 2021-2025',
         'excluded_years':{'2020':'non exposé dans l’arborescence Geo-DVF /latest au moment de la matérialisation ; non substitué par une source différente'},
-        'mutation_filter':'code_commune=16015; nature_mutation=Vente; au moins un local Maison/Appartement',
+        'mutation_filter':f'code_commune={TARGET}; nature_mutation=Vente; au moins un local Maison/Appartement',
         'transaction_count_unit':'id_mutation distinct',
         'price_m2_filter':'ventes résidentielles simples avec exactement un id_local Maison ou Appartement, valeur_fonciere>0, surface_reelle_bati>0',
         'price_m2_formula':'valeur_fonciere / surface_reelle_bati',
@@ -156,6 +157,7 @@ contract={
         'house_median_price_m2_eur':latest['houses']['median_price_m2_eur'],
         'apartment_median_price_m2_eur':latest['apartments']['median_price_m2_eur']
     },
+    'runtime':runtime_metadata(),
     'quality':{
         'deduplicated_by_id_mutation':True,
         'complex_mutations_excluded_from_price_m2':True,
