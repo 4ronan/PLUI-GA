@@ -1,7 +1,8 @@
 import json
 from pathlib import Path
+from diagnostic_runtime import target, runtime_metadata
 
-TARGET = '16015'
+TARGET = target()
 OUT = Path('output/diagnostic-3kg-assembly.json')
 
 SOURCES = {
@@ -11,7 +12,7 @@ SOURCES = {
     'construction': ('output/sitadel-3ke-contract.json', None),
     'social_housing': ('output/rpls-3kf-contract.json', None),
     'demography_housing': ('output/insee-3jc-contract.json', None),
-    'socioeconomic_context': ('output/filosofi-3icde-angouleme-panel.json', 'contract'),
+    'socioeconomic_context': ('output/filosofi-3icde-panel.json', 'contract'),
 }
 
 
@@ -56,8 +57,8 @@ lovac = blocks['vacancy_private']
 lovac_metrics = lovac.get('metrics', {})
 if lovac_metrics.get('latest_compatible_rate_year') != 2025:
     raise RuntimeError('LOVAC: dernière année de taux compatible attendue = 2025')
-if lovac_metrics.get('vacant_all_count_2026') != 2741:
-    raise RuntimeError('LOVAC: nombre vacant 2026 inattendu')
+if lovac_metrics.get('vacant_all_count_2026') is None:
+    raise RuntimeError('LOVAC: nombre vacant 2026 indisponible pour la commune cible')
 
 log1 = blocks['vacant_stock_profile']
 if log1.get('year') != 2023:
@@ -105,6 +106,7 @@ assembly = {
     },
     'checks': checks,
     'blocks': blocks,
+    'runtime': runtime_metadata(),
     'quality': {
         'expected_blocks': len(SOURCES),
         'loaded_blocks': len(blocks),
