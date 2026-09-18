@@ -75,7 +75,7 @@ jobs:
               assert d['quality']['target_excluded'] is True
               assert len(d['panel_codes'])==15
               assert os.environ['DIAG_TERRITORY'] not in d['panel_codes']
-              assert all(x['structural_score']>=0 for x in d['selected'])
+              assert all(x['structural_distance']>=0 for x in d['selected'])
           assert first['panel_codes']==second['panel_codes']
           assert [x['rank'] for x in second['selected']]==list(range(1,16))
           print('3VA_AUTO_PANEL_OK',second['territory'],second['requested_scale'],second['effective_scale'],','.join(second['panel_codes']))
