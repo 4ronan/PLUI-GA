@@ -68,7 +68,13 @@ synthesis={
             factor_view('vacant_apartment_share'),
             factor_view('vacant_1946_1990_share'),
         ],
-        'reading':'profil des logements vacants discriminant dans le panel' if (factors['vacant_apartment_share']['is_discriminant'] or factors['vacant_1946_1990_share']['is_discriminant']) else 'profil des logements vacants non discriminant dans le panel',
+        'reading':(
+            'profil des logements vacants indisponible ou non comparable'
+            if factors['vacant_apartment_share'].get('percentile') is None or factors['vacant_1946_1990_share'].get('percentile') is None
+            else ('profil des logements vacants discriminant dans le panel'
+                  if (factors['vacant_apartment_share']['is_discriminant'] or factors['vacant_1946_1990_share']['is_discriminant'])
+                  else 'profil des logements vacants non discriminant dans le panel')
+        ),
         'guardrail':guards.get('G2_no_atypical_vacant_profile',{}).get('statement'),
     },
     'market_context':{
