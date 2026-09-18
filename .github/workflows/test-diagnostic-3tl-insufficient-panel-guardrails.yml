@@ -113,3 +113,79 @@ jobs:
 
           print('3TL_NO_FALSE_NORMALITY_OK')
           PY
+
+
+  no_false_hypotheses:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Générer jusqu'à 3M-2
+        run: |
+          set -euo pipefail
+          export PYTHONPATH="$PWD/scripts:${PYTHONPATH:-}"
+          python scripts/lovac_3kb_contract.py
+          python scripts/insee_log1_3kc_contract.py
+          python scripts/dvf_3kd_contract.py
+          python scripts/sitadel_3ke_contract.py
+          python scripts/rpls_3kf_contract.py
+          python scripts/insee_3jc_contract.py
+          python scripts/filosofi_panel_contract_3icde.py
+          python scripts/diagnostic_3kg_assembly.py
+          python scripts/diagnostic_3l_interpretation.py
+          python scripts/diagnostic_3m_discriminants.py
+          python scripts/diagnostic_3mp_missing_panels.py
+          python scripts/diagnostic_3m2_discriminants_extended.py
+
+      - name: Injecter trois convergences avec un facteur insuffisant
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('output/diagnostic-3m2-discriminants.json')
+          d=json.loads(p.read_text(encoding='utf-8'))
+          allf={x['id']:x for x in d['discriminant_factors']+d['non_discriminant_comparators']}
+
+          def setf(fid, direction, percentile, sufficient, discr):
+              x=allf[fid]
+              x['direction']=direction
+              x['percentile']=percentile
+              x['comparison_sufficient']=sufficient
+              x['reference_panel_n']=15 if sufficient else 9
+              x['minimum_reference_panel_n']=10
+              x['is_discriminant']=discr
+              x['strength']='marqué' if discr else None
+
+          setf('median_income','faible',10.0,False,False)
+          setf('poverty_rate','eleve',90.0,True,True)
+          setf('dvf_median_price_m2','faible',10.0,True,True)
+
+          setf('sitadel_authorized_intensity','typique',50.0,False,False)
+          setf('sitadel_started_intensity','tres_faible',5.0,True,True)
+
+          setf('social_mobility','tres_eleve',95.0,True,True)
+          setf('social_qpv_share','tres_eleve',95.0,True,True)
+          setf('social_vacancy','panel_insuffisant',50.0,False,False)
+
+          d['discriminant_factors']=[x for x in allf.values() if x['is_discriminant']]
+          d['non_discriminant_comparators']=[x for x in allf.values() if not x['is_discriminant']]
+          p.write_text(json.dumps(d,ensure_ascii=False,indent=2),encoding='utf-8')
+          print('3TL_FALSE_CONVERGENCES_INJECTED')
+          PY
+
+      - name: Vérifier qu'aucune hypothèse n'est déclenchée
+        run: |
+          export PYTHONPATH="$PWD/scripts:${PYTHONPATH:-}"
+          python scripts/diagnostic_3n_hypotheses.py
+          python - <<'PY'
+          import json
+          d=json.load(open('output/diagnostic-3n-hypotheses.json',encoding='utf-8'))
+          ids={x['id'] for x in d['hypotheses']}
+          assert 'H1_socioeconomic_market_convergence' not in ids
+          assert 'H2_construction_pipeline_gap' not in ids
+          assert 'H3_social_housing_configuration' not in ids
+          print('3TL_NO_FALSE_HYPOTHESES_OK')
+          PY
