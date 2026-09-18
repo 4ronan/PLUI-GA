@@ -62,6 +62,12 @@ def now_iso():
 def safe_slug(value):
     return "".join(c.lower() if c.isalnum() else "-" for c in value).strip("-") or "commune"
 
+def atomic_copy2(src, dst):
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    tmp = dst.with_name(f".{dst.name}.{os.getpid()}.tmp")
+    shutil.copy2(src, tmp)
+    os.replace(tmp, dst)
+
 started = time.monotonic()
 started_at = now_iso()
 run_id = f"{TARGET}-{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')}-{os.getpid()}"
@@ -152,7 +158,7 @@ try:
         OUTPUT / "diagnostic-3q-priorities.json": publish_dir / "priorities.json",
     }
     for src, dst in publication_map.items():
-        shutil.copy2(src, dst)
+        atomic_copy2(src, dst)
 
     manifest["outputs"] = [
         {
