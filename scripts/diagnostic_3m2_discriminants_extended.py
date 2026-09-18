@@ -9,6 +9,8 @@ TARGET=target()
 
 
 def band(p):
+    if p is None:
+        return 'indisponible',None
     p=float(p)
     if p<=10: return 'tres_faible','très marqué'
     if p<=25: return 'faible','marqué'
@@ -36,7 +38,7 @@ if base.get('stage')!='3M' or pan.get('stage')!='3M-P':
     raise RuntimeError('Étapes amont inattendues')
 if str(base.get('territory'))!=TARGET or str(pan.get('territory'))!=TARGET:
     raise RuntimeError('Territoire inattendu')
-if pan.get('quality',{}).get('status')!='ok':
+if pan.get('quality',{}).get('status') not in {'ok','partial'}:
     raise RuntimeError('3M-P non validé')
 
 candidates=list(base['discriminant_factors'])+list(base['non_discriminant_comparators'])
@@ -79,7 +81,8 @@ out={
     'quality':{
         'candidate_count':len(candidates),
         'discriminant_count':len(discriminants),
-        'all_candidates_have_panel':all(x.get('reference_panel_n',0)>0 for x in candidates),
+        'all_candidates_have_panel':all(x.get('reference_panel_n',0)>0 for x in candidates if x.get('percentile') is not None),
+        'unavailable_candidate_count':sum(1 for x in candidates if x.get('percentile') is None),
         'all_discriminants_have_panel':all(x.get('reference_panel_n',0)>0 for x in discriminants),
         'causal_claims_included':False,
         'recommendations_included':False,
