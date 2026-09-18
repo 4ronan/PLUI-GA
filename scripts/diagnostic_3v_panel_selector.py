@@ -217,13 +217,25 @@ def select_panel():
 def ensure_runtime_panel():
     explicit=os.getenv('DIAG_PANEL_CODES')
     if explicit and explicit.strip():
+        explicit_codes=[x.strip().upper() for x in explicit.split(',') if x.strip()]
+        if os.getenv('DIAG_PANEL_SOURCE')==ALGORITHM and OUT.exists() and OUT.stat().st_size>0:
+            try:
+                prior=json.loads(OUT.read_text(encoding='utf-8'))
+                if (
+                    prior.get('algorithm')==ALGORITHM
+                    and str(prior.get('territory'))==target()
+                    and prior.get('panel_codes')==explicit_codes
+                ):
+                    return prior
+            except Exception:
+                pass
         return {
             'stage':'3V-A',
             'algorithm':'explicit_env_override',
             'territory':target(),
             'requested_scale':comparison_scale(),
             'effective_scale':'explicit',
-            'panel_codes':[x.strip().upper() for x in explicit.split(',') if x.strip()],
+            'panel_codes':explicit_codes,
             'quality':{'status':'explicit_override'},
         }
 
