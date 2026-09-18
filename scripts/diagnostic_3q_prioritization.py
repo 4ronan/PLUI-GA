@@ -1,9 +1,10 @@
 import json
 from pathlib import Path
+from diagnostic_runtime import target, runtime_metadata
 
 INP=Path('output/diagnostic-3p-levers.json')
 OUT=Path('output/diagnostic-3q-priorities.json')
-TARGET='16015'
+TARGET=target()
 
 if not INP.exists() or INP.stat().st_size==0:
     raise RuntimeError('Entrée 3P absente ou vide')
@@ -124,6 +125,7 @@ out={
  },
  'priorities':priorities,
  'suppressed_levers':d.get('suppressed_levers',[]),
+ 'runtime':runtime_metadata(),
  'quality':{
    'priority_count':len(priorities),
    'orders_unique':len({x['order'] for x in priorities})==len(priorities),
