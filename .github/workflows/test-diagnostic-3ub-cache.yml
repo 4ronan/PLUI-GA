@@ -1,0 +1,67 @@
+name: Test diagnostic 3U-B cache
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [vacants-rpls-d2]
+    paths:
+      - 'scripts/diagnostic_3ub_cached_production.py'
+      - '.github/workflows/test-diagnostic-3ub-cache.yml'
+
+jobs:
+  cache_roundtrip:
+    runs-on: ubuntu-24.04
+    env:
+      DIAG_TERRITORY: '16102'
+      DIAG_COMMUNE_NAME: 'Cognac'
+      DIAG_PANEL_CODES: '19031,47001,24322,40192,79191,86066,33243,17299,40088,24037,17415,16015,17306,47323,47157'
+      DIAG_CACHE_TTL_HOURS: '24'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Premier appel — cache absent
+        run: |
+          python scripts/diagnostic_3ub_cached_production.py
+          cp output/diagnostic-3ub-manifest.json /tmp/first.json
+          cp output/published/16102/diagnostic.json /tmp/first-diagnostic.json
+
+      - name: Deuxième appel — cache réutilisé
+        run: |
+          python scripts/diagnostic_3ub_cached_production.py
+          cp output/diagnostic-3ub-manifest.json /tmp/second.json
+
+      - name: Vérifier le round-trip du cache
+        run: |
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          first=json.load(open('/tmp/first.json',encoding='utf-8'))
+          second=json.load(open('/tmp/second.json',encoding='utf-8'))
+          assert first['stage']=='3U-B' and first['status']=='success'
+          assert first['cache']['hit'] is False
+          assert first['cache']['reason']=='cache_absent'
+          assert second['stage']=='3U-B' and second['status']=='success'
+          assert second['cache']['hit'] is True
+          assert second['cache']['reason']=='valid_cache'
+          assert first['cache']['key']==second['cache']['key']
+          before=hashlib.sha256(Path('/tmp/first-diagnostic.json').read_bytes()).hexdigest()
+          after=hashlib.sha256(Path('output/published/16102/diagnostic.json').read_bytes()).hexdigest()
+          assert before==after
+          page=json.load(open('output/published/16102/diagnostic.json',encoding='utf-8'))
+          assert page['territory']=='16102'
+          assert page['quality']['status']=='ok'
+          print('3UB_CACHE_OK',first['duration_seconds'],second['duration_seconds'])
+          PY
+
+      - name: Publier les preuves 3U-B
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostic-3ub-cache-cognac
+          path: |
+            output/diagnostic-3ub-manifest.json
+            output/diagnostic-3u-manifest.json
+            output/published/16102/
+            output/cache/
