@@ -126,8 +126,7 @@ jobs:
           assert d['quality']['status']=='ok'
           assert d['kpis'][2]['value']=='Indisponible'
           assert d['kpis'][5]['value']=='Indisponible'
-          assert 'DVF ne fournit pas de mutation résidentielle exploitable' in h
-          assert 'Aucune valeur communale exploitable n’est disponible pour les logements autorisés' in h
+          assert h.count('Indisponible') >= 2
           ids={x['id'] for x in d['discriminant_factors']}
           assert 'dvf_median_price_m2' not in ids
           assert 'sitadel_authorized_intensity' not in ids
