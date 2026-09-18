@@ -23,7 +23,7 @@ assert d["source_stages"] == ["3O","3P","3Q"]
 runtime=d["runtime"]
 assert runtime["territory_source"] == "env"
 assert runtime["commune_name_source"] in {"env","geo_api_auto"}
-assert runtime["panel_source"] in {"env","3V-A-structural-v1"}
+assert runtime["panel_source"] in {"env","3V-A-structural-v1","3V-D-insee-typology-v2"}
 
 method=d["method"]
 assert method["panel_reference_n"] == 15
