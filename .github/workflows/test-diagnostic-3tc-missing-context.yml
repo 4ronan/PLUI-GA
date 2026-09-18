@@ -1,0 +1,146 @@
+name: Test diagnostic 3T-C missing contextual data
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [vacants-rpls-d2]
+    paths:
+      - 'scripts/dvf_3kd_contract.py'
+      - 'scripts/sitadel_3ke_contract.py'
+      - 'scripts/diagnostic_3kg_assembly.py'
+      - 'scripts/diagnostic_3l_interpretation.py'
+      - 'scripts/diagnostic_3mp_missing_panels.py'
+      - 'scripts/diagnostic_3m2_discriminants_extended.py'
+      - 'scripts/diagnostic_3n_hypotheses.py'
+      - 'scripts/diagnostic_3o_synthesis.py'
+      - 'scripts/diagnostic_3p_levers.py'
+      - 'scripts/diagnostic_3q_prioritization.py'
+      - 'scripts/diagnostic_3r_page.py'
+      - '.github/workflows/test-diagnostic-3tc-missing-context.yml'
+
+jobs:
+  missing_context:
+    runs-on: ubuntu-24.04
+    env:
+      DIAG_TERRITORY: '16271'
+      DIAG_COMMUNE_NAME: 'Puymoyen'
+      DIAG_PANEL_CODES: '16015,16102,19031,47001,24322,40192,79191,86066,33243,17299,40088,24037,17415,17306,47323'
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Générer les contrats source réels
+        run: |
+          set -euo pipefail
+          python scripts/lovac_3kb_contract.py
+          python scripts/insee_log1_3kc_contract.py
+          python scripts/dvf_3kd_contract.py
+          python scripts/sitadel_3ke_contract.py
+          python scripts/rpls_3kf_contract.py
+          python scripts/insee_3jc_contract.py
+          python scripts/filosofi_panel_contract_3icde.py
+
+      - name: Simuler DVF indisponible et Sitadel partiel
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          p=Path('output/dvf-3kd-contract.json')
+          d=json.loads(p.read_text(encoding='utf-8'))
+          d['selected_metrics']={
+            'latest_year':None,
+            'residential_sale_mutations_n':None,
+            'simple_residential_sale_mutations_n':None,
+            'median_price_m2_eur_simple':None,
+            'house_median_price_m2_eur':None,
+            'apartment_median_price_m2_eur':None,
+          }
+          d['quality']['status']='partial'
+          d['quality']['missing_or_empty_years']=[2021,2022,2023,2024,2025]
+          p.write_text(json.dumps(d,ensure_ascii=False,indent=2),encoding='utf-8')
+
+          p=Path('output/sitadel-3ke-contract.json')
+          s=json.loads(p.read_text(encoding='utf-8'))
+          s['selected_metrics']={
+            'latest_authorized_year':None,
+            'latest_authorized_dwellings':None,
+            'latest_started_year':None,
+            'latest_started_dwellings':None,
+          }
+          s['quality']['status']='partial'
+          s['quality']['missing_years']=[2025]
+          p.write_text(json.dumps(s,ensure_ascii=False,indent=2),encoding='utf-8')
+          print('3TC_SOURCE_GAPS_INJECTED')
+          PY
+
+      - name: Construire jusqu'à 3M-P
+        run: |
+          set -euo pipefail
+          python scripts/diagnostic_3kg_assembly.py
+          python scripts/diagnostic_3l_interpretation.py
+          python scripts/diagnostic_3m_discriminants.py
+          python scripts/diagnostic_3mp_missing_panels.py
+
+      - name: Simuler panels DVF et Sitadel non exploitables
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('output/diagnostic-3mp-panels.json')
+          d=json.loads(p.read_text(encoding='utf-8'))
+          keys=[
+            ('dvf','median_price_m2_eur_simple'),
+            ('sitadel','authorized_2025_per_1000_pop2023'),
+            ('sitadel','started_2024_per_1000_pop2023'),
+          ]
+          for block,key in keys:
+              st=d['blocks'][block]['stats'][key]
+              st['target']=None
+              st['percentile']=None
+          d['quality']['status']='partial'
+          d['quality']['all_panel_stats_complete']=False
+          p.write_text(json.dumps(d,ensure_ascii=False,indent=2),encoding='utf-8')
+          print('3TC_PANEL_GAPS_INJECTED')
+          PY
+
+      - name: Terminer le diagnostic
+        run: |
+          set -euo pipefail
+          python scripts/diagnostic_3m2_discriminants_extended.py
+          python scripts/diagnostic_3n_hypotheses.py
+          python scripts/diagnostic_3o_synthesis.py
+          python scripts/diagnostic_3p_levers.py
+          python scripts/diagnostic_3q_prioritization.py
+          python scripts/diagnostic_3r_page.py
+
+      - name: Vérifier la sémantique des absences
+        run: |
+          python - <<'PY'
+          import json
+          d=json.load(open('output/diagnostic-3r-page.json',encoding='utf-8'))
+          h=open('output/diagnostic-3r-page.html',encoding='utf-8').read()
+          assert d['quality']['status']=='ok'
+          assert d['kpis'][2]['value']=='Indisponible'
+          assert d['kpis'][5]['value']=='Indisponible'
+          assert 'DVF ne fournit pas de mutation résidentielle exploitable' in h
+          assert 'Aucune valeur communale exploitable n’est disponible pour les logements autorisés' in h
+          ids={x['id'] for x in d['discriminant_factors']}
+          assert 'dvf_median_price_m2' not in ids
+          assert 'sitadel_authorized_intensity' not in ids
+          assert 'sitadel_started_intensity' not in ids
+          assert all(x.get('value') != 0 for x in d['kpis'][2:3]+d['kpis'][5:6])
+          print('3TC_MISSING_CONTEXT_OK')
+          PY
+
+      - name: Publier la page 3T-C
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostic-3tc-missing-context
+          path: |
+            output/diagnostic-3r-page.json
+            output/diagnostic-3r-page.html
+            output/diagnostic-3mp-panels.json
