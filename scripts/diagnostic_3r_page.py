@@ -9,7 +9,29 @@ OUT_JSON=Path('output/diagnostic-3r-page.json')
 OUT_HTML=Path('output/diagnostic-3r-page.html')
 TARGET=target()
 COMMUNE_NAME=commune_name()
-REFERENCE_N=len(panel_peers())
+PANEL_CODES=panel_peers()
+REFERENCE_N=len(PANEL_CODES)
+RUNTIME=runtime_metadata()
+
+panel_members=[{'code':c,'name':None} for c in PANEL_CODES]
+panel_effective_scale=RUNTIME.get('comparison_scale')
+panel_algorithm=RUNTIME.get('panel_source')
+panel_meta_path=Path('output/diagnostic-3v-panel.json')
+if panel_meta_path.exists() and panel_meta_path.stat().st_size>0:
+    try:
+        panel_meta=json.loads(panel_meta_path.read_text(encoding='utf-8'))
+        if (
+            str(panel_meta.get('territory'))==TARGET
+            and panel_meta.get('panel_codes')==PANEL_CODES
+        ):
+            panel_effective_scale=panel_meta.get('effective_scale') or panel_effective_scale
+            panel_algorithm=panel_meta.get('algorithm') or panel_algorithm
+            panel_members=[
+                {'code':x.get('code'),'name':x.get('name'),'rank':x.get('rank')}
+                for x in panel_meta.get('selected',[])
+            ]
+    except Exception:
+        pass
 
 for p in (P3O,P3P,P3Q):
     if not p.exists() or p.stat().st_size==0:
@@ -91,12 +113,17 @@ page={
  'suppressed_levers':p.get('suppressed_levers',[]),
  'method':{
    'panel_reference_n':REFERENCE_N,
+   'panel_codes':PANEL_CODES,
+   'panel_members':panel_members,
+   'panel_source':panel_algorithm,
+   'comparison_scale_requested':RUNTIME.get('comparison_scale'),
+   'comparison_scale_effective':panel_effective_scale,
    'comparison_rule':f'Le panel cible comprend {REFERENCE_N} communes comparables, cible exclue. L’effectif réellement disponible peut être inférieur selon la source et l’indicateur ; un facteur n’est classé discriminant que si au moins deux tiers du panel demandé sont disponibles.',
    'hypotheses_rule':'Les hypothèses sont générées par règles déterministes à partir du diagnostic; aucune IA n’intervient.',
    'priority_rule':'L’ordre 3Q est un ordre de vérification, pas un classement d’efficacité.',
    'universe_rule':'LOVAC, INSEE RP et RPLS restent des univers distincts.'
  },
- 'runtime':runtime_metadata(),
+ 'runtime':RUNTIME,
  'quality':{
    'kpi_count':len(kpis),
    'discriminant_factor_count':len(o['discriminant_factors']),
@@ -155,6 +182,10 @@ for x in page['priorities']:
 limits_html=li(page['limits'])
 supp_reasons=[x['reason'] for x in page['suppressed_levers']]
 supp_html=li(supp_reasons) if supp_reasons else '<li>Aucun levier n’est explicitement écarté par les garde-fous pour ce territoire.</li>'
+panel_members_html=''.join(
+    f'<li>{esc(x.get("name") or "Commune")} · {esc(x.get("code"))}</li>'
+    for x in page['method']['panel_members']
+)
 
 html_doc=f'''<!doctype html>
 <html lang="fr">
@@ -208,6 +239,8 @@ footer{{margin-top:40px;color:var(--muted);font-size:.85rem}} ul{{padding-left:1
 <h2>Méthode</h2>
 <section class="method">
 <p><strong>Comparaison :</strong> {esc(page['method']['comparison_rule'])}</p>
+<p><strong>Échelle demandée :</strong> {esc(page['method']['comparison_scale_requested'])} · <strong>échelle effective :</strong> {esc(page['method']['comparison_scale_effective'])} · <strong>source du panel :</strong> {esc(page['method']['panel_source'])}</p>
+<details><summary>Communes du panel de référence</summary><ul>{panel_members_html}</ul></details>
 <p><strong>Hypothèses :</strong> {esc(page['method']['hypotheses_rule'])}</p>
 <p><strong>Priorités :</strong> {esc(page['method']['priority_rule'])}</p>
 <p><strong>Univers statistiques :</strong> {esc(page['method']['universe_rule'])}</p>
