@@ -98,7 +98,7 @@ def main():
         result={
             'status':'failure',
             'territory':env['DIAG_TERRITORY'],
-            'comparison_scale':args.scale,
+            'comparison_scale':scale,
             'runner':script,
             'return_code':proc.returncode,
             'error':(error_manifest or {}).get('error'),
