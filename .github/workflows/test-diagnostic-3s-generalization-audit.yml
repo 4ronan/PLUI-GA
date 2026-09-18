@@ -1,0 +1,43 @@
+name: Audit diagnostic 3S generalization
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [vacants-rpls-d2]
+    paths:
+      - 'scripts/diagnostic_3s_generalization_audit.py'
+      - 'scripts/*.py'
+      - '.github/workflows/test-diagnostic-3s-generalization-audit.yml'
+
+jobs:
+  generalization_audit:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Auditer les dépendances codées en dur
+        run: python scripts/diagnostic_3s_generalization_audit.py
+      - name: Vérifier 3S-A
+        run: |
+          test -s output/diagnostic-3s-generalization-audit.json
+          python - <<'PY'
+          import json
+          d=json.load(open('output/diagnostic-3s-generalization-audit.json',encoding='utf-8'))
+          assert d['stage']=='3S-A'
+          assert d['quality']['status']=='ok'
+          assert d['quality']['audit_deterministic'] is True
+          assert d['quality']['llm_used'] is False
+          assert d['summary']['pipeline_file_count']==17
+          assert d['quality']['all_pipeline_files_present'] is True
+          # 3S-A est un audit: on attend encore des blocages avant refactorisation.
+          assert d['summary']['blocking_file_count']>0
+          assert d['summary']['ready_for_any_commune'] is False
+          print(json.dumps({'summary':d['summary'],'next_refactor_order':d['next_refactor_order']},ensure_ascii=False,indent=2))
+          PY
+      - name: Publier 3S-A
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostic-3s-generalization-audit
+          path: output/diagnostic-3s-generalization-audit.json
