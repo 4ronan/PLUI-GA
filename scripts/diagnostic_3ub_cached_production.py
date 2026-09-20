@@ -28,6 +28,7 @@ COMPARISON_SCALE=comparison_scale()
 PUBLISHED_NAMES=('index.html','diagnostic.json','synthesis.json','levers.json','priorities.json')
 REQUEST_INDEX=CACHE_ROOT/'request-index.json'
 REQUEST_ID=f'{TARGET}|{COMPARISON_SCALE}'
+AUTO_REQUEST=not bool(os.getenv('DIAG_PANEL_CODES')) and not bool(os.getenv('DIAG_COMMUNE_NAME'))
 
 def truthy(value):
     return str(value or '').strip().lower() in {'1','true','yes','oui','on'}
@@ -200,7 +201,7 @@ now_epoch=time.time()
 
 # Fast path: une requête territoire+échelle déjà indexée et encore valide
 # peut être servie sans rappeler geo.api.gouv.fr ni les zonages de panel.
-if not force_refresh:
+if not force_refresh and AUTO_REQUEST:
     request_entry=(load_request_index().get('entries') or {}).get(REQUEST_ID)
     if request_entry:
         indexed_key=request_entry.get('cache_key')
@@ -501,7 +502,7 @@ else:
 
 manifest['finished_at']=now_iso()
 manifest['duration_seconds']=round(time.monotonic()-started,3)
-if manifest['status']=='success':
+if manifest['status']=='success' and AUTO_REQUEST:
     update_request_index(cache_key)
 write_json(OUT_MANIFEST,manifest)
 print(json.dumps({
