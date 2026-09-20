@@ -2,10 +2,12 @@ services:
   - type: web
     name: zonage-terrain-vacance
     runtime: docker
-    plan: starter
+    plan: 0.5c-512mb
     region: frankfurt
     healthCheckPath: /api/ready
-    autoDeploy: false
+    autoDeployTrigger: checksPass
+    numInstances: 1
+    maxShutdownDelaySeconds: 300
     envVars:
       - key: DIAG_CACHE_DIR
         value: /data/cache

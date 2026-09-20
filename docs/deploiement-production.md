@@ -25,7 +25,7 @@ curl --fail http://127.0.0.1:8765/api/health
 curl --fail http://127.0.0.1:8765/api/ready
 ```
 
-Le fichier `render.yaml` fournit un déploiement Render avec disque persistant de 5 Go. Le plan doit permettre un processus toujours actif : une mise en veille pendant une génération interromprait le travail en mémoire.
+Le fichier `render.yaml` fournit un déploiement Render avec disque persistant de 5 Go, une seule instance et déploiement automatique uniquement après réussite de la CI. Le plan doit permettre un processus toujours actif : une mise en veille pendant une génération interromprait le travail en mémoire.
 
 ## Contrat HTTP public
 
