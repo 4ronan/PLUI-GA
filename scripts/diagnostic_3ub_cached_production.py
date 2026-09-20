@@ -24,25 +24,10 @@ _lock_handle=LOCK_PATH.open('a+')
 fcntl.flock(_lock_handle.fileno(),fcntl.LOCK_EX)
 
 TARGET=target()
-try:
-    PANEL_SELECTION=ensure_runtime_panel()
-except Exception as exc:
-    preflight={
-        'stage':'3U-B',
-        'status':'failure',
-        'phase':'panel_selection',
-        'territory':TARGET,
-        'commune_name':os.getenv('DIAG_COMMUNE_NAME'),
-        'started_at':datetime.now(timezone.utc).isoformat().replace('+00:00','Z'),
-        'finished_at':datetime.now(timezone.utc).isoformat().replace('+00:00','Z'),
-        'error':{'type':type(exc).__name__,'message':str(exc)},
-    }
-    OUT_MANIFEST.write_text(json.dumps(preflight,ensure_ascii=False,indent=2),encoding='utf-8')
-    raise
-COMMUNE=commune_name()
-PEERS=panel_peers()
 COMPARISON_SCALE=comparison_scale()
 PUBLISHED_NAMES=('index.html','diagnostic.json','synthesis.json','levers.json','priorities.json')
+REQUEST_INDEX=CACHE_ROOT/'request-index.json'
+REQUEST_ID=f'{TARGET}|{COMPARISON_SCALE}'
 
 def truthy(value):
     return str(value or '').strip().lower() in {'1','true','yes','oui','on'}
@@ -172,9 +157,145 @@ def validate_cached_source_manifest(cache_dir,meta):
         return False
     return d.get('status')=='success' and d.get('territory')==TARGET
 
+def validate_cached_panel(cache_dir,meta):
+    item=meta.get('panel_file') or {}
+    p=cache_dir/'diagnostic-3v-panel.json'
+    if not p.exists() or p.stat().st_size<=0:
+        return False
+    if p.stat().st_size!=item.get('bytes') or sha256_file(p)!=item.get('sha256'):
+        return False
+    try:
+        d=json.loads(p.read_text(encoding='utf-8'))
+    except Exception:
+        return False
+    return d.get('territory')==TARGET and d.get('panel_codes')==meta.get('panel_codes')
+
+def load_request_index():
+    if not REQUEST_INDEX.exists():
+        return {'schema':'3U-B-request-index-v1','entries':{}}
+    try:
+        d=json.loads(REQUEST_INDEX.read_text(encoding='utf-8'))
+        if d.get('schema')!='3U-B-request-index-v1' or not isinstance(d.get('entries'),dict):
+            raise ValueError('index schema')
+        return d
+    except Exception:
+        return {'schema':'3U-B-request-index-v1','entries':{}}
+
+def update_request_index(cache_key):
+    d=load_request_index()
+    d['entries'][REQUEST_ID]={
+        'cache_key':cache_key,
+        'territory':TARGET,
+        'comparison_scale':COMPARISON_SCALE,
+        'updated_at':now_iso(),
+    }
+    write_json(REQUEST_INDEX,d)
+
 started=time.monotonic()
 engine_sha=engine_fingerprint()
 data_sha=local_data_fingerprint()
+ttl_hours=float(os.getenv('DIAG_CACHE_TTL_HOURS','24'))
+force_refresh=truthy(os.getenv('DIAG_FORCE_REFRESH'))
+now_epoch=time.time()
+
+# Fast path: une requête territoire+échelle déjà indexée et encore valide
+# peut être servie sans rappeler geo.api.gouv.fr ni les zonages de panel.
+if not force_refresh:
+    request_entry=(load_request_index().get('entries') or {}).get(REQUEST_ID)
+    if request_entry:
+        indexed_key=request_entry.get('cache_key')
+        indexed_dir=CACHE_ROOT/str(indexed_key)
+        indexed_meta_path=indexed_dir/'cache-meta.json'
+        try:
+            indexed_meta=json.loads(indexed_meta_path.read_text(encoding='utf-8'))
+        except Exception:
+            indexed_meta=None
+        if indexed_meta:
+            age_hours=(now_epoch-float(indexed_meta.get('created_at_epoch',0)))/3600
+            indexed_pub=indexed_dir/'published'
+            indexed_selection=indexed_meta.get('panel_selection') or {}
+            fast_valid=(
+                age_hours<=ttl_hours
+                and indexed_meta.get('territory')==TARGET
+                and indexed_meta.get('comparison_scale')==COMPARISON_SCALE
+                and indexed_meta.get('engine_sha256')==engine_sha
+                and indexed_meta.get('local_data_sha256')==data_sha
+                and isinstance(indexed_meta.get('panel_codes'),list)
+                and len(indexed_meta.get('panel_codes'))==15
+                and indexed_selection.get('algorithm') in {'3V-D-insee-typology-v2','3V-A-structural-v1','explicit_env_override'}
+                and validate_cached_files(indexed_pub,indexed_meta)
+                and validate_cached_source_manifest(indexed_dir,indexed_meta)
+                and validate_cached_panel(indexed_dir,indexed_meta)
+            )
+            if fast_valid:
+                COMMUNE=indexed_meta['commune_name']
+                PEERS=indexed_meta['panel_codes']
+                os.environ['DIAG_COMMUNE_NAME']=COMMUNE
+                os.environ['DIAG_COMMUNE_NAME_SOURCE']='cache_index'
+                os.environ['DIAG_PANEL_CODES']=','.join(PEERS)
+                os.environ['DIAG_PANEL_SOURCE']=indexed_selection.get('algorithm')
+                os.environ['DIAG_COMPARISON_SCALE']=COMPARISON_SCALE
+                os.environ['DIAG_COMPARISON_SCALE_SOURCE']='env'
+                restore_publication_atomically(indexed_pub,PUBLISHED/TARGET)
+                atomic_copy2(indexed_dir/'diagnostic-3u-manifest.json',OUTPUT/'diagnostic-3u-manifest.json')
+                atomic_copy2(indexed_dir/'diagnostic-3v-panel.json',OUTPUT/'diagnostic-3v-panel.json')
+                fast_manifest={
+                    'stage':'3U-B',
+                    'status':'success',
+                    'territory':TARGET,
+                    'commune_name':COMMUNE,
+                    'runtime':runtime_metadata(),
+                    'panel_reference_n':len(PEERS),
+                    'panel_codes':PEERS,
+                    'panel_selection':indexed_selection,
+                    'cache':{
+                        'key':indexed_key,
+                        'root':str(CACHE_ROOT.relative_to(ROOT)) if CACHE_ROOT.is_relative_to(ROOT) else str(CACHE_ROOT),
+                        'ttl_hours':ttl_hours,
+                        'force_refresh':False,
+                        'hit':True,
+                        'reason':'request_index_valid_cache',
+                        'fast_path':True,
+                        'engine_sha256':engine_sha,
+                        'local_data_sha256':data_sha,
+                        'panel_sha256':indexed_meta.get('panel_sha256'),
+                        'panel_selection_sha256':indexed_meta.get('panel_selection_sha256'),
+                        'commune_sha256':indexed_meta.get('commune_sha256'),
+                        'comparison_scale':COMPARISON_SCALE,
+                        'comparison_scale_sha256':indexed_meta.get('comparison_scale_sha256'),
+                    },
+                    'source_generation_manifest':str(indexed_dir/'diagnostic-3u-manifest.json'),
+                    'serialized_workspace':True,
+                    'started_at':now_iso(),
+                    'finished_at':now_iso(),
+                    'duration_seconds':round(time.monotonic()-started,3),
+                }
+                write_json(OUT_MANIFEST,fast_manifest)
+                print(json.dumps({
+                    'status':'success','stage':'3U-B','territory':TARGET,
+                    'cache_hit':True,'cache_reason':'request_index_valid_cache',
+                    'duration_seconds':fast_manifest['duration_seconds'],'cache_key':indexed_key,
+                },ensure_ascii=False))
+                raise SystemExit(0)
+
+try:
+    PANEL_SELECTION=ensure_runtime_panel()
+except Exception as exc:
+    preflight={
+        'stage':'3U-B',
+        'status':'failure',
+        'phase':'panel_selection',
+        'territory':TARGET,
+        'commune_name':os.getenv('DIAG_COMMUNE_NAME'),
+        'started_at':now_iso(),
+        'finished_at':now_iso(),
+        'error':{'type':type(exc).__name__,'message':str(exc)},
+    }
+    write_json(OUT_MANIFEST,preflight)
+    raise
+COMMUNE=commune_name()
+PEERS=panel_peers()
+
 panel_signature=hashlib.sha256(','.join(PEERS).encode()).hexdigest()
 panel_selection_payload={
     'algorithm':PANEL_SELECTION.get('algorithm'),
@@ -203,10 +324,6 @@ cache_key=f"{TARGET}-{commune_signature[:10]}-{scale_signature[:8]}-{panel_signa
 cache_dir=CACHE_ROOT/cache_key
 cache_pub=cache_dir/'published'
 cache_meta_path=cache_dir/'cache-meta.json'
-ttl_hours=float(os.getenv('DIAG_CACHE_TTL_HOURS','24'))
-force_refresh=truthy(os.getenv('DIAG_FORCE_REFRESH'))
-now_epoch=time.time()
-
 manifest={
     'stage':'3U-B',
     'status':'running',
@@ -227,10 +344,16 @@ manifest={
         'force_refresh':force_refresh,
         'hit':False,
         'reason':None,
+        'fast_path':False,
         'engine_sha256':engine_sha,
         'local_data_sha256':data_sha,
         'panel_sha256':panel_signature,
         'panel_selection_sha256':panel_selection_signature,
+        'panel_selection':{
+            'algorithm':PANEL_SELECTION.get('algorithm'),
+            'requested_scale':PANEL_SELECTION.get('requested_scale'),
+            'effective_scale':PANEL_SELECTION.get('effective_scale'),
+        },
         'commune_sha256':commune_signature,
         'comparison_scale':COMPARISON_SCALE,
         'comparison_scale_sha256':scale_signature,
@@ -265,7 +388,8 @@ elif cache_meta:
     same_scale=cache_meta.get('comparison_scale')==COMPARISON_SCALE and cache_meta.get('comparison_scale_sha256')==scale_signature
     files_ok=validate_cached_files(cache_pub,cache_meta)
     source_manifest_ok=validate_cached_source_manifest(cache_dir,cache_meta)
-    if age_hours<=ttl_hours and same_engine and same_data and same_panel and same_panel_selection and same_target and same_commune and same_scale and files_ok and source_manifest_ok:
+    panel_file_ok=validate_cached_panel(cache_dir,cache_meta)
+    if age_hours<=ttl_hours and same_engine and same_data and same_panel and same_panel_selection and same_target and same_commune and same_scale and files_ok and source_manifest_ok and panel_file_ok:
         cache_valid=True
         reason='valid_cache'
     elif age_hours>ttl_hours:
@@ -291,6 +415,7 @@ if cache_valid:
     restore_publication_atomically(cache_pub,PUBLISHED/TARGET)
     source_manifest=cache_dir/'diagnostic-3u-manifest.json'
     atomic_copy2(source_manifest,OUTPUT/'diagnostic-3u-manifest.json')
+    atomic_copy2(cache_dir/'diagnostic-3v-panel.json',OUTPUT/'diagnostic-3v-panel.json')
     manifest['cache']['hit']=True
     manifest['cache']['reason']=reason
     manifest['source_generation_manifest']=str(source_manifest)
@@ -327,11 +452,21 @@ else:
     cache_dir.mkdir(parents=True,exist_ok=True)
     snapshot_publication(PUBLISHED/TARGET,cache_pub)
     shutil.copy2(source_manifest_path,cache_dir/'diagnostic-3u-manifest.json')
+    panel_source_path=OUTPUT/'diagnostic-3v-panel.json'
+    if not panel_source_path.exists() or panel_source_path.stat().st_size<=0:
+        raise RuntimeError('Panel 3V absent après génération')
+    shutil.copy2(panel_source_path,cache_dir/'diagnostic-3v-panel.json')
     cached_source_manifest=cache_dir/'diagnostic-3u-manifest.json'
     source_manifest_meta={
         'name':'diagnostic-3u-manifest.json',
         'bytes':cached_source_manifest.stat().st_size,
         'sha256':sha256_file(cached_source_manifest),
+    }
+    cached_panel=cache_dir/'diagnostic-3v-panel.json'
+    panel_file_meta={
+        'name':'diagnostic-3v-panel.json',
+        'bytes':cached_panel.stat().st_size,
+        'sha256':sha256_file(cached_panel),
     }
     file_meta=[]
     for p in sorted(cache_pub.iterdir()):
@@ -353,6 +488,7 @@ else:
         'created_at_epoch':time.time(),
         'files':file_meta,
         'source_manifest':source_manifest_meta,
+        'panel_file':panel_file_meta,
     }
     write_json(cache_meta_path,cache_meta)
     manifest['source_generation_manifest']=str(source_manifest_path.relative_to(ROOT))
@@ -360,6 +496,8 @@ else:
 
 manifest['finished_at']=now_iso()
 manifest['duration_seconds']=round(time.monotonic()-started,3)
+if manifest['status']=='success':
+    update_request_index(cache_key)
 write_json(OUT_MANIFEST,manifest)
 print(json.dumps({
     'status':manifest['status'],
