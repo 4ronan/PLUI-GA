@@ -5,6 +5,7 @@ on:
   push:
     branches: [vacants-rpls-d2]
     paths:
+      - 'scripts/diagnostic_3kg_assembly.py'
       - 'scripts/diagnostic_3r_page.py'
       - 'scripts/diagnostic_3q_prioritization.py'
       - 'scripts/diagnostic_3p_levers.py'
@@ -68,10 +69,19 @@ jobs:
           assert d['stage']=='3R'
           assert d['territory']=='16015'
           assert d['quality']['status']=='ok'
-          assert d['quality']['kpi_count']==8
-          assert d['quality']['discriminant_factor_count']==6
-          assert d['quality']['hypothesis_count']==3
-          assert d['quality']['priority_count']==4
+          o=json.load(open('output/diagnostic-3o-synthesis.json',encoding='utf-8'))
+          q=json.load(open('output/diagnostic-3q-priorities.json',encoding='utf-8'))
+          kg=json.load(open('output/diagnostic-3kg-assembly.json',encoding='utf-8'))
+          assert d['quality']['kpi_count']==len(d['kpis'])==8
+          assert d['quality']['discriminant_factor_count']==len(d['discriminant_factors'])==len(o['discriminant_factors'])
+          assert d['quality']['hypothesis_count']==len(d['hypotheses'])==len(o['hypotheses'])
+          assert d['quality']['priority_count']==len(d['priorities'])==len(q['priorities'])
+          assert d['priorities']==q['priorities']
+          expected_sources={'vacancy_private','vacant_stock_profile','real_estate_market','construction','social_housing','demography_housing','socioeconomic_context'}
+          assert set(d['source_provenance'])==expected_sources
+          assert d['quality']['source_provenance_count']==7
+          assert d['source_provenance']==kg['source_provenance']
+          assert all(x.get('source') and x.get('period_label') and x.get('availability_policy') for x in d['source_provenance'].values())
           assert d['quality']['llm_used'] is False
           assert d['quality']['external_knowledge_lookup_used'] is False
           assert d['quality']['free_text_generation'] is False
