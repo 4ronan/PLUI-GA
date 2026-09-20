@@ -21,17 +21,19 @@ LOG1_DATASET='DS_RP_TD_LOGEMENT_CARACT_PRINC'
 LOG1_BASE='https://api.insee.fr/melodi/data'
 POP_SNAPSHOT=Path('data/insee-rp2023-panel-3j.csv')
 IO_WORKERS=max(1,min(8,int(os.getenv('DIAG_3MP_WORKERS','4'))))
+SITADEL_WORKERS=max(1,min(IO_WORKERS,int(os.getenv('DIAG_3MP_SITADEL_WORKERS','1'))))
 STARTED=time.monotonic()
 TIMINGS={}
 
 
-def ordered_map(fn,items):
+def ordered_map(fn,items,workers=None):
     items=list(items)
     if not items:
         return []
-    if IO_WORKERS==1:
+    workers=IO_WORKERS if workers is None else max(1,min(IO_WORKERS,int(workers)))
+    if workers==1:
         return [fn(x) for x in items]
-    with ThreadPoolExecutor(max_workers=min(IO_WORKERS,len(items))) as executor:
+    with ThreadPoolExecutor(max_workers=min(workers,len(items))) as executor:
         return list(executor.map(fn,items))
 
 
@@ -244,7 +246,7 @@ def sitadel_row(item):
     }
 
 _t=time.monotonic()
-sitadel=ordered_map(sitadel_row,PANEL.items())
+sitadel=ordered_map(sitadel_row,PANEL.items(),workers=SITADEL_WORKERS)
 TIMINGS['sitadel']=round(time.monotonic()-_t,3)
 
 # 4. LOG1 : profil des logements vacants comparé entre communes du même panel.
@@ -327,10 +329,11 @@ out={
  'purpose':'matérialiser les panels manquants avant extension de la détection des facteurs discriminants',
  'execution':{
    'io_workers':IO_WORKERS,
+   'sitadel_workers':SITADEL_WORKERS,
    'parallel_io':IO_WORKERS>1,
    'duration_seconds':round(time.monotonic()-STARTED,3),
    'source_timings_seconds':TIMINGS,
-   'ordering_rule':'executor.map conserve l’ordre PANEL; les statistiques et sorties restent déterministes à données source identiques'
+   'ordering_rule':'executor.map conserve l’ordre PANEL; Sitadel peut utiliser un worker spécifique pour respecter le débit API; les statistiques et sorties restent déterministes à données source identiques'
  },
  'blocks':blocks,'quality':quality
 }
