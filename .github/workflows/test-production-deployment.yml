@@ -61,14 +61,17 @@ jobs:
             -X POST -H 'Content-Type: application/json' \
             -d '{"territory":"ABC","scale":"france"}' \
             http://127.0.0.1:8768/api/diagnostics.php)
+          echo "invalid_status=$status body=$(cat /tmp/invalid.json)"
           test "$status" = "400"
           status=$(curl --silent --output /tmp/submitted.json --write-out '%{http_code}' \
             -X POST -H 'Content-Type: application/json' \
             -d '{"territory":"16015","scale":"france"}' \
             http://127.0.0.1:8768/api/diagnostics.php)
+          echo "submitted_status=$status body=$(cat /tmp/submitted.json)"
           test "$status" = "202"
           status=$(curl --silent --output /tmp/job-error.json --write-out '%{http_code}' \
             'http://127.0.0.1:8768/api/jobs.php?id=bad')
+          echo "job_error_status=$status body=$(cat /tmp/job-error.json)"
           test "$status" = "400"
           python - <<'PY'
           import json
