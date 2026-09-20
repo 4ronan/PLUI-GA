@@ -39,7 +39,9 @@ jobs:
           assert all(code in s for code in panel_codes)
           assert 'Les percentiles sont conditionnels à la composition du panel' in s
           assert 'Aucun résultat métier n’est simulé' in s
-          assert 'Sources et millésimes' in s\n          assert 'source_provenance' in s\n          print('3Y_PAGE_CONTENT_OK')
+          assert 'Sources et millésimes' in s
+          assert 'source_provenance' in s
+          print('3Y_PAGE_CONTENT_OK')
           PY
 
       - name: Vérifier la syntaxe JavaScript embarquée
