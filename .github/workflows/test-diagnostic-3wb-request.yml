@@ -57,9 +57,9 @@ jobs:
           test -z "${DIAG_PANEL_CODES:-}"
           python scripts/diagnostic_request.py 16102 france > /tmp/first.json
 
-      - name: Deuxième appel identique
+      - name: Deuxième appel identique avec API administrative volontairement indisponible
         run: |
-          python scripts/diagnostic_request.py 16102 france > /tmp/second.json
+          DIAG_GEO_API_BASE='http://127.0.0.1:9' python scripts/diagnostic_request.py 16102 france > /tmp/second.json
 
       - name: Vérifier résolution automatique et cache
         run: |
@@ -85,6 +85,7 @@ jobs:
           assert second['cache']['hit'] is True
           assert second['cache']['reason']=='request_index_valid_cache'
           assert second['cache'].get('fast_path') is True
+          assert second['panel_source']==first['panel_source']
           assert first['cache']['key']==second['cache']['key']
           print('3WB_REQUEST_OK',first['panel_source'],first['cache']['reason'],second['cache']['reason'])
           PY
