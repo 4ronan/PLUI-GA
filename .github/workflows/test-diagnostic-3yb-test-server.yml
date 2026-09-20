@@ -6,6 +6,7 @@ on:
     branches: [vacants-rpls-d2]
     paths:
       - 'scripts/diagnostic_test_server.py'
+      - 'scripts/diagnostic_batch.py'
       - 'tests/diagnostic-vacance-page-test.html'
       - '.github/workflows/test-diagnostic-3yb-test-server.yml'
 
@@ -24,7 +25,7 @@ jobs:
 
       - name: Vérifier les syntaxes
         run: |
-          python -m py_compile scripts/diagnostic_test_server.py
+          python -m py_compile scripts/diagnostic_test_server.py scripts/diagnostic_batch.py
           python - <<'PY'
           from pathlib import Path
           import re
@@ -77,6 +78,33 @@ jobs:
           assert d['phase']=='input_validation'
           assert d['error']['type']=='invalid_territory'
           print('3YB_SERVER_CONTRACT_OK')
+          PY
+
+      - name: Vérifier le contrat batch sans lancer le moteur
+        run: |
+          if python scripts/diagnostic_batch.py '16102,ABC' france >/tmp/batch-cli-error.json; then
+            exit 1
+          fi
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/batch-cli-error.json',encoding='utf-8'))
+          assert d['status']=='failure'
+          assert d['phase']=='input_validation'
+          assert d['error']['type']=='invalid_codes'
+          PY
+
+          status=$(curl --silent --output /tmp/batch-http-error.json --write-out '%{http_code}' \
+            -X POST -H 'Content-Type: application/json' \
+            -d '{"territories":["16102","ABC"],"scale":"france"}' \
+            http://127.0.0.1:8765/api/batch)
+          test "$status" = "400"
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/batch-http-error.json',encoding='utf-8'))
+          assert d['status']=='failure'
+          assert d['phase']=='input_validation'
+          assert d['error']['type']=='invalid_territory'
+          print('3AB_BATCH_CONTRACT_OK')
           PY
 
       - name: Arrêter le serveur
