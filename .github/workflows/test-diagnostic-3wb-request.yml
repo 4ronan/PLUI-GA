@@ -83,7 +83,8 @@ jobs:
 
           assert first['cache']['hit'] is False
           assert second['cache']['hit'] is True
-          assert second['cache']['reason']=='valid_cache'
+          assert second['cache']['reason']=='request_index_valid_cache'
+          assert second['cache'].get('fast_path') is True
           assert first['cache']['key']==second['cache']['key']
           print('3WB_REQUEST_OK',first['panel_source'],first['cache']['reason'],second['cache']['reason'])
           PY
