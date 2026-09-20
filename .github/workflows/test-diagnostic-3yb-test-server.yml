@@ -1,0 +1,85 @@
+name: Test diagnostic 3Y-B local test server
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [vacants-rpls-d2]
+    paths:
+      - 'scripts/diagnostic_test_server.py'
+      - 'tests/diagnostic-vacance-page-test.html'
+      - '.github/workflows/test-diagnostic-3yb-test-server.yml'
+
+concurrency:
+  group: diagnostic-3yb-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  server_contract:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Vérifier les syntaxes
+        run: |
+          python -m py_compile scripts/diagnostic_test_server.py
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          s=Path('tests/diagnostic-vacance-page-test.html').read_text(encoding='utf-8')
+          scripts=re.findall(r'<script>(.*?)</script>',s,flags=re.S|re.I)
+          assert len(scripts)==1
+          Path('/tmp/page.js').write_text(scripts[0],encoding='utf-8')
+          assert '/api/diagnostic?' in s
+          assert 'diagnostic_test_server.py' in s
+          PY
+          node --check /tmp/page.js
+
+      - name: Démarrer le serveur local
+        run: |
+          python scripts/diagnostic_test_server.py --port 8765 >/tmp/server.out 2>/tmp/server.err &
+          echo $! >/tmp/server.pid
+          for i in $(seq 1 40); do
+            if curl --fail --silent http://127.0.0.1:8765/api/health >/tmp/health.json; then
+              exit 0
+            fi
+            sleep 0.25
+          done
+          cat /tmp/server.out /tmp/server.err
+          exit 1
+
+      - name: Vérifier santé et page racine
+        run: |
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/health.json',encoding='utf-8'))
+          assert d=={
+              'status':'ok',
+              'service':'diagnostic-vacance-test',
+              'interface':'territory+comparison_scale',
+              'llm_used':False,
+          }
+          PY
+          curl --fail --silent http://127.0.0.1:8765/ >/tmp/page.html
+          grep -q 'Diagnostic territorial de la vacance' /tmp/page.html
+          grep -q '/api/diagnostic?' /tmp/page.html
+
+      - name: Rejeter une requête invalide sans lancer le moteur
+        run: |
+          status=$(curl --silent --output /tmp/error.json --write-out '%{http_code}' 'http://127.0.0.1:8765/api/diagnostic?territory=ABC&scale=france')
+          test "$status" = "400"
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/error.json',encoding='utf-8'))
+          assert d['status']=='failure'
+          assert d['phase']=='input_validation'
+          assert d['error']['type']=='invalid_territory'
+          print('3YB_SERVER_CONTRACT_OK')
+          PY
+
+      - name: Arrêter le serveur
+        if: always()
+        run: |
+          if test -f /tmp/server.pid; then kill "$(cat /tmp/server.pid)" || true; fi
