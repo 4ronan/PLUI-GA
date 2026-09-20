@@ -58,6 +58,9 @@ jobs:
           assert d['quality']['status']=='ok'
           assert d['quality']['insee_typology_enabled'] is True
           assert d['quality']['population_band_priority_respected'] is True
+          assert d['quality']['administrative_request_count']==2
+          assert d['quality']['national_commune_list_requested'] is False
+          assert len(d['source']['administrative']['candidate_urls'])==1
           candidate_bands=d['quality']['candidate_population_band_counts']
           selected_bands=d['quality']['selected_population_band_counts']
           if candidate_bands['0']>=15:
