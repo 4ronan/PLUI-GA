@@ -66,18 +66,24 @@ jobs:
           assert d['generation']['llm_used'] is False
           assert d['generation']['scoring_used'] is False
           assert d['quality']['status']=='ok'
-          assert d['quality']['priority_count']==4
+          p=json.load(open('output/diagnostic-3p-levers.json',encoding='utf-8'))
+          expected_order={
+            'L1_private_vacancy_monitoring':1,
+            'L2_market_feasibility_check':2,
+            'L3_construction_pipeline_review':3,
+            'L4_social_housing_context_coordination':4,
+          }
+          active=[x['id'] for x in p['levers']]
+          expected=sorted(active,key=lambda x:expected_order[x])
+          assert d['quality']['priority_count']==len(d['priorities'])==len(active)
           assert d['quality']['orders_unique'] is True
           assert d['quality']['all_priorities_traceable_to_3p'] is True
           assert d['quality']['all_have_local_verification'] is True
           assert d['quality']['global_score_included'] is False
           assert d['quality']['effectiveness_ranking_included'] is False
-          assert [x['lever_id'] for x in d['priorities']]==[
-            'L1_private_vacancy_monitoring',
-            'L2_market_feasibility_check',
-            'L3_construction_pipeline_review',
-            'L4_social_housing_context_coordination'
-          ]
+          assert [x['lever_id'] for x in d['priorities']]==expected
+          assert [x['order'] for x in d['priorities']]==[expected_order[x] for x in expected]
+          assert d['suppressed_levers']==p['suppressed_levers']
           print(json.dumps({'quality':d['quality'],'priorities':d['priorities']},ensure_ascii=False,indent=2))
           PY
       - name: Publier 3Q
