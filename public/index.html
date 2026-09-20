@@ -221,7 +221,7 @@ async function pollJob(statusUrl,territory){
    if(job.status==="failure")throw new Error(job?.error?.message||"La génération du diagnostic a échoué.");
    const elapsed=Math.max(1,Math.round((Date.now()-started)/1000));
    $("#notice").innerHTML='<b>Diagnostic en cours…</b> Le moteur collecte et contrôle les données publiques ('+elapsed+' s). Vous pouvez laisser cette page ouverte.';
-   await wait(2000);
+   await wait(5000);
  }
  throw new Error("La génération prend plus de temps que prévu. Réessayez dans quelques minutes : le calcul peut continuer en arrière-plan.");
 }
@@ -235,7 +235,7 @@ async function loadPublishedBundle(resultUrl,territory){
  return {status:"success",diagnostic,levers,priorities,panel,cache_manifest};
 }
 
-const GENERATION_CLIENT_TIMEOUT=15*60*1000;
+const GENERATION_CLIENT_TIMEOUT=60*60*1000;
 
 async function startDiagnostic(code,scale,label){
  const n=$("#notice"),btn=$("#load");

@@ -18,9 +18,10 @@ $job = json_decode((string)file_get_contents($path), true);
 if (!is_array($job)) {
     zt_json_response(500, ['status' => 'failure', 'error' => ['type' => 'job_corrupted', 'message' => 'Le suivi de la demande est illisible.']]);
 }
-if (($job['status'] ?? '') === 'queued') {
-    $created = strtotime((string)($job['created_at'] ?? '')) ?: time();
-    if ($created < time() - 2700) {
+if (in_array(($job['status'] ?? ''), ['queued', 'running'], true)) {
+    $reference = ($job['status'] ?? '') === 'running' ? ($job['started_at'] ?? $job['created_at'] ?? '') : ($job['created_at'] ?? '');
+    $created = strtotime((string)$reference) ?: time();
+    if ($created < time() - (int)zt_load_config()['job_timeout_seconds']) {
         $job['status'] = 'failure';
         $job['finished_at'] = gmdate('c');
         $job['error'] = ['type' => 'generation_timeout', 'message' => 'La génération n’a pas abouti dans le délai prévu.'];

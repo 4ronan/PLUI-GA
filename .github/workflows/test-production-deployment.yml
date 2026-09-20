@@ -6,9 +6,10 @@ on:
     branches: [main, vacants-rpls-d2]
     paths:
       - 'public/**'
+      - 'scripts/**'
+      - 'data/**'
       - 'config/diagnostic.example.php'
       - '.github/workflows/deploy-interface-ovh.yml'
-      - '.github/workflows/generate-diagnostic-ovh.yml'
       - '.github/workflows/test-production-deployment.yml'
 
 concurrency:
@@ -21,12 +22,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Vérifier PHP et JavaScript
+      - name: Vérifier PHP, Python et JavaScript
         run: |
           php -l public/api/bootstrap.php
           php -l public/api/diagnostics.php
           php -l public/api/jobs.php
           php -l config/diagnostic.example.php
+          python -m py_compile scripts/diagnostic_ovh_worker.py scripts/diagnostic_request.py
           python - <<'PY'
           from pathlib import Path
           import re
@@ -52,7 +54,7 @@ jobs:
           cat /tmp/php-server.log
           exit 1
 
-      - name: Vérifier les réponses sans déclencher GitHub
+      - name: Vérifier la mise en file locale
         run: |
           grep -q 'Comprendre la vacance des logements' /tmp/index.html
           status=$(curl --silent --output /tmp/invalid.json --write-out '%{http_code}' \
@@ -60,26 +62,55 @@ jobs:
             -d '{"territory":"ABC","scale":"france"}' \
             http://127.0.0.1:8768/api/diagnostics.php)
           test "$status" = "400"
-          status=$(curl --silent --output /tmp/unconfigured.json --write-out '%{http_code}' \
+          status=$(curl --silent --output /tmp/submitted.json --write-out '%{http_code}' \
             -X POST -H 'Content-Type: application/json' \
             -d '{"territory":"16015","scale":"france"}' \
             http://127.0.0.1:8768/api/diagnostics.php)
-          test "$status" = "503"
+          test "$status" = "202"
           status=$(curl --silent --output /tmp/job-error.json --write-out '%{http_code}' \
             'http://127.0.0.1:8768/api/jobs.php?id=bad')
           test "$status" = "400"
           python - <<'PY'
           import json
           assert json.load(open('/tmp/invalid.json'))['error']['type']=='invalid_territory'
-          assert json.load(open('/tmp/unconfigured.json'))['error']['type']=='configuration_missing'
+          submitted=json.load(open('/tmp/submitted.json'))
+          assert submitted['status']=='queued'
+          assert len(submitted['id'])==32
           assert json.load(open('/tmp/job-error.json'))['error']['type']=='invalid_job'
           PY
+
+      - name: Vérifier le cycle complet du worker OVH
+        run: |
+          mkdir -p /tmp/fake-engine/scripts /tmp/fake-engine/output
+          cp scripts/diagnostic_request.py /tmp/fake-engine/scripts/diagnostic_request.py
+          python - <<'PY'
+          from pathlib import Path
+          path=Path('/tmp/fake-engine/scripts/diagnostic_request.py')
+          path.write_text('''import json,sys\nfrom pathlib import Path\nroot=Path(__file__).resolve().parents[1]\ncode=sys.argv[1]\nout=root/"output"\npub=out/"published"/code\npub.mkdir(parents=True,exist_ok=True)\nfor name in ("index.html","diagnostic.json","synthesis.json","levers.json","priorities.json"):\n    (pub/name).write_text("{}" if name.endswith(".json") else "<html>ok</html>",encoding="utf-8")\nfor name in ("diagnostic-3v-panel.json","diagnostic-3ub-manifest.json","diagnostic-3u-manifest.json"):\n    (out/name).write_text(json.dumps({"territory":code,"status":"success"}),encoding="utf-8")\nprint(json.dumps({"status":"success","territory":code}))\n''',encoding='utf-8')
+          PY
+          python scripts/diagnostic_ovh_worker.py \
+            --site-root "$PWD/public" \
+            --engine-root /tmp/fake-engine \
+            --max-jobs 1 \
+            --timeout-seconds 60
+          job_id=$(python -c "import json; print(json.load(open('/tmp/submitted.json'))['id'])")
+          curl --fail --silent "http://127.0.0.1:8768/api/jobs.php?id=$job_id" >/tmp/completed.json
+          python - <<'PY'
+          import json
+          completed=json.load(open('/tmp/completed.json'))
+          assert completed['status']=='success'
+          assert completed['executor']=='ovh-python'
+          assert completed['result_url']=='diagnostics/16015/france/'
+          PY
+          test -s public/diagnostics/16015/france/diagnostic.json
 
       - name: Vérifier les protections du paquet
         run: |
           test -f public/.htaccess
           test -f public/jobs/.htaccess
           test -f public/runtime/.htaccess
+          test -f scripts/diagnostic_ovh_worker.py
+          test ! -e .github/workflows/generate-diagnostic-ovh.yml
           test ! -e render.yaml
           test ! -e Procfile
 

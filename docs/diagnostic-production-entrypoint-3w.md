@@ -275,9 +275,9 @@ En production, OVH sert cette page et les points d’entrée PHP du dossier `pub
 
 `POST api/diagnostics.php`
 
-Le navigateur suit ensuite `GET api/jobs.php?id=<identifiant>`. En l’absence d’un résultat frais, PHP déclenche le workflow GitHub Actions `generate-diagnostic-ovh.yml`. Ce workflow exécute le moteur déterministe dans un runner isolé, puis publie par SFTP les résultats canoniques sous `diagnostics/<code_INSEE>/` et le statut final dans `jobs/`.
+Le navigateur suit ensuite `GET api/jobs.php?id=<identifiant>`. En l’absence d’un résultat frais, PHP place une demande JSON dans `runtime/queue/`. La tâche planifiée OVH lance `diagnostic_ovh_worker.py`, qui exécute localement le moteur déterministe et publie les résultats canoniques sous `diagnostics/<code_INSEE>/<échelle>/` ainsi que le statut final dans `jobs/`.
 
-Cette architecture ne nécessite aucun processus Python permanent sur l’hébergement mutualisé. Elle utilise l’hébergement OVH existant et les runners standard du dépôt public. Le cache de 24 heures, la déduplication et les limites par IP/jour réduisent les exécutions inutiles.
+Cette architecture ne nécessite aucun processus Python permanent sur l’hébergement mutualisé et ne dépend pas de GitHub Actions pour les calculs. Elle utilise uniquement PHP, Python et la tâche planifiée de l’hébergement OVH existant. Le cache de 24 heures, la déduplication et les limites par IP/jour réduisent les exécutions inutiles.
 
 Pour le développement local uniquement, le serveur Python historique reste disponible :
 

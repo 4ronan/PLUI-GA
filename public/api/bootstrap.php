@@ -19,9 +19,6 @@ function zt_json_response(int $status, array $payload, array $headers = []): voi
 function zt_load_config(): array
 {
     $defaults = [
-        'repository' => '4ronan/PLUI-GA',
-        'workflow' => 'generate-diagnostic-ovh.yml',
-        'ref' => 'main',
         'allowed_origins' => [
             'https://zonage-terrain.fr',
             'https://www.zonage-terrain.fr',
@@ -29,6 +26,8 @@ function zt_load_config(): array
         'per_ip_per_hour' => 3,
         'global_per_day' => 30,
         'cache_ttl_seconds' => 86400,
+        'job_timeout_seconds' => 7200,
+        'queue_max' => 100,
     ];
     $documentRoot = rtrim((string)($_SERVER['DOCUMENT_ROOT'] ?? ''), '/');
     $configFile = getenv('ZT_CONFIG_FILE') ?: dirname($documentRoot) . '/private-zonage-terrain/diagnostic.php';
@@ -40,10 +39,6 @@ function zt_load_config(): array
         }
     }
     $config = array_replace($defaults, $custom);
-    $envToken = getenv('ZT_GITHUB_TOKEN');
-    if (is_string($envToken) && $envToken !== '') {
-        $config['github_token'] = $envToken;
-    }
     return $config;
 }
 
@@ -138,6 +133,15 @@ function zt_dispatch_lock()
         zt_json_response(503, ['status' => 'failure', 'error' => ['type' => 'dispatch_unavailable', 'message' => 'Le service ne peut pas réserver la génération.']]);
     }
     return $handle;
+}
+
+function zt_queue_dir(): string
+{
+    $path = zt_runtime_dir() . '/queue';
+    if (!is_dir($path) && !mkdir($path, 0700, true) && !is_dir($path)) {
+        zt_json_response(503, ['status' => 'failure', 'error' => ['type' => 'storage_unavailable', 'message' => 'La file de génération est indisponible.']]);
+    }
+    return $path;
 }
 
 function zt_active_path(string $territory, string $scale): string

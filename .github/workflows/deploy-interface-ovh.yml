@@ -1,4 +1,4 @@
-name: Deploy vacancy diagnostic interface to OVH
+name: Deploy vacancy diagnostic and Python engine to OVH
 
 on:
   workflow_dispatch:
@@ -12,18 +12,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Préparer l’interface sans données d’exécution
+      - name: Préparer l’application OVH autonome
         run: |
           mkdir -p /tmp/vacancy-site
           cp -a public/. /tmp/vacancy-site/
           find /tmp/vacancy-site/jobs -type f ! -name '.htaccess' ! -name '.gitkeep' -delete
           find /tmp/vacancy-site/runtime -type f ! -name '.htaccess' ! -name '.gitkeep' -delete
+          mkdir -p /tmp/vacancy-site/runtime/engine/output
+          cp -a scripts /tmp/vacancy-site/runtime/engine/
+          cp -a data /tmp/vacancy-site/runtime/engine/
+          chmod +x /tmp/vacancy-site/runtime/engine/scripts/diagnostic_ovh_worker.py
 
       - name: Vérifier les syntaxes avant publication
         run: |
           php -l /tmp/vacancy-site/api/bootstrap.php
           php -l /tmp/vacancy-site/api/diagnostics.php
           php -l /tmp/vacancy-site/api/jobs.php
+          python -m py_compile \
+            /tmp/vacancy-site/runtime/engine/scripts/diagnostic_ovh_worker.py \
+            /tmp/vacancy-site/runtime/engine/scripts/diagnostic_request.py
           python - <<'PY'
           from pathlib import Path
           import re
@@ -32,6 +39,7 @@ jobs:
           assert len(scripts)==1
           Path('/tmp/interface.js').write_text(scripts[0],encoding='utf-8')
           assert 'api/diagnostics.php' in page
+          assert '60*60*1000' in page
           PY
           node --check /tmp/interface.js
 
