@@ -10,6 +10,7 @@ from urllib.parse import parse_qs, urlparse
 ROOT=Path(__file__).resolve().parents[1]
 PAGE=ROOT/'tests/diagnostic-vacance-page-test.html'
 REQUEST=ROOT/'scripts/diagnostic_request.py'
+BATCH=ROOT/'scripts/diagnostic_batch.py'
 OUTPUT=ROOT/'output'
 
 
@@ -59,6 +60,85 @@ class Handler(SimpleHTTPRequestHandler):
             self.handle_diagnostic(parsed)
             return
         super().do_GET()
+
+    def do_POST(self):
+        parsed=urlparse(self.path)
+        if parsed.path!='/api/batch':
+            self.send_error(404,'Not Found')
+            return
+        try:
+            length=int(self.headers.get('Content-Length') or '0')
+            body=self.rfile.read(length)
+            payload=json.loads(body.decode('utf-8') or '{}')
+        except Exception:
+            self.json_response(400,{
+                'status':'failure','phase':'input_validation',
+                'error':{'type':'invalid_json','message':'corps JSON invalide'},
+            })
+            return
+
+        territories=payload.get('territories') or payload.get('codes')
+        scale=str(payload.get('scale') or '').strip()
+        refresh=bool(payload.get('refresh',False))
+        stop_on_error=bool(payload.get('stop_on_error',False))
+        if not isinstance(territories,list) or not territories:
+            self.json_response(400,{
+                'status':'failure','phase':'input_validation',
+                'error':{'type':'invalid_territories','message':'territories doit être une liste non vide de codes INSEE'},
+            })
+            return
+        codes=[]
+        seen=set()
+        for raw in territories:
+            code=str(raw or '').strip().upper()
+            if not re.fullmatch(r'[0-9A-Z]{5}',code):
+                self.json_response(400,{
+                    'status':'failure','phase':'input_validation',
+                    'error':{'type':'invalid_territory','message':f'code INSEE invalide: {code!r}'},
+                })
+                return
+            if code not in seen:
+                seen.add(code); codes.append(code)
+        if not scale:
+            self.json_response(400,{
+                'status':'failure','phase':'input_validation',
+                'error':{'type':'invalid_scale','message':'échelle requise: département, région ou France'},
+            })
+            return
+
+        cmd=[sys.executable,str(BATCH),','.join(codes),scale]
+        if refresh: cmd.append('--force-refresh')
+        if stop_on_error: cmd.append('--stop-on-error')
+        try:
+            proc=subprocess.run(
+                cmd,cwd=ROOT,text=True,
+                stdout=subprocess.PIPE,stderr=subprocess.STDOUT,
+                timeout=max(1800,1800*len(codes)),
+            )
+        except subprocess.TimeoutExpired:
+            self.json_response(504,{
+                'status':'failure','phase':'batch_generation',
+                'error':{'type':'timeout','message':'batch interrompu par délai maximal'},
+            })
+            return
+
+        lines=[x for x in (proc.stdout or '').splitlines() if x.strip()]
+        summary=None
+        for line in reversed(lines):
+            try:
+                candidate=json.loads(line)
+                if isinstance(candidate,dict) and candidate.get('requested_n') is not None:
+                    summary=candidate; break
+            except Exception:
+                pass
+        if summary is None:
+            self.json_response(500,{
+                'status':'failure','phase':'batch_generation',
+                'error':{'type':'invalid_batch_output'},
+                'log_tail':'\n'.join(lines[-20:]),
+            })
+            return
+        self.json_response(200 if summary.get('status')=='success' else 207,summary)
 
     def handle_diagnostic(self,parsed):
         q=parse_qs(parsed.query)
