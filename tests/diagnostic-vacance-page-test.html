@@ -68,6 +68,8 @@ h2{font-size:20px;margin:0 0 4px;letter-spacing:-.02em}.sub{font-size:13px;color
 <div class="check"><b>✓ 3W</b>Entrée utilisateur : territoire + échelle seulement.</div>
 </div></section>
 
+<section class="card s12"><h2>Sources et millésimes</h2><div class="sub">Chaque univers conserve son propre millésime. Aucun rapprochement temporel artificiel n’est utilisé pour fabriquer un indicateur synthétique.</div><div class="tablewrap"><table><thead><tr><th>Bloc</th><th>Source</th><th>Millésime</th><th>Qualité</th><th>Disponibilité</th></tr></thead><tbody id="sources"></tbody></table></div></section>
+
 <section class="card s12"><h2>Limites méthodologiques</h2><ul class="list" id="limits"></ul></section>
 <section class="card s12 raw"><details><summary><b>Voir les données de démonstration utilisées</b></summary><pre id="raw"></pre></details></section>
 </div>
@@ -80,7 +82,16 @@ const SAMPLE={
  diagnostic:{
   territory:"16102",subtitle:"Cognac · code INSEE 16102",
   headline:"la vacance privée n’est pas atypique dans le panel; le diagnostic met en évidence des contextes discriminants distincts à examiner sans causalité automatique",
-  quality:{status:"ok",kpi_count:8,discriminant_factor_count:6,hypothesis_count:0,priority_count:1},
+  quality:{status:"ok",kpi_count:8,discriminant_factor_count:6,hypothesis_count:0,priority_count:1,source_provenance_count:7},
+  source_provenance:{
+   vacancy_private:{source:"LOVAC open data - Ministère de la Transition écologique",period_label:"taux 2025 · volumes 2026",quality_status:"ok",availability_policy:"required_core"},
+   vacant_stock_profile:{source:"Insee RP2023 - DS_RP_TD_LOGEMENT_CARACT_PRINC",period_label:"2023",quality_status:"ok",availability_policy:"contextual"},
+   real_estate_market:{source:"DVF géolocalisées (Etalab / data.gouv.fr)",period_label:"fenêtre 2021–2025",quality_status:"ok",availability_policy:"contextual_partial_allowed"},
+   demography_housing:{source:"INSEE - Recensement de la population 2023, séries historiques",period_label:"évolution 2017–2023",quality_status:"ok",availability_policy:"contextual"},
+   socioeconomic_context:{source:"Filosofi 2021 - Insee",period_label:"2021",quality_status:"ok",availability_policy:"contextual_missing_values_allowed"},
+   construction:{source:"SDES - Sitadel, logements autorisés et commencés, séries annuelles non estimées",period_label:"autorisations 2025 · mises en chantier 2024",quality_status:"ok",availability_policy:"contextual_partial_allowed"},
+   social_housing:{source:"RPLS 2025 - SDES",period_label:"2025",quality_status:"ok",availability_policy:"contextual"}
+  },
   kpis:[
    ["Vacance privée 2025","10,05%","Panel médian 10,26% · percentile 46,7"],
    ["Vacance > 2 ans 2025","5,39%","Panel médian 5,30% · percentile 53,3"],
@@ -135,6 +146,8 @@ function render(b,mode){
  $("#lever").innerHTML='<div class="priority"><span class="pill ok">'+esc(d.lever.family)+'</span><h3>'+esc(d.lever.title)+'</h3><p>'+esc(d.lever.objective)+'</p><b>Actions</b><ul class="list">'+d.lever.actions.map(v=>'<li>'+esc(v)+'</li>').join("")+'</ul></div>';
  $("#panel").innerHTML=p.peers.map((x,i)=>'<div class="peer"><div class="n">'+(i+1)+' · '+esc(x[1])+'</div><div class="m">'+esc(x[0])+' · Centres urbains intermédiaires<br>commune-centre AAV</div><div class="r">Population : '+x[2]+' % de la cible</div></div>').join("");
  $("#method").innerHTML='<div><b>Commune cible</b><span>'+esc(p.target.name)+' · '+esc(p.target.code)+'</span></div><div><b>Profil Insee</b><span>'+esc(p.target.density)+' · '+esc(p.target.aav)+'</span></div><div><b>Panel</b><span>15 communes · cible exclue</span></div><div><b>Algorithme</b><span>'+esc(p.algorithm)+'</span></div><div><b>Échelle demandée</b><span>'+esc(p.requested_scale)+'</span></div><div><b>Priorité population</b><span>'+p.quality.selected_band0+'/15 dans la bande 70–130 %</span></div>';
+ const sourceLabels={vacancy_private:"Vacance privée",vacant_stock_profile:"Profil du parc vacant",real_estate_market:"Marché immobilier",demography_housing:"Démographie / logement",socioeconomic_context:"Contexte socio-économique",construction:"Construction",social_housing:"Parc locatif social"};
+ $("#sources").innerHTML=Object.entries(d.source_provenance||{}).map(([key,x])=>'<tr><td><b>'+esc(sourceLabels[key]||key)+'</b></td><td>'+esc(x.source||"Indisponible")+'</td><td>'+esc(x.period_label||"Indisponible")+'</td><td><span class="pill '+(x.quality_status==="ok"?"green":"orange")+'">'+esc(x.quality_status||"Indisponible")+'</span></td><td>'+esc(x.availability_policy||"Indisponible")+'</td></tr>').join("");
  $("#limits").innerHTML=d.limits.map(v=>'<li>'+esc(v)+'</li>').join("");
  $("#raw").textContent=JSON.stringify(b,null,2);
  $("#code").value=d.territory; $("#scale").value=p.requested_scale;
@@ -147,6 +160,7 @@ function normalizePublished(d,p,l,pr,m){
    kpis:d.kpis.map(x=>[x.label,x.value,x.detail]),
    factors:d.discriminant_factors.map(x=>[x.label,x.value,x.panel_median,x.percentile,x.reference_panel_n,x.universe]),
    hypotheses:d.hypotheses||[],
+   source_provenance:d.source_provenance||{},
    priority:(pr.priorities||d.priorities||[])[0] ? {
     title:(pr.priorities||d.priorities)[0].title,
     priority_class:(pr.priorities||d.priorities)[0].priority_class,
