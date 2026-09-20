@@ -96,6 +96,25 @@ rpls = blocks['social_housing']
 if rpls.get('quality', {}).get('status') not in {'ok','partial'}:
     raise RuntimeError('RPLS: qualité non validée')
 
+def provenance_quality_status(name, block):
+    quality=block.get('quality') or {}
+    explicit=quality.get('status')
+    if explicit is not None:
+        return explicit,'contract'
+    if name=='vacancy_private':
+        # Les métriques LOVAC cœur ont déjà été contrôlées juste au-dessus.
+        return 'ok','3K-G-core-validation'
+    if name=='socioeconomic_context':
+        missing=quality.get('target_missing_indicators') or []
+        expected=quality.get('panel_n_excluding_target')
+        by_indicator=quality.get('panel_n_by_indicator') or {}
+        panel_partial=(
+            expected is not None
+            and any((n is None or int(n)<int(expected)) for n in by_indicator.values())
+        )
+        return ('partial' if missing or panel_partial else 'ok'),'3K-G-filosofi-normalization'
+    return 'ok','3K-G-loaded-contract'
+
 source_provenance = {
     'vacancy_private': {
         'source': lovac.get('source'),
@@ -145,7 +164,9 @@ source_provenance = {
 }
 for name,meta in source_provenance.items():
     block=blocks[name]
-    meta['quality_status']=(block.get('quality') or {}).get('status')
+    quality_status,quality_status_source=provenance_quality_status(name,block)
+    meta['quality_status']=quality_status
+    meta['quality_status_source']=quality_status_source
     meta['availability_policy']=DATA_AVAILABILITY_POLICY[name]
     meta['missing_semantics']=(block.get('quality') or {}).get('missing_semantics')
     meta['role']=block.get('role')
