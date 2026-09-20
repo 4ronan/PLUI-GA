@@ -479,6 +479,11 @@ else:
         'panel_codes':PEERS,
         'panel_sha256':panel_signature,
         'panel_selection_sha256':panel_selection_signature,
+        'panel_selection':{
+            'algorithm':PANEL_SELECTION.get('algorithm'),
+            'requested_scale':PANEL_SELECTION.get('requested_scale'),
+            'effective_scale':PANEL_SELECTION.get('effective_scale'),
+        },
         'commune_sha256':commune_signature,
         'comparison_scale':COMPARISON_SCALE,
         'comparison_scale_sha256':scale_signature,
