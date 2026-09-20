@@ -26,7 +26,7 @@ jobs:
           s=p.read_text(encoding='utf-8')
           assert '<!doctype html>' in s.lower()
           assert '3V-D-insee-typology-v2' in s
-          assert 'diagnostic_request.py' in s
+          assert 'diagnostic_test_server.py' in s
           assert 'LOVAC cœur obligatoire' in s
           assert 'Manquant = null, jamais 0' in s
           assert 'DENS7 + AAV Insee 2026' in s
@@ -38,8 +38,8 @@ jobs:
           panel_codes=['43157','73011','14366','17306','71306','74081','40088','50502','51230','17299','27375','35115','03190','70550','80001']
           assert all(code in s for code in panel_codes)
           assert 'Les percentiles sont conditionnels à la composition du panel' in s
-          assert 'Aucun résultat n’est simulé' in s
-          print('3Y_PAGE_CONTENT_OK')
+          assert 'Aucun résultat métier n’est simulé' in s
+          assert 'Sources et millésimes' in s\n          assert 'source_provenance' in s\n          print('3Y_PAGE_CONTENT_OK')
           PY
 
       - name: Vérifier la syntaxe JavaScript embarquée
