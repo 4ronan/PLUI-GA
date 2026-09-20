@@ -175,43 +175,54 @@ async function loadPublished(){
  btn.disabled=true;btn.textContent="Génération / chargement…";
  n.innerHTML='Recherche du diagnostic pour <b>'+esc(code)+'</b> à l’échelle <b>'+esc(scale)+'</b>…';n.classList.add("show");
  try{
-   const api=await fetch("/api/diagnostic?territory="+encodeURIComponent(code)+"&scale="+encodeURIComponent(scale),{cache:"no-store"});
-   if(api.ok){
-     const b=await api.json();
-     if(b.status==="success"&&b.diagnostic?.territory===code&&b.panel?.territory===code){
-       render(normalizePublished(b.diagnostic,b.panel,b.levers,b.priorities,b.cache_manifest),"published");
-       n.classList.remove("show");
+   try{
+     const api=await fetch("/api/diagnostic?territory="+encodeURIComponent(code)+"&scale="+encodeURIComponent(scale),{cache:"no-store"});
+     if(api.ok){
+       const b=await api.json();
+       if(b.status==="success"&&b.diagnostic?.territory===code&&b.panel?.territory===code){
+         render(normalizePublished(b.diagnostic,b.panel,b.levers,b.priorities,b.cache_manifest),"published");
+         n.classList.remove("show");
+         return;
+       }
+     }else if(api.status!==404){
+       let err={};try{err=await api.json()}catch(e){}
+       n.textContent=err?.request?.error?.message||err?.error?.message||"La génération côté serveur a échoué.";
+       n.classList.add("show");
        return;
      }
-   }else if(api.status!==404){
-     let err={};try{err=await api.json()}catch(e){}
-     n.textContent=err?.request?.error?.message||err?.error?.message||"La génération côté serveur a échoué.";
+   }catch(e){}
+   const roots=["../output","./output","../../output"];
+   for(const root of roots){
+     try{
+       const rs=await Promise.all([
+         fetch(root+"/published/"+code+"/diagnostic.json",{cache:"no-store"}),
+         fetch(root+"/published/"+code+"/levers.json",{cache:"no-store"}),
+         fetch(root+"/published/"+code+"/priorities.json",{cache:"no-store"}),
+         fetch(root+"/diagnostic-3v-panel.json",{cache:"no-store"}),
+         fetch(root+"/diagnostic-3ub-manifest.json",{cache:"no-store"})
+       ]);
+       if(rs.every(r=>r.ok)){
+         const j=await Promise.all(rs.map(r=>r.json()));
+         if(j[0].territory===code&&j[3].territory===code){
+           render(normalizePublished(j[0],j[3],j[1],j[2],j[4]),"published");
+           n.classList.remove("show");
+           return;
+         }
+       }
+     }catch(e){}
+   }
+   if(code==="16102"&&scale==="france"){
+     render(SAMPLE,"sample");
+     n.textContent="Serveur/API non disponible : affichage de la démonstration Cognac validée embarquée.";
      n.classList.add("show");
      return;
    }
- }catch(e){}
- const roots=["../output","./output","../../output"];
- for(const root of roots){
-  try{
-   const rs=await Promise.all([
-    fetch(root+"/published/"+code+"/diagnostic.json",{cache:"no-store"}),fetch(root+"/published/"+code+"/levers.json",{cache:"no-store"}),fetch(root+"/published/"+code+"/priorities.json",{cache:"no-store"}),
-    fetch(root+"/diagnostic-3v-panel.json",{cache:"no-store"}),fetch(root+"/diagnostic-3ub-manifest.json",{cache:"no-store"})
-   ]);
-   if(rs.every(r=>r.ok)){
-    const j=await Promise.all(rs.map(r=>r.json()));
-    if(j[0].territory===code&&j[3].territory===code){render(normalizePublished(j[0],j[3],j[1],j[2],j[4]),"published");n.classList.remove("show");return}
-   }
-  }catch(e){}
- }
- if(code==="16102"&&scale==="france"){
-   render(SAMPLE,"sample");
-   n.textContent="Serveur/API non disponible : affichage de la démonstration Cognac validée embarquée.";
+   n.innerHTML='Aucun diagnostic publié accessible pour <b>'+esc(code)+'</b>. Pour générer réellement depuis cette interface, lancer <code>python scripts/diagnostic_test_server.py</code>, puis ouvrir <code>http://127.0.0.1:8765/</code>. Aucun résultat n’est simulé.';
    n.classList.add("show");
-   return;
+ } finally {
+   btn.disabled=false;
+   btn.textContent=previous;
  }
- n.innerHTML='Aucun diagnostic publié accessible pour <b>'+esc(code)+'</b>. Pour générer réellement depuis cette interface, lancer <code>python scripts/diagnostic_test_server.py</code>, puis ouvrir <code>http://127.0.0.1:8765/</code>. Aucun résultat n’est simulé.';
- n.classList.add("show");
- } finally {btn.disabled=false;btn.textContent=previous}
 }
 
 $("#load").addEventListener("click",loadPublished); $("#demo").addEventListener("click",()=>render(SAMPLE,"sample")); render(SAMPLE,"sample");
