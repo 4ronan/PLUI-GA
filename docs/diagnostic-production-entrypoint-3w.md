@@ -98,10 +98,15 @@ Appel identique ultérieur avec cache valide :
 {
   "cache": {
     "hit": true,
-    "reason": "valid_cache"
+    "reason": "request_index_valid_cache",
+    "fast_path": true
   }
 }
 ```
+
+Pour une requête utilisateur minimale `territoire + échelle`, ce chemin rapide intervient **avant** toute nouvelle résolution du panel. Un diagnostic encore valide peut donc être servi même si l’API administrative est temporairement indisponible.
+
+Le fast cache reste désactivé lorsqu’un override technique `DIAG_PANEL_CODES` ou `DIAG_COMMUNE_NAME` est fourni.
 
 La clé dépend notamment :
 
@@ -113,6 +118,8 @@ La clé dépend notamment :
 - des hashes des zonages Insee ;
 - de l’empreinte du moteur ;
 - des snapshots locaux.
+
+Le cache conserve également une copie hashée du fichier `diagnostic-3v-panel.json` et du manifeste 3U-A. Les cinq fichiers publiés, le panel et le manifeste sont tous contrôlés avant réutilisation.
 
 ## Recalcul forcé
 
@@ -148,6 +155,7 @@ Exemple de structure :
   "cache": {
     "hit": false,
     "reason": "cache_absent",
+    "fast_path": false,
     "key": "..."
   },
   "quality": {
@@ -256,6 +264,44 @@ Les cinq fichiers canoniques sont :
 Ils sont remplacés atomiquement.
 
 Un cache hit restaure également les fichiers sans supprimer préalablement le dossier publié.
+
+## Page test interactive locale
+
+Une interface de test est disponible dans :
+
+`tests/diagnostic-vacance-page-test.html`
+
+Le serveur local standard-library se lance avec :
+
+```bash
+python scripts/diagnostic_test_server.py
+```
+
+Puis ouvrir :
+
+`http://127.0.0.1:8765/`
+
+La page appelle :
+
+`/api/diagnostic?territory=<code>&scale=<échelle>`
+
+Le serveur délègue intégralement le calcul à `diagnostic_request.py`. Le navigateur ne calcule ni facteur, ni percentile, ni hypothèse.
+
+Sans serveur, la page peut lire des JSON déjà publiés. Pour Cognac/France seulement, une démonstration validée est embarquée afin que la page reste consultable hors ligne.
+
+## Provenance des sources et millésimes
+
+La page 3R expose désormais sept blocs de provenance :
+
+- LOVAC : taux 2025, volumes 2026 ;
+- INSEE LOG1 : 2023 ;
+- DVF : fenêtre 2021–2025, avec dernier millésime exploitable ;
+- INSEE démographie/logement : évolution 2017–2023 ;
+- Filosofi : 2021 ;
+- Sitadel : millésimes distincts pour autorisations et mises en chantier ;
+- RPLS : 2025.
+
+Chaque bloc conserve également son statut qualité et sa politique de disponibilité. Les millésimes restent distincts : ils ne sont jamais fusionnés pour construire un indicateur synthétique.
 
 ## Principe de sécurité méthodologique
 
