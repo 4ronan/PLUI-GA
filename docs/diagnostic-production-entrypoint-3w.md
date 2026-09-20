@@ -265,29 +265,34 @@ Ils sont remplacés atomiquement.
 
 Un cache hit restaure également les fichiers sans supprimer préalablement le dossier publié.
 
-## Page test interactive locale
+## Interface web publique
 
-Une interface de test est disponible dans :
+L’interface destinée aux utilisateurs est disponible dans :
 
-`tests/diagnostic-vacance-page-test.html`
+`public/index.html`
 
-Le serveur local standard-library se lance avec :
+Le service web se lance avec :
 
 ```bash
-python scripts/diagnostic_test_server.py
+python scripts/diagnostic_web_server.py
 ```
 
 Puis ouvrir :
 
 `http://127.0.0.1:8765/`
 
-La page appelle :
+La page soumet une génération asynchrone avec :
 
-`/api/diagnostic?territory=<code>&scale=<échelle>`
+`POST /api/diagnostics`
 
-Le serveur délègue intégralement le calcul à `diagnostic_request.py`. Le navigateur ne calcule ni facteur, ni percentile, ni hypothèse.
+Le navigateur suit ensuite `GET /api/jobs/<identifiant>`. Ce contrat évite qu’une première génération longue soit interrompue par le délai maximal du proxy HTTP. Le serveur délègue intégralement le calcul à `diagnostic_request.py`. Le navigateur ne calcule ni facteur, ni percentile, ni hypothèse.
 
-Sans serveur, la page peut lire des JSON déjà publiés. Pour Cognac/France seulement, une démonstration validée est embarquée afin que la page reste consultable hors ligne.
+Les générations sont placées dans une file bornée et traitées une par une, conformément au verrou de l’espace de travail. Deux demandes identiques simultanées partagent le même travail. Les résultats canoniques sont accessibles sous `/diagnostics/<code_INSEE>/`.
+
+Les sondes d’exploitation sont :
+
+- `/api/health` pour l’état du processus et de la file ;
+- `/api/ready` pour vérifier que l’interface, le moteur et l’espace de sortie sont disponibles.
 
 ## Provenance des sources et millésimes
 
@@ -355,23 +360,10 @@ Exemple de réponse :
 }
 ```
 
-### Endpoint HTTP de batch
+### Batch et service public
 
-Le serveur de test expose également :
+Le runner local historique peut exposer un traitement batch. L’API publique ne l’expose volontairement pas afin qu’un visiteur ne puisse pas monopoliser la file avec une liste importante. En production, le batch reste une commande d’administration :
 
-`POST /api/batch`
-
-Corps JSON :
-
-```json
-{
-  "territories": ["16102", "16015", "19031"],
-  "scale": "france",
-  "refresh": false,
-  "stop_on_error": false
-}
-```
-
-Le serveur retourne HTTP 200 lorsque toutes les communes ont été générées, ou 207 lorsque le traitement est partiel.
+`python scripts/diagnostic_batch.py 16102,16015,19031 france`
 
 Le batch ne parallélise volontairement pas les diagnostics complets : la chaîne de production utilise encore un espace intermédiaire partagé et certaines sources externes appliquent des limitations de débit.

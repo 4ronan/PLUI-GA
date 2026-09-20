@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: zonage-terrain-vacance
+    runtime: docker
+    plan: starter
+    region: frankfurt
+    healthCheckPath: /api/ready
+    autoDeploy: false
+    envVars:
+      - key: DIAG_CACHE_DIR
+        value: /data/cache
+      - key: DIAG_CACHE_TTL_HOURS
+        value: "24"
+      - key: DIAG_JOB_QUEUE_LIMIT
+        value: "20"
+      - key: DIAG_RATE_LIMIT_PER_MINUTE
+        value: "10"
+    disk:
+      name: diagnostic-cache
+      mountPath: /data
+      sizeGB: 5

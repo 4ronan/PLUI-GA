@@ -5,9 +5,9 @@ on:
   push:
     branches: [vacants-rpls-d2]
     paths:
-      - 'scripts/diagnostic_test_server.py'
+      - 'scripts/diagnostic_web_server.py'
       - 'scripts/diagnostic_batch.py'
-      - 'tests/diagnostic-vacance-page-test.html'
+      - 'public/index.html'
       - '.github/workflows/test-diagnostic-3yb-test-server.yml'
 
 concurrency:
@@ -25,22 +25,22 @@ jobs:
 
       - name: Vérifier les syntaxes
         run: |
-          python -m py_compile scripts/diagnostic_test_server.py scripts/diagnostic_batch.py
+          python -m py_compile scripts/diagnostic_web_server.py scripts/diagnostic_batch.py
           python - <<'PY'
           from pathlib import Path
           import re
-          s=Path('tests/diagnostic-vacance-page-test.html').read_text(encoding='utf-8')
+          s=Path('public/index.html').read_text(encoding='utf-8')
           scripts=re.findall(r'<script>(.*?)</script>',s,flags=re.S|re.I)
           assert len(scripts)==1
           Path('/tmp/page.js').write_text(scripts[0],encoding='utf-8')
-          assert '/api/diagnostic?' in s
-          assert 'diagnostic_test_server.py' in s
+          assert '/api/diagnostics' in s
+          assert 'status_url' in s and 'pollJob' in s
           PY
           node --check /tmp/page.js
 
       - name: Démarrer le serveur local
         run: |
-          python scripts/diagnostic_test_server.py --port 8765 >/tmp/server.out 2>/tmp/server.err &
+          DIAG_REQUEST_SCRIPT=/bin/false python scripts/diagnostic_web_server.py --host 127.0.0.1 --port 8765 >/tmp/server.out 2>/tmp/server.err &
           echo $! >/tmp/server.pid
           for i in $(seq 1 40); do
             if curl --fail --silent http://127.0.0.1:8765/api/health >/tmp/health.json; then
@@ -56,16 +56,17 @@ jobs:
           python - <<'PY'
           import json
           d=json.load(open('/tmp/health.json',encoding='utf-8'))
-          assert d=={
-              'status':'ok',
-              'service':'diagnostic-vacance-test',
-              'interface':'territory+comparison_scale',
-              'llm_used':False,
-          }
+          assert d['status']=='ok'
+          assert d['service']=='diagnostic-vacance'
+          assert d['version']=='1.0'
+          assert d['llm_used'] is False
+          assert d['jobs']['capacity']>=1
           PY
           curl --fail --silent http://127.0.0.1:8765/ >/tmp/page.html
           grep -q 'Diagnostic territorial de la vacance' /tmp/page.html
-          grep -q '/api/diagnostic?' /tmp/page.html
+          grep -q '/api/diagnostics' /tmp/page.html
+          curl --fail --silent http://127.0.0.1:8765/api/ready >/tmp/ready.json
+          grep -qi '^content-security-policy:' <(curl --silent --head http://127.0.0.1:8765/)
 
       - name: Rejeter une requête invalide sans lancer le moteur
         run: |
@@ -76,11 +77,11 @@ jobs:
           d=json.load(open('/tmp/error.json',encoding='utf-8'))
           assert d['status']=='failure'
           assert d['phase']=='input_validation'
-          assert d['error']['type']=='invalid_territory'
+          assert d['error']['type']=='invalid_input'
           print('3YB_SERVER_CONTRACT_OK')
           PY
 
-      - name: Vérifier le contrat batch sans lancer le moteur
+      - name: Vérifier le contrat batch d’administration sans lancer le moteur
         run: |
           if python scripts/diagnostic_batch.py '16102,ABC' france >/tmp/batch-cli-error.json; then
             exit 1
@@ -91,20 +92,32 @@ jobs:
           assert d['status']=='failure'
           assert d['phase']=='input_validation'
           assert d['error']['type']=='invalid_codes'
+          print('3AB_BATCH_CONTRACT_OK')
           PY
 
-          status=$(curl --silent --output /tmp/batch-http-error.json --write-out '%{http_code}' \
-            -X POST -H 'Content-Type: application/json' \
-            -d '{"territories":["16102","ABC"],"scale":"france"}' \
-            http://127.0.0.1:8765/api/batch)
-          test "$status" = "400"
+      - name: Vérifier la file asynchrone sans lancer le moteur réel
+        run: |
           python - <<'PY'
-          import json
-          d=json.load(open('/tmp/batch-http-error.json',encoding='utf-8'))
-          assert d['status']=='failure'
-          assert d['phase']=='input_validation'
-          assert d['error']['type']=='invalid_territory'
-          print('3AB_BATCH_CONTRACT_OK')
+          import json,time,urllib.request
+          request=urllib.request.Request(
+              'http://127.0.0.1:8765/api/diagnostics',
+              data=json.dumps({'territory':'16102','scale':'france'}).encode(),
+              headers={'Content-Type':'application/json'},method='POST',
+          )
+          with urllib.request.urlopen(request,timeout=5) as response:
+              submitted=json.load(response)
+          assert submitted['status']=='queued'
+          assert submitted['status_url'].startswith('/api/jobs/')
+          status_url='http://127.0.0.1:8765'+submitted['status_url']
+          for _ in range(30):
+              with urllib.request.urlopen(status_url,timeout=5) as response:
+                  job=json.load(response)
+              if job['status'] in {'success','failure'}:
+                  break
+              time.sleep(.1)
+          assert job['status']=='failure'
+          assert job['error']['type']=='RuntimeError'
+          print('ASYNC_JOB_LIFECYCLE_OK')
           PY
 
       - name: Arrêter le serveur
