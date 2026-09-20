@@ -2,6 +2,7 @@ import json, html
 from pathlib import Path
 from diagnostic_runtime import target, commune_name, panel_peers, runtime_metadata
 
+P3KG=Path('output/diagnostic-3kg-assembly.json')
 P3O=Path('output/diagnostic-3o-synthesis.json')
 P3P=Path('output/diagnostic-3p-levers.json')
 P3Q=Path('output/diagnostic-3q-priorities.json')
@@ -44,18 +45,19 @@ if panel_meta_path.exists() and panel_meta_path.stat().st_size>0:
     except Exception:
         pass
 
-for p in (P3O,P3P,P3Q):
+for p in (P3KG,P3O,P3P,P3Q):
     if not p.exists() or p.stat().st_size==0:
         raise RuntimeError(f'Entrée absente ou vide: {p}')
+kg=json.loads(P3KG.read_text(encoding='utf-8'))
 o=json.loads(P3O.read_text(encoding='utf-8'))
 p=json.loads(P3P.read_text(encoding='utf-8'))
 q=json.loads(P3Q.read_text(encoding='utf-8'))
 
-if o.get('stage')!='3O' or p.get('stage')!='3P' or q.get('stage')!='3Q':
+if kg.get('stage')!='3K-G' or o.get('stage')!='3O' or p.get('stage')!='3P' or q.get('stage')!='3Q':
     raise RuntimeError('Étapes amont inattendues')
-if any(str(x.get('territory'))!=TARGET for x in (o,p,q)):
+if any(str(x.get('territory'))!=TARGET for x in (kg,o,p,q)):
     raise RuntimeError('Territoire inattendu')
-if any(x.get('quality',{}).get('status')!='ok' for x in (o,p,q)):
+if kg.get('quality',{}).get('status')!='ok' or any(x.get('quality',{}).get('status')!='ok' for x in (o,p,q)):
     raise RuntimeError('Une étape amont n’est pas validée')
 if any(x.get('generation',{}).get('llm_used') is not False for x in (o,p,q)):
     raise RuntimeError('Les étapes amont doivent être déterministes')
@@ -122,6 +124,7 @@ page={
  'priorities':q['priorities'],
  'limits':o['limits'],
  'suppressed_levers':p.get('suppressed_levers',[]),
+ 'source_provenance':kg.get('source_provenance',{}),
  'method':{
    'panel_reference_n':REFERENCE_N,
    'panel_codes':PANEL_CODES,
@@ -144,6 +147,7 @@ page={
    'llm_used':False,
    'external_knowledge_lookup_used':False,
    'free_text_generation':False,
+   'source_provenance_count':len(kg.get('source_provenance',{})),
    'status':'ok'
  }
 }
@@ -190,6 +194,28 @@ for x in page['priorities']:
       <p><strong>Avant d’agir :</strong> {esc(x['decision_gate'])}</p>
       <details><summary>Données locales à vérifier</summary><ul>{li(x['local_data_to_verify'])}</ul></details></div>
     </article>'''
+
+def provenance_label(name):
+    return {
+        'vacancy_private':'Vacance privée',
+        'vacant_stock_profile':'Profil du parc vacant',
+        'real_estate_market':'Marché immobilier',
+        'demography_housing':'Démographie / logement',
+        'socioeconomic_context':'Contexte socio-économique',
+        'construction':'Construction',
+        'social_housing':'Parc locatif social',
+    }.get(name,name)
+
+provenance_html=''.join(
+    '<tr>'
+    f'<td><strong>{esc(provenance_label(name))}</strong></td>'
+    f'<td>{esc(meta.get("source") or "Indisponible")}</td>'
+    f'<td>{esc(meta.get("period_label") or "Indisponible")}</td>'
+    f'<td>{esc(meta.get("quality_status") or "Indisponible")}</td>'
+    f'<td>{esc(meta.get("availability_policy") or "Indisponible")}</td>'
+    '</tr>'
+    for name,meta in page['source_provenance'].items()
+)
 
 limits_html=li(page['limits'])
 supp_reasons=[x['reason'] for x in page['suppressed_levers']]
@@ -266,6 +292,15 @@ footer{{margin-top:40px;color:var(--muted);font-size:.85rem}} ul{{padding-left:1
 
 <h2>Limites méthodologiques</h2>
 <section class="panel"><ul>{limits_html}</ul></section>
+
+<h2>Sources et millésimes</h2>
+<section class="panel" style="overflow-x:auto">
+<table style="width:100%;border-collapse:collapse;min-width:760px">
+<thead><tr><th style="text-align:left;padding:8px;border-bottom:1px solid var(--line)">Bloc</th><th style="text-align:left;padding:8px;border-bottom:1px solid var(--line)">Source</th><th style="text-align:left;padding:8px;border-bottom:1px solid var(--line)">Millésime</th><th style="text-align:left;padding:8px;border-bottom:1px solid var(--line)">Qualité</th><th style="text-align:left;padding:8px;border-bottom:1px solid var(--line)">Disponibilité</th></tr></thead>
+<tbody>{provenance_html}</tbody>
+</table>
+<p class="muted">Les millésimes diffèrent selon les producteurs. Ils restent distincts et ne sont jamais fusionnés pour fabriquer un indicateur synthétique.</p>
+</section>
 
 <h2>Méthode</h2>
 <section class="method">
