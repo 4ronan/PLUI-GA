@@ -66,14 +66,18 @@ jobs:
           assert d['quality']['status']=='ok'
           assert d['quality']['synthesis_block_count']==7
           assert d['quality']['all_7_domains_present'] is True
-          assert d['quality']['discriminant_factor_count']==6
-          assert d['quality']['hypothesis_count']==3
+          m2=json.load(open('output/diagnostic-3m2-discriminants.json',encoding='utf-8'))
+          n=json.load(open('output/diagnostic-3n-hypotheses.json',encoding='utf-8'))
+          assert d['quality']['discriminant_factor_count']==len(d['discriminant_factors'])==len(m2['discriminant_factors'])
+          assert d['quality']['hypothesis_count']==len(d['hypotheses'])==len(n['hypotheses'])
+          assert {x['id'] for x in d['hypotheses']}=={x['id'] for x in n['hypotheses']}
           assert d['quality']['all_hypotheses_from_3n'] is True
           assert d['quality']['causal_claims_included'] is False
           assert d['quality']['recommendations_included'] is False
           assert d['quality']['global_score_included'] is False
-          assert d['headline']['private_vacancy_discriminant'] is False
-          assert d['headline']['structural_private_vacancy_discriminant'] is False
+          all_factors={x['id']:x for x in m2['discriminant_factors']+m2['non_discriminant_comparators']}
+          assert d['headline']['private_vacancy_discriminant']==all_factors['private_vacancy_rate']['is_discriminant']
+          assert d['headline']['structural_private_vacancy_discriminant']==all_factors['private_structural_vacancy_rate']['is_discriminant']
           print(json.dumps({'quality':d['quality'],'headline':d['headline']},ensure_ascii=False,indent=2))
           PY
 
