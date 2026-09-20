@@ -66,6 +66,8 @@ jobs:
           assert panel['target']['name']=='Cognac'
           assert panel['panel_codes']==manifest['panel_codes']
           assert panel['quality']['status']=='ok'
+          assert panel['quality']['administrative_request_count']==2
+          assert panel['quality']['national_commune_list_requested'] is True
 
           assert page['subtitle']=='Cognac · code INSEE 16102'
           assert page['runtime']['commune_name_source']=='geo_api_auto'
