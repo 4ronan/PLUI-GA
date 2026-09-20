@@ -318,3 +318,60 @@ Les règles restent notamment :
 - seuil minimal de panel comparable ;
 - transparence de la composition du panel ;
 - ordre opérationnel distinct d’un classement d’efficacité.
+
+
+## Batch multi-communes
+
+Le moteur peut désormais traiter plusieurs communes séquentiellement avec le même contrat de production :
+
+```bash
+python scripts/diagnostic_batch.py 16102,16015,19031 france
+```
+
+Un fichier texte ou CSV simple peut également être passé à la place de la liste.
+
+Le batch :
+
+- déduplique les codes ;
+- valide les codes avant toute génération ;
+- appelle le point d’entrée unitaire pour chaque commune ;
+- réutilise le cache lorsque disponible ;
+- conserve l’ordre de la demande ;
+- retourne un résumé JSON avec le nombre de succès et d’échecs ;
+- reste séquentiel afin de respecter le verrou de l’espace de travail et de limiter la pression sur les API externes.
+
+Exemple de réponse :
+
+```json
+{
+  "status": "success",
+  "requested_n": 3,
+  "processed_n": 3,
+  "success_n": 3,
+  "failure_n": 0,
+  "comparison_scale": "france",
+  "territories": ["16102", "16015", "19031"],
+  "results": []
+}
+```
+
+### Endpoint HTTP de batch
+
+Le serveur de test expose également :
+
+`POST /api/batch`
+
+Corps JSON :
+
+```json
+{
+  "territories": ["16102", "16015", "19031"],
+  "scale": "france",
+  "refresh": false,
+  "stop_on_error": false
+}
+```
+
+Le serveur retourne HTTP 200 lorsque toutes les communes ont été générées, ou 207 lorsque le traitement est partiel.
+
+Le batch ne parallélise volontairement pas les diagnostics complets : la chaîne de production utilise encore un espace intermédiaire partagé et certaines sources externes appliquent des limitations de débit.
