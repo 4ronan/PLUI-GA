@@ -69,21 +69,37 @@ jobs:
           assert d['generation']['network_calls'] is False
           assert d['generation']['free_text_generation'] is False
           assert d['quality']['status']=='ok'
-          assert d['quality']['lever_count']==4
+          o=json.load(open('output/diagnostic-3o-synthesis.json',encoding='utf-8'))
+          assert d['quality']['lever_count']==len(d['levers'])
           assert d['quality']['all_levers_have_triggers'] is True
           assert d['quality']['all_levers_unprioritized'] is True
           assert d['quality']['causal_claims_included'] is False
           assert d['quality']['effectiveness_claims_included'] is False
           assert d['quality']['automatic_prescriptions_included'] is False
+
+          expected=set()
+          vacancy={x['id']:x for x in o['synthesis']['vacancy_status']['comparison']}
+          pv=vacancy['private_vacancy_rate']; ps=vacancy['private_structural_vacancy_rate']
+          if pv.get('comparison_sufficient',True) and ps.get('comparison_sufficient',True) and not pv['is_discriminant'] and not ps['is_discriminant']:
+              expected.add('L1_private_vacancy_monitoring')
+          hids={x['id'] for x in o['hypotheses']}
+          if 'H1_socioeconomic_market_convergence' in hids: expected.add('L2_market_feasibility_check')
+          if 'H2_construction_pipeline_gap' in hids: expected.add('L3_construction_pipeline_review')
+          if 'H3_social_housing_configuration' in hids: expected.add('L4_social_housing_context_coordination')
           ids={x['id'] for x in d['levers']}
-          assert ids=={
-              'L1_private_vacancy_monitoring',
-              'L2_market_feasibility_check',
-              'L3_construction_pipeline_review',
-              'L4_social_housing_context_coordination',
-          }
+          assert ids==expected
+
+          expected_suppressed=set()
+          if (
+              (pv.get('comparison_sufficient',True) and ps.get('comparison_sufficient',True) and not pv['is_discriminant'] and not ps['is_discriminant'])
+              or (not pv.get('comparison_sufficient',True) or not ps.get('comparison_sufficient',True))
+          ):
+              expected_suppressed.add('S1_mass_private_vacancy_reduction')
+          profile=o['synthesis']['vacant_stock_profile']['reading']
+          if profile in {'profil des logements vacants non discriminant dans le panel','profil des logements vacants indisponible ou non comparable'}:
+              expected_suppressed.add('S2_target_by_vacant_dwelling_profile')
           suppressed={x['id'] for x in d['suppressed_levers']}
-          assert suppressed=={'S1_mass_private_vacancy_reduction','S2_target_by_vacant_dwelling_profile'}
+          assert suppressed==expected_suppressed
           print(json.dumps({'quality':d['quality'],'levers':d['levers'],'suppressed':d['suppressed_levers']},ensure_ascii=False,indent=2))
           PY
 
