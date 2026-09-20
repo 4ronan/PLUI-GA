@@ -159,6 +159,9 @@ def validate_cached_source_manifest(cache_dir,meta):
     return d.get('status')=='success' and d.get('territory')==TARGET
 
 def validate_cached_panel(cache_dir,meta):
+    selection=meta.get('panel_selection') or {}
+    if selection.get('algorithm')=='explicit_env_override':
+        return True
     item=meta.get('panel_file') or {}
     p=cache_dir/'diagnostic-3v-panel.json'
     if not p.exists() or p.stat().st_size<=0:
@@ -416,7 +419,9 @@ if cache_valid:
     restore_publication_atomically(cache_pub,PUBLISHED/TARGET)
     source_manifest=cache_dir/'diagnostic-3u-manifest.json'
     atomic_copy2(source_manifest,OUTPUT/'diagnostic-3u-manifest.json')
-    atomic_copy2(cache_dir/'diagnostic-3v-panel.json',OUTPUT/'diagnostic-3v-panel.json')
+    cached_panel_path=cache_dir/'diagnostic-3v-panel.json'
+    if cached_panel_path.exists() and cached_panel_path.stat().st_size>0:
+        atomic_copy2(cached_panel_path,OUTPUT/'diagnostic-3v-panel.json')
     manifest['cache']['hit']=True
     manifest['cache']['reason']=reason
     manifest['source_generation_manifest']=str(source_manifest)
@@ -454,21 +459,28 @@ else:
     snapshot_publication(PUBLISHED/TARGET,cache_pub)
     shutil.copy2(source_manifest_path,cache_dir/'diagnostic-3u-manifest.json')
     panel_source_path=OUTPUT/'diagnostic-3v-panel.json'
-    if not panel_source_path.exists() or panel_source_path.stat().st_size<=0:
-        raise RuntimeError('Panel 3V absent après génération')
-    shutil.copy2(panel_source_path,cache_dir/'diagnostic-3v-panel.json')
+    cached_panel=cache_dir/'diagnostic-3v-panel.json'
+    if PANEL_SELECTION.get('algorithm')!='explicit_env_override':
+        if not panel_source_path.exists() or panel_source_path.stat().st_size<=0:
+            raise RuntimeError('Panel 3V absent après génération automatique')
+        shutil.copy2(panel_source_path,cached_panel)
+    elif cached_panel.exists():
+        cached_panel.unlink()
     cached_source_manifest=cache_dir/'diagnostic-3u-manifest.json'
     source_manifest_meta={
         'name':'diagnostic-3u-manifest.json',
         'bytes':cached_source_manifest.stat().st_size,
         'sha256':sha256_file(cached_source_manifest),
     }
-    cached_panel=cache_dir/'diagnostic-3v-panel.json'
-    panel_file_meta={
-        'name':'diagnostic-3v-panel.json',
-        'bytes':cached_panel.stat().st_size,
-        'sha256':sha256_file(cached_panel),
-    }
+    panel_file_meta=(
+        {
+            'name':'diagnostic-3v-panel.json',
+            'bytes':cached_panel.stat().st_size,
+            'sha256':sha256_file(cached_panel),
+        }
+        if cached_panel.exists() and cached_panel.stat().st_size>0
+        else None
+    )
     file_meta=[]
     for p in sorted(cache_pub.iterdir()):
         if p.is_file():
