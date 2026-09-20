@@ -32,6 +32,26 @@ assert "uniquement à sélectionner les communes de référence" in method["pane
 assert all("aav" not in str(x.get("id","")).lower() and "dens7" not in str(x.get("id","")).lower() for x in d["discriminant_factors"])
 assert all("aav" not in str(x.get("id","")).lower() and "dens7" not in str(x.get("id","")).lower() for x in d["hypotheses"])
 
+expected_provenance={
+    "vacancy_private":"required_core",
+    "vacant_stock_profile":"contextual",
+    "real_estate_market":"contextual_partial_allowed",
+    "construction":"contextual_partial_allowed",
+    "social_housing":"contextual",
+    "demography_housing":"contextual",
+    "socioeconomic_context":"contextual_missing_values_allowed",
+}
+provenance=d.get("source_provenance") or {}
+assert set(provenance)==set(expected_provenance)
+for block,policy in expected_provenance.items():
+    meta=provenance[block]
+    assert meta.get("source")
+    assert meta.get("period_label")
+    assert meta.get("availability_policy")==policy
+    assert meta.get("quality_status") in {"ok","partial"}
+assert "Sources et millésimes" in h
+assert "Les millésimes diffèrent selon les producteurs" in h
+
 quality=d["quality"]
 assert quality["status"] == "ok"
 assert quality["llm_used"] is False
@@ -41,6 +61,7 @@ assert quality["kpi_count"] == len(d["kpis"]) == 8
 assert quality["discriminant_factor_count"] == len(d["discriminant_factors"])
 assert quality["hypothesis_count"] == len(d["hypotheses"])
 assert quality["priority_count"] == len(d["priorities"])
+assert quality["source_provenance_count"] == len(provenance) == 7
 assert all(isinstance(quality[k], int) and quality[k] >= 0 for k in (
     "kpi_count","discriminant_factor_count","hypothesis_count","priority_count"
 ))
@@ -78,5 +99,6 @@ print(json.dumps({
     "priorities":quality["priority_count"],
     "panel_sufficiency_validated":True,
     "panel_source":runtime["panel_source"],
-    "comparison_scale":runtime.get("comparison_scale")
+    "comparison_scale":runtime.get("comparison_scale"),
+    "source_provenance_count":quality["source_provenance_count"]
 }, ensure_ascii=False))
