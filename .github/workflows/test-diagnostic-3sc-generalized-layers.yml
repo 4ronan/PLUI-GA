@@ -113,11 +113,22 @@ jobs:
           q=json.load(open('output/diagnostic-3q-priorities.json',encoding='utf-8'))
           docs=[k,l,mp,m2,n,o,p,q]
           assert all(x['territory']=='16102' for x in docs)
-          assert all(x.get('quality',{}).get('status')=='ok' for x in docs)
+          assert k['quality']['status']=='ok'
+          assert l['quality']['status']=='ok'
+          assert mp['quality']['status'] in {'ok','partial'}
+          assert m2['quality']['status']=='ok'
+          assert n['quality']['status']=='ok'
+          assert o['quality']['status']=='ok'
+          assert p['quality']['status']=='ok'
+          assert q['quality']['status']=='ok'
           assert mp['quality']['reference_n']==15
+          if mp['quality']['status']=='partial':
+              assert mp['quality']['partial_panel_stats']
+              assert mp['quality']['missing_semantics']=='absence/secret = null ou exclusion; jamais 0'
           assert '16102' not in mp['quality']['panel_codes'][1:]
           assert q['runtime']['territory_source']=='env'
           assert len(q['priorities'])>=1
+          assert all(x.get('quality',{}).get('status')=='ok' for x in [m2,n,o,p,q])
           text=' '.join(s['text'] for sec in l['sections'] for s in sec['statements'])
           assert 'Angoulême' not in text
           assert 'Cognac' in text
