@@ -184,9 +184,18 @@ def dvf_row(item):
     code,name=item
     try:
         n,med,ns=dvf_summary(code)
+        availability='ok' if n>0 else 'no_residential_sale'
     except Exception:
-        n,med,ns=0,None,0
-    return {'code':code,'name':name,'residential_sale_mutations_n':n,'simple_sales_n':ns,'median_price_m2_eur_simple':med}
+        n,med,ns=None,None,None
+        availability='source_unavailable'
+    return {
+        'code':code,
+        'name':name,
+        'residential_sale_mutations_n':n,
+        'simple_sales_n':ns,
+        'median_price_m2_eur_simple':med,
+        'availability':availability,
+    }
 
 dvf=ordered_map(dvf_row,PANEL.items())
 
