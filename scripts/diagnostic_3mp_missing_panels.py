@@ -22,6 +22,7 @@ LOG1_BASE='https://api.insee.fr/melodi/data'
 POP_SNAPSHOT=Path('data/insee-rp2023-panel-3j.csv')
 IO_WORKERS=max(1,min(8,int(os.getenv('DIAG_3MP_WORKERS','4'))))
 STARTED=time.monotonic()
+TIMINGS={}
 
 
 def ordered_map(fn,items):
@@ -120,10 +121,13 @@ def population_row(code):
     except Exception:
         return code,None
 
+_t=time.monotonic()
 for code,value in ordered_map(population_row,missing_population_codes):
     pop2023[code]=value
+TIMINGS['population_fallback']=round(time.monotonic()-_t,3)
 
-# 1. LOVAC : même fichier national, même millésime et même dénominateur pour les 16 communes.
+# 1. LOVAC
+_t=time.monotonic() : même fichier national, même millésime et même dénominateur pour les 16 communes.
 lp=TMP/'lovac.csv'; curl(LOVAC_URL,lp); raw=lp.read_bytes()
 text=None
 for enc in ('utf-8-sig','cp1252','latin-1'):
@@ -149,6 +153,7 @@ for code,name in PANEL.items():
         'vacancy_rate_pct':vac/stock*100 if available else None,
         'structural_vacancy_rate_pct':gt2/stock*100 if available else None
     })
+TIMINGS['lovac']=round(time.monotonic()-_t,3)
 
 # 2. DVF 2025 : prix médian au m² des ventes résidentielles simples, même méthode que 3K-D.
 def dvf_summary(code):
@@ -197,7 +202,9 @@ def dvf_row(item):
         'availability':availability,
     }
 
+_t=time.monotonic()
 dvf=ordered_map(dvf_row,PANEL.items())
+TIMINGS['dvf']=round(time.monotonic()-_t,3)
 
 # 3. Sitadel : années fixes pour rendre les comparaisons homogènes.
 def rows_from_payload(payload):
@@ -236,7 +243,9 @@ def sitadel_row(item):
         'started_2024_per_1000_pop2023':(com24/pop*1000 if com24 is not None and pop not in (None,0) else None)
     }
 
+_t=time.monotonic()
 sitadel=ordered_map(sitadel_row,PANEL.items())
+TIMINGS['sitadel']=round(time.monotonic()-_t,3)
 
 # 4. LOG1 : profil des logements vacants comparé entre communes du même panel.
 def flatten(obj,prefix=''):
@@ -289,7 +298,9 @@ def log1_row(item):
         apt,mid=None,None
     return {'code':code,'name':name,'vacant_apartment_share_pct':apt,'vacant_1946_1990_share_pct':mid}
 
+_t=time.monotonic()
 log1=ordered_map(log1_row,PANEL.items())
+TIMINGS['insee_log1']=round(time.monotonic()-_t,3)
 
 blocks={
  'lovac':{'year':2025,'rows':lovac,'stats':{'vacancy_rate_pct':stats(lovac,'vacancy_rate_pct'),'structural_vacancy_rate_pct':stats(lovac,'structural_vacancy_rate_pct')},'limit':'Comparaison du parc privé LOVAC sur un même millésime; ne pas fusionner avec les univers INSEE ou RPLS.'},
@@ -318,10 +329,11 @@ out={
    'io_workers':IO_WORKERS,
    'parallel_io':IO_WORKERS>1,
    'duration_seconds':round(time.monotonic()-STARTED,3),
+   'source_timings_seconds':TIMINGS,
    'ordering_rule':'executor.map conserve l’ordre PANEL; les statistiques et sorties restent déterministes à données source identiques'
  },
  'blocks':blocks,'quality':quality
 }
 OUT.parent.mkdir(exist_ok=True)
 OUT.write_text(json.dumps(out,ensure_ascii=False,indent=2),encoding='utf-8')
-print(json.dumps({'quality':quality,'target_stats':{k:v['stats'] for k,v in blocks.items()}},ensure_ascii=False,indent=2))
+print(json.dumps({'execution':out['execution'],'quality':quality,'target_stats':{k:v['stats'] for k,v in blocks.items()}},ensure_ascii=False,indent=2))
