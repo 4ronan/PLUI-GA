@@ -126,6 +126,7 @@ def main():
             {
                 'hit':cache_manifest.get('cache',{}).get('hit'),
                 'reason':cache_manifest.get('cache',{}).get('reason'),
+                'fast_path':cache_manifest.get('cache',{}).get('fast_path',False),
                 'key':cache_manifest.get('cache',{}).get('key'),
             }
             if cache_manifest and not args.no_cache else None
