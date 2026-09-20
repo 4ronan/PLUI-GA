@@ -164,20 +164,39 @@ def _candidate_rank(row,target_row,typology_enabled):
 def select_panel():
     target_code=target()
     requested_scale=comparison_scale()
-    params=urllib.parse.urlencode({'fields':FIELDS,'format':'json'})
-    url=f'{API_BASE}/communes?{params}'
-    payload=_fetch_json(url)
-    if not isinstance(payload,list):
-        raise RuntimeError('Réponse geo.api.gouv.fr inattendue pour la liste des communes')
+    common={'fields':FIELDS,'format':'json'}
 
-    rows=[]
-    for raw in payload:
-        if isinstance(raw,dict):
-            clean=_clean(raw)
-            if clean:
-                rows.append(clean)
+    target_params=urllib.parse.urlencode(common)
+    target_url=f'{API_BASE}/communes/{urllib.parse.quote(target_code)}?{target_params}'
+    raw_target=_fetch_json(target_url)
+    if not isinstance(raw_target,dict):
+        raise RuntimeError('Réponse geo.api.gouv.fr inattendue pour la commune cible')
+    target_row=_clean(raw_target)
+    if not target_row:
+        raise RuntimeError(f'Commune cible {target_code} absente ou sans population/surface exploitable dans geo.api.gouv.fr')
 
-    by_code={r['code']:r for r in rows}
+    requested_urls=[target_url]
+
+    def load_scope(scope):
+        params=dict(common)
+        if scope=='department':
+            params['codeDepartement']=target_row['department']
+        elif scope=='region':
+            params['codeRegion']=target_row['region']
+        elif scope!='france':
+            raise RuntimeError(f'Échelle inconnue: {scope}')
+        url=f"{API_BASE}/communes?{urllib.parse.urlencode(params)}"
+        payload=_fetch_json(url)
+        if not isinstance(payload,list):
+            raise RuntimeError(f'Réponse geo.api.gouv.fr inattendue pour le périmètre {scope}')
+        requested_urls.append(url)
+        rows=[]
+        for raw in payload:
+            if isinstance(raw,dict):
+                clean=_clean(raw)
+                if clean and clean['code']!=target_code:
+                    rows.append(clean)
+        return url,rows
 
     zoning_status='unavailable'
     zoning_metadata={}
@@ -188,25 +207,17 @@ def select_panel():
         zoning=load_insee_zonings()
         zoning_by_code=zoning['by_code']
         zoning_metadata=zoning['metadata']
-        for code,row in by_code.items():
-            row.update(zoning_by_code.get(code,{}))
+        target_row.update(zoning_by_code.get(target_code,{}))
         zoning_status='available'
     except Exception as exc:
         zoning_metadata={'error':f'{type(exc).__name__}: {exc}'}
-
-    target_row=by_code.get(target_code)
-    if not target_row:
-        raise RuntimeError(f'Commune cible {target_code} absente ou sans population/surface exploitable dans geo.api.gouv.fr')
 
     chosen_scope=None
     candidates=None
     expansion=[]
     for scope in _scope_sequence(requested_scale):
-        scoped=[
-            r for r in rows
-            if r['code']!=target_code and _scope_match(r,target_row,scope)
-        ]
-        expansion.append({'scope':scope,'valid_candidate_n':len(scoped)})
+        scope_url,scoped=load_scope(scope)
+        expansion.append({'scope':scope,'valid_candidate_n':len(scoped),'url':scope_url})
         if len(scoped)>=PANEL_N:
             chosen_scope=scope
             candidates=scoped
@@ -214,6 +225,11 @@ def select_panel():
 
     if chosen_scope is None or candidates is None:
         raise RuntimeError(f'Moins de {PANEL_N} communes comparables valides, même après élargissement à la France')
+
+    if zoning_status=='available':
+        zoning_by_code=zoning['by_code']
+        for row in candidates:
+            row.update(zoning_by_code.get(row['code'],{}))
 
     typology_enabled=(
         zoning_status=='available'
@@ -263,7 +279,9 @@ def select_panel():
             'administrative':{
                 'name':'API Découpage administratif - communes',
                 'producer':'DINUM / Etalab',
-                'url':url,
+                'target_url':target_url,
+                'candidate_urls':requested_urls[1:],
+                'request_count':len(requested_urls),
                 'fields':['nom','code','codeDepartement','codeRegion','population','surface'],
             },
             'insee_zonings':{
@@ -292,6 +310,7 @@ def select_panel():
                 'population_band, structural_distance, population_distance, density_distance, code INSEE'
             ),
             'administrative_scope_fallback':'department -> region -> france; region -> france; france',
+            'administrative_request_strategy':'cible seule puis périmètre demandé; France entière uniquement si l’effectif reste inférieur à 15',
             'llm_used':False,
             'global_score_used':False,
             'selection_metric_note':'Les distances servent uniquement à choisir les communes de référence; elles n’évaluent ni ne classent la commune cible.',
@@ -307,6 +326,8 @@ def select_panel():
             'all_have_population':all(x['population']>0 for x in selected),
             'all_have_surface':all(x['surface']>0 for x in selected),
             'deterministic_sort':True,
+            'administrative_request_count':len(requested_urls),
+            'national_commune_list_requested':any('codeDepartement=' not in u and 'codeRegion=' not in u and '/communes?' in u for u in requested_urls[1:]),
             'candidate_population_band_counts':{str(k):v for k,v in candidate_band_counts.items()},
             'selected_population_band_counts':{str(k):v for k,v in selected_band_counts.items()},
             'population_band_priority_respected':(
