@@ -127,12 +127,12 @@ for year in YEARS:
     if path is None:
         series.append({
             'year':year,
-            'residential_sale_mutations_n':0,
-            'simple_residential_sale_mutations_n':0,
+            'residential_sale_mutations_n':None,
+            'simple_residential_sale_mutations_n':None,
             'median_transaction_value_eur_simple':None,
             'median_price_m2_eur_simple':None,
-            'houses':{'n':0,'median_price_m2_eur':None},
-            'apartments':{'n':0,'median_price_m2_eur':None},
+            'houses':{'n':None,'median_price_m2_eur':None},
+            'apartments':{'n':None,'median_price_m2_eur':None},
             'availability':'file_unavailable'
         })
         continue
@@ -141,7 +141,7 @@ for year in YEARS:
     row['availability']='ok' if row['residential_sale_mutations_n']>0 else 'no_residential_sale'
     series.append(row)
 
-available=[x for x in series if x['residential_sale_mutations_n']>0]
+available=[x for x in series if x['availability']!='file_unavailable' and (x['residential_sale_mutations_n'] or 0)>0]
 latest=max(available,key=lambda x:x['year']) if available else None
 contract={
     'source':'DVF géolocalisées (Etalab / data.gouv.fr)',
@@ -179,9 +179,11 @@ contract={
         'complex_mutations_excluded_from_price_m2':True,
         'missing_semantics':'absence de valeur = null, jamais 0',
         'year_window_status':'2021-2025 stable/reproductible; 2020 explicitement hors contrat',
-        'available_years':[x['year'] for x in series if x['residential_sale_mutations_n']>0],
-        'missing_or_empty_years':[x['year'] for x in series if x['residential_sale_mutations_n']==0],
-        'status':'ok' if all(x['residential_sale_mutations_n']>0 for x in series) else 'partial'
+        'available_file_years':[x['year'] for x in series if x['availability']!='file_unavailable'],
+        'market_years':[x['year'] for x in series if (x['residential_sale_mutations_n'] or 0)>0],
+        'no_residential_sale_years':[x['year'] for x in series if x['availability']=='no_residential_sale'],
+        'file_unavailable_years':[x['year'] for x in series if x['availability']=='file_unavailable'],
+        'status':'partial' if any(x['availability']=='file_unavailable' for x in series) else 'ok'
     }
 }
 OUT.parent.mkdir(exist_ok=True)
