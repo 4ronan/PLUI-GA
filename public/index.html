@@ -214,7 +214,7 @@ async function pollJob(statusUrl,territory){
    const job=await response.json();
    if(!response.ok)throw new Error(job?.error?.message||"Impossible de suivre la génération.");
    if(job.status==="success"){
-     const b=job.result;
+     const b=job.result||await loadPublishedBundle(job.result_url,territory);
      if(b.status!=="success"||b.diagnostic?.territory!==territory||b.panel?.territory!==territory)throw new Error("Le résultat publié ne correspond pas à la commune demandée.");
      return b;
    }
@@ -226,6 +226,15 @@ async function pollJob(statusUrl,territory){
  throw new Error("La génération prend plus de temps que prévu. Réessayez dans quelques minutes : le calcul peut continuer en arrière-plan.");
 }
 
+async function loadPublishedBundle(resultUrl,territory){
+ const root=String(resultUrl||("diagnostics/"+territory+"/")).replace(/\/?$/,"/");
+ const names=["diagnostic.json","levers.json","priorities.json","panel.json","cache-manifest.json"];
+ const responses=await Promise.all(names.map(name=>fetch(root+name,{cache:"no-store"})));
+ if(!responses.every(response=>response.ok))throw new Error("Le diagnostic est terminé mais ses fichiers publiés ne sont pas encore tous disponibles.");
+ const [diagnostic,levers,priorities,panel,cache_manifest]=await Promise.all(responses.map(response=>response.json()));
+ return {status:"success",diagnostic,levers,priorities,panel,cache_manifest};
+}
+
 const GENERATION_CLIENT_TIMEOUT=15*60*1000;
 
 async function startDiagnostic(code,scale,label){
@@ -233,7 +242,7 @@ async function startDiagnostic(code,scale,label){
  btn.disabled=true;btn.textContent="Diagnostic en cours…";
  n.innerHTML='Préparation du diagnostic de <b>'+esc(label)+'</b>…';n.classList.add("show");
  try{
-   const response=await fetch("/api/diagnostics",{
+   const response=await fetch("api/diagnostics.php",{
      method:"POST",headers:{"Content-Type":"application/json"},
      body:JSON.stringify({territory:code,scale})
    });

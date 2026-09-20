@@ -307,6 +307,10 @@ class Handler(SimpleHTTPRequestHandler):
             self.json_response(200 if ready else 503, {"status": "ready" if ready else "not_ready"})
             return
         job_match = re.fullmatch(r"/api/jobs/([0-9a-f]{32})", parsed.path)
+        if parsed.path == "/api/jobs.php":
+            requested_id = (parse_qs(parsed.query).get("id") or [""])[0]
+            if re.fullmatch(r"[0-9a-f]{32}", requested_id):
+                job_match = re.match(r"/api/jobs/([0-9a-f]{32})", f"/api/jobs/{requested_id}")
         if job_match:
             job = JOBS.get(job_match.group(1))
             if not job:
@@ -325,7 +329,7 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_POST(self):
         parsed = urlparse(self.path)
-        if parsed.path != "/api/diagnostics":
+        if parsed.path not in {"/api/diagnostics", "/api/diagnostics.php"}:
             self.send_error(404, "Not Found")
             return
         try:

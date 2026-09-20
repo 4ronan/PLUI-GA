@@ -3,7 +3,7 @@ name: Test integrated vacancy diagnostic page
 on:
   workflow_dispatch:
   push:
-    branches: [vacants-rpls-d2]
+    branches: [main, vacants-rpls-d2]
     paths:
       - 'public/index.html'
       - '.github/workflows/test-diagnostic-page-integrated.yml'
@@ -26,7 +26,8 @@ jobs:
           s=p.read_text(encoding='utf-8')
           assert '<!doctype html>' in s.lower()
           assert '3V-D-insee-typology-v2' in s
-          assert '/api/diagnostics' in s
+          assert 'api/diagnostics.php' in s
+          assert 'loadPublishedBundle' in s
           assert 'status_url' in s and 'pollJob' in s
           assert 'Commune, code postal ou code INSEE' in s
           assert 'Générer le diagnostic' in s

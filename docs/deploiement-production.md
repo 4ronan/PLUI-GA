@@ -1,58 +1,92 @@
-# Mise en production du diagnostic de vacance
+# Mise en production sans coût d’hébergement supplémentaire
 
 ## Architecture retenue
 
-Le service réunit dans un même conteneur :
+La production utilise uniquement les services déjà disponibles :
 
-- l’interface publique `public/index.html` ;
-- l’API asynchrone `scripts/diagnostic_web_server.py` ;
-- le moteur déterministe appelé par `scripts/diagnostic_request.py` ;
-- le cache persistant placé dans `DIAG_CACHE_DIR`.
+- l’hébergement OVH de `zonage-terrain.fr` sert l’interface et trois petits scripts PHP ;
+- GitHub Actions exécute le moteur Python à la demande dans le dépôt public ;
+- le workflow renvoie le diagnostic et son statut sur OVH par SFTP ;
+- OVH conserve les résultats pendant 24 heures pour éviter les recalculs identiques.
 
-Une seule génération est exécutée à la fois. Cette contrainte est volontaire : les étapes historiques utilisent encore des fichiers intermédiaires communs dans `output/`. La file HTTP absorbe les demandes concurrentes et déduplique les requêtes identiques déjà en cours.
+Il n’y a ni serveur applicatif permanent, ni base de données, ni abonnement applicatif tiers à prévoir. Docker et `scripts/diagnostic_web_server.py` restent disponibles uniquement pour le développement local.
 
-## Déploiement rapide avec Docker
+## URL publique conseillée
 
-```bash
-docker build -t zonage-terrain-vacance .
-docker run --rm -p 8765:8765 -v diagnostic-cache:/data zonage-terrain-vacance
-```
+Publier le contenu du dossier `public/` dans un sous-dossier du domaine, par exemple :
 
-Vérifications :
+`https://www.zonage-terrain.fr/diagnostic-vacance/`
 
-```bash
-curl --fail http://127.0.0.1:8765/api/health
-curl --fail http://127.0.0.1:8765/api/ready
-```
+La page utilise des chemins relatifs ; elle fonctionne donc à la racine ou dans ce sous-dossier sans modification.
 
-Le fichier `render.yaml` fournit un déploiement Render avec disque persistant de 5 Go, une seule instance et déploiement automatique uniquement après réussite de la CI. Le plan doit permettre un processus toujours actif : une mise en veille pendant une génération interromprait le travail en mémoire.
+## Secrets GitHub requis
 
-## Contrat HTTP public
+Créer ces secrets dans les paramètres Actions du dépôt :
+
+- `OVH_SFTP_HOST` : serveur SFTP OVH ;
+- `OVH_SFTP_PORT` : port SFTP, généralement `22` ;
+- `OVH_SFTP_USER` : utilisateur SFTP ;
+- `OVH_SFTP_PASSWORD` : mot de passe SFTP ;
+- `OVH_DIAGNOSTIC_PATH` : chemin distant exact du dossier public, par exemple `/www/diagnostic-vacance`.
+
+Le workflow manuel `Deploy vacancy diagnostic interface to OVH` publie l’interface. Le workflow `Generate and publish one vacancy diagnostic to OVH` est ensuite déclenché automatiquement par PHP pour chaque nouvelle demande.
+
+## Configuration privée sur OVH
+
+Copier `config/diagnostic.example.php` vers un emplacement non public, par défaut :
+
+`<dossier-parent-du-document-root>/private-zonage-terrain/diagnostic.php`
+
+Renseigner `github_token` avec un jeton GitHub à durée limitée, restreint au seul dépôt `4ronan/PLUI-GA`, avec le droit Actions en écriture. Ne jamais placer ce jeton dans `public/` ou dans le dépôt.
+
+Si OVH utilise une arborescence différente, définir la variable d’environnement `ZT_CONFIG_FILE` avec le chemin absolu du fichier privé.
+
+## Contrat HTTP
 
 Soumission :
 
 ```http
-POST /api/diagnostics
+POST api/diagnostics.php
 Content-Type: application/json
 
 {"territory":"16015","scale":"france"}
 ```
 
-La réponse HTTP 202 fournit `status_url`. Cette URL est interrogée jusqu’à l’état `success` ou `failure`. Après succès, `result_url` pointe vers la page publiée sous `/diagnostics/16015/`.
+La réponse `202` fournit `status_url`. La page interroge cette URL jusqu’à l’état `success` ou `failure`, puis charge les JSON publiés sous `diagnostics/<code_INSEE>/`. Une réponse `200` immédiate indique que le cache OVH a été utilisé.
 
-## Variables principales
+## Maîtrise de l’usage
 
-- `PORT` : port d’écoute, 8765 par défaut ;
-- `DIAG_CACHE_DIR` : cache persistant ;
-- `DIAG_CACHE_TTL_HOURS` : durée de validité, 24 heures par défaut ;
-- `DIAG_JOB_QUEUE_LIMIT` : nombre maximal de demandes en attente ;
-- `DIAG_RATE_LIMIT_PER_MINUTE` : limite de soumissions par adresse ;
-- `DIAG_GENERATION_TIMEOUT_SECONDS` : délai maximal d’une génération.
+Les valeurs par défaut sont :
 
-## Conditions avant ouverture au public
+- 3 nouvelles générations par adresse IP et par heure ;
+- 30 nouvelles générations par jour au total ;
+- cache de 24 heures ;
+- déduplication d’une demande identique déjà en cours ;
+- expiration d’un suivi bloqué après 45 minutes.
 
-1. Les workflows Angoulême et Cognac doivent rester verts pour les sorties HTML et JSON.
-2. Le test du service web doit valider `/api/health`, `/api/ready`, les en-têtes de sécurité et les erreurs d’entrée.
-3. Le répertoire monté sur `DIAG_CACHE_DIR` doit être persistant et accessible en écriture.
-4. Le domaine public doit terminer HTTPS et transmettre les requêtes au port du conteneur.
-5. Après déploiement, lancer un diagnostic Angoulême puis Cognac et vérifier leurs pages publiées.
+Ces seuils sont modifiables dans le fichier de configuration privé. Ils protègent les quotas GitHub Actions et l’hébergement sans introduire de service tiers.
+
+## Procédure de mise en ligne
+
+1. Ajouter les cinq secrets SFTP au dépôt GitHub.
+2. Créer le fichier privé OVH à partir de l’exemple et y renseigner le jeton GitHub.
+3. Exécuter manuellement le workflow `Deploy vacancy diagnostic interface to OVH`.
+4. Ouvrir l’URL publique et demander Angoulême (`16015`), puis Cognac (`16102`).
+5. Vérifier la création de `diagnostics/16015/`, `diagnostics/16102/` et des statuts dans `jobs/`.
+
+## Vérification locale
+
+```bash
+ZT_CONFIG_FILE="$PWD/config/diagnostic.example.php" php -S 127.0.0.1:8768 -t public
+```
+
+Puis ouvrir `http://127.0.0.1:8768/`. Sans vrai jeton, une demande valide doit répondre que le moteur n’est pas encore activé ; cela permet de tester le frontal sans déclencher de génération.
+
+## Sécurité
+
+- le jeton GitHub reste hors du document root ;
+- les dossiers `jobs/` et `runtime/` sont interdits en accès direct par `.htaccess` ;
+- seul `jobs.php` restitue un statut dont l’identifiant respecte le format attendu ;
+- l’origine du navigateur est contrôlée ;
+- les entrées territoire et échelle sont validées avant tout appel externe ;
+- les journaux techniques restent dans GitHub Actions pendant sept jours.

@@ -1,0 +1,54 @@
+name: Deploy vacancy diagnostic interface to OVH
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy_interface:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Préparer l’interface sans données d’exécution
+        run: |
+          mkdir -p /tmp/vacancy-site
+          cp -a public/. /tmp/vacancy-site/
+          find /tmp/vacancy-site/jobs -type f ! -name '.htaccess' ! -name '.gitkeep' -delete
+          find /tmp/vacancy-site/runtime -type f ! -name '.htaccess' ! -name '.gitkeep' -delete
+
+      - name: Vérifier les syntaxes avant publication
+        run: |
+          php -l /tmp/vacancy-site/api/bootstrap.php
+          php -l /tmp/vacancy-site/api/diagnostics.php
+          php -l /tmp/vacancy-site/api/jobs.php
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          page=Path('/tmp/vacancy-site/index.html').read_text(encoding='utf-8')
+          scripts=re.findall(r'<script>(.*?)</script>',page,flags=re.S|re.I)
+          assert len(scripts)==1
+          Path('/tmp/interface.js').write_text(scripts[0],encoding='utf-8')
+          assert 'api/diagnostics.php' in page
+          PY
+          node --check /tmp/interface.js
+
+      - name: Installer le client SFTP
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
+      - name: Publier l’interface sur OVH
+        env:
+          OVH_SFTP_HOST: ${{ secrets.OVH_SFTP_HOST }}
+          OVH_SFTP_PORT: ${{ secrets.OVH_SFTP_PORT }}
+          OVH_SFTP_USER: ${{ secrets.OVH_SFTP_USER }}
+          OVH_SFTP_PASSWORD: ${{ secrets.OVH_SFTP_PASSWORD }}
+          OVH_DIAGNOSTIC_PATH: ${{ secrets.OVH_DIAGNOSTIC_PATH }}
+        run: |
+          test -n "$OVH_SFTP_HOST"
+          test -n "$OVH_SFTP_USER"
+          test -n "$OVH_SFTP_PASSWORD"
+          test -n "$OVH_DIAGNOSTIC_PATH"
+          port="${OVH_SFTP_PORT:-22}"
+          lftp -u "$OVH_SFTP_USER,$OVH_SFTP_PASSWORD" -p "$port" "sftp://$OVH_SFTP_HOST" -e "set sftp:auto-confirm yes; set xfer:use-temp-file yes; set net:max-retries 3; mirror -R --verbose /tmp/vacancy-site $OVH_DIAGNOSTIC_PATH; bye"

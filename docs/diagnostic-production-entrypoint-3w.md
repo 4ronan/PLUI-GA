@@ -271,28 +271,21 @@ L’interface destinée aux utilisateurs est disponible dans :
 
 `public/index.html`
 
-Le service web se lance avec :
+En production, OVH sert cette page et les points d’entrée PHP du dossier `public/api/`. Une demande appelle :
+
+`POST api/diagnostics.php`
+
+Le navigateur suit ensuite `GET api/jobs.php?id=<identifiant>`. En l’absence d’un résultat frais, PHP déclenche le workflow GitHub Actions `generate-diagnostic-ovh.yml`. Ce workflow exécute le moteur déterministe dans un runner isolé, puis publie par SFTP les résultats canoniques sous `diagnostics/<code_INSEE>/` et le statut final dans `jobs/`.
+
+Cette architecture ne nécessite aucun processus Python permanent sur l’hébergement mutualisé. Elle utilise l’hébergement OVH existant et les runners standard du dépôt public. Le cache de 24 heures, la déduplication et les limites par IP/jour réduisent les exécutions inutiles.
+
+Pour le développement local uniquement, le serveur Python historique reste disponible :
 
 ```bash
 python scripts/diagnostic_web_server.py
 ```
 
-Puis ouvrir :
-
-`http://127.0.0.1:8765/`
-
-La page soumet une génération asynchrone avec :
-
-`POST /api/diagnostics`
-
-Le navigateur suit ensuite `GET /api/jobs/<identifiant>`. Ce contrat évite qu’une première génération longue soit interrompue par le délai maximal du proxy HTTP. Le serveur délègue intégralement le calcul à `diagnostic_request.py`. Le navigateur ne calcule ni facteur, ni percentile, ni hypothèse.
-
-Les générations sont placées dans une file bornée et traitées une par une, conformément au verrou de l’espace de travail. Deux demandes identiques simultanées partagent le même travail. Les résultats canoniques sont accessibles sous `/diagnostics/<code_INSEE>/`.
-
-Les sondes d’exploitation sont :
-
-- `/api/health` pour l’état du processus et de la file ;
-- `/api/ready` pour vérifier que l’interface, le moteur et l’espace de sortie sont disponibles.
+Dans les deux modes, le navigateur ne calcule ni facteur, ni percentile, ni hypothèse.
 
 ## Provenance des sources et millésimes
 

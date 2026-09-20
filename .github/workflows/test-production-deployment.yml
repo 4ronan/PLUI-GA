@@ -1,76 +1,89 @@
-name: Test production deployment package
+name: Test zero-cost OVH deployment package
 
 on:
   workflow_dispatch:
   push:
-    branches: [vacants-rpls-d2]
+    branches: [main, vacants-rpls-d2]
     paths:
-      - 'Dockerfile'
-      - '.dockerignore'
-      - 'render.yaml'
-      - 'Procfile'
-      - 'public/index.html'
-      - 'scripts/diagnostic_web_server.py'
+      - 'public/**'
+      - 'config/diagnostic.example.php'
+      - '.github/workflows/deploy-interface-ovh.yml'
+      - '.github/workflows/generate-diagnostic-ovh.yml'
       - '.github/workflows/test-production-deployment.yml'
 
 concurrency:
-  group: diagnostic-production-package-${{ github.ref }}
+  group: diagnostic-ovh-package-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  container_smoke_test:
+  php_contract:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
-      - name: Construire l’image de production
-        run: docker build -t diagnostic-vacance:ci .
-
-      - name: Démarrer le conteneur
+      - name: Vérifier PHP et JavaScript
         run: |
-          docker run --rm -d --name diagnostic-vacance-ci -p 8765:8765 diagnostic-vacance:ci
-          for i in $(seq 1 60); do
-            if curl --fail --silent http://127.0.0.1:8765/api/ready >/tmp/ready.json; then
+          php -l public/api/bootstrap.php
+          php -l public/api/diagnostics.php
+          php -l public/api/jobs.php
+          php -l config/diagnostic.example.php
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          page=Path('public/index.html').read_text(encoding='utf-8')
+          scripts=re.findall(r'<script>(.*?)</script>',page,flags=re.S|re.I)
+          assert len(scripts)==1
+          assert 'api/diagnostics.php' in page
+          assert 'loadPublishedBundle' in page
+          Path('/tmp/interface.js').write_text(scripts[0],encoding='utf-8')
+          PY
+          node --check /tmp/interface.js
+
+      - name: Démarrer le frontal PHP comme sur l’hébergement
+        run: |
+          ZT_CONFIG_FILE="$PWD/config/diagnostic.example.php" php -S 127.0.0.1:8768 -t public >/tmp/php-server.log 2>&1 &
+          echo $! >/tmp/php-server.pid
+          for i in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8768/ >/tmp/index.html; then
               exit 0
             fi
-            sleep 0.5
+            sleep 0.25
           done
-          docker logs diagnostic-vacance-ci
+          cat /tmp/php-server.log
           exit 1
 
-      - name: Vérifier l’interface, l’API et la sécurité
+      - name: Vérifier les réponses sans déclencher GitHub
         run: |
-          curl --fail --silent http://127.0.0.1:8765/ >/tmp/index.html
           grep -q 'Comprendre la vacance des logements' /tmp/index.html
-          grep -q '/api/diagnostics' /tmp/index.html
-          curl --fail --silent http://127.0.0.1:8765/api/health >/tmp/health.json
-          python - <<'PY'
-          import json
-          health=json.load(open('/tmp/health.json',encoding='utf-8'))
-          ready=json.load(open('/tmp/ready.json',encoding='utf-8'))
-          assert health['status']=='ok'
-          assert health['service']=='diagnostic-vacance'
-          assert health['llm_used'] is False
-          assert ready['status']=='ready'
-          PY
-          curl --silent --dump-header /tmp/headers.txt --output /dev/null http://127.0.0.1:8765/
-          grep -qi '^content-security-policy:' /tmp/headers.txt
-          grep -qi '^x-content-type-options: nosniff' /tmp/headers.txt
-
-      - name: Vérifier les rejets sans lancer le moteur
-        run: |
           status=$(curl --silent --output /tmp/invalid.json --write-out '%{http_code}' \
             -X POST -H 'Content-Type: application/json' \
             -d '{"territory":"ABC","scale":"france"}' \
-            http://127.0.0.1:8765/api/diagnostics)
+            http://127.0.0.1:8768/api/diagnostics.php)
+          test "$status" = "400"
+          status=$(curl --silent --output /tmp/unconfigured.json --write-out '%{http_code}' \
+            -X POST -H 'Content-Type: application/json' \
+            -d '{"territory":"16015","scale":"france"}' \
+            http://127.0.0.1:8768/api/diagnostics.php)
+          test "$status" = "503"
+          status=$(curl --silent --output /tmp/job-error.json --write-out '%{http_code}' \
+            'http://127.0.0.1:8768/api/jobs.php?id=bad')
           test "$status" = "400"
           python - <<'PY'
           import json
-          data=json.load(open('/tmp/invalid.json',encoding='utf-8'))
-          assert data['status']=='failure'
-          assert data['phase']=='input_validation'
+          assert json.load(open('/tmp/invalid.json'))['error']['type']=='invalid_territory'
+          assert json.load(open('/tmp/unconfigured.json'))['error']['type']=='configuration_missing'
+          assert json.load(open('/tmp/job-error.json'))['error']['type']=='invalid_job'
           PY
 
-      - name: Arrêter le conteneur
+      - name: Vérifier les protections du paquet
+        run: |
+          test -f public/.htaccess
+          test -f public/jobs/.htaccess
+          test -f public/runtime/.htaccess
+          test ! -e render.yaml
+          test ! -e Procfile
+
+      - name: Arrêter le frontal PHP
         if: always()
-        run: docker stop diagnostic-vacance-ci || true
+        run: |
+          if test -f /tmp/php-server.pid; then kill "$(cat /tmp/php-server.pid)" || true; fi

@@ -3,7 +3,7 @@ name: Test diagnostic 3Y-B local test server
 on:
   workflow_dispatch:
   push:
-    branches: [vacants-rpls-d2]
+    branches: [main, vacants-rpls-d2]
     paths:
       - 'scripts/diagnostic_web_server.py'
       - 'scripts/diagnostic_batch.py'
@@ -33,7 +33,7 @@ jobs:
           scripts=re.findall(r'<script>(.*?)</script>',s,flags=re.S|re.I)
           assert len(scripts)==1
           Path('/tmp/page.js').write_text(scripts[0],encoding='utf-8')
-          assert '/api/diagnostics' in s
+          assert 'api/diagnostics.php' in s
           assert 'status_url' in s and 'pollJob' in s
           PY
           node --check /tmp/page.js
@@ -64,7 +64,7 @@ jobs:
           PY
           curl --fail --silent http://127.0.0.1:8765/ >/tmp/page.html
           grep -q 'Diagnostic territorial de la vacance' /tmp/page.html
-          grep -q '/api/diagnostics' /tmp/page.html
+          grep -q 'api/diagnostics.php' /tmp/page.html
           curl --fail --silent http://127.0.0.1:8765/api/ready >/tmp/ready.json
           grep -qi '^content-security-policy:' <(curl --silent --head http://127.0.0.1:8765/)
 

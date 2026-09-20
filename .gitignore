@@ -3,3 +3,6 @@ tmp_*/
 __pycache__/
 *.py[cod]
 .DS_Store
+public/jobs/*.json
+public/runtime/*.json
+public/runtime/*.lock

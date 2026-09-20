@@ -1,0 +1,148 @@
+name: Generate and publish one vacancy diagnostic to OVH
+
+on:
+  workflow_dispatch:
+    inputs:
+      territory:
+        description: Code INSEE communal
+        required: true
+        type: string
+      scale:
+        description: Échelle de comparaison
+        required: true
+        type: choice
+        options:
+          - department
+          - region
+          - france
+      request_id:
+        description: Identifiant de suivi généré par zonage-terrain.fr
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vacancy-${{ inputs.territory }}-${{ inputs.scale }}
+  cancel-in-progress: false
+
+jobs:
+  generate_and_publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      TERRITORY: ${{ inputs.territory }}
+      SCALE: ${{ inputs.scale }}
+      REQUEST_ID: ${{ inputs.request_id }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Valider strictement la demande
+        run: |
+          python - <<'PY'
+          import os,re
+          territory=os.environ['TERRITORY'].strip().upper()
+          scale=os.environ['SCALE'].strip().lower()
+          request_id=os.environ['REQUEST_ID'].strip().lower()
+          assert re.fullmatch(r'[0-9A-Z]{5}',territory), 'code INSEE invalide'
+          assert scale in {'department','region','france'}, 'échelle invalide'
+          assert re.fullmatch(r'[a-f0-9]{32}',request_id), 'request_id invalide'
+          PY
+
+      - name: Générer le diagnostic déterministe
+        id: generation
+        run: |
+          set +e
+          python scripts/diagnostic_request.py "$TERRITORY" "$SCALE" > /tmp/diagnostic-run.log 2>&1
+          exit_code=$?
+          echo "exit_code=$exit_code" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Préparer les fichiers publics et le statut
+        env:
+          EXIT_CODE: ${{ steps.generation.outputs.exit_code }}
+        run: |
+          python - <<'PY'
+          import json,os,shutil
+          from datetime import datetime,timezone
+          from pathlib import Path
+
+          root=Path.cwd()
+          deploy=Path('/tmp/diagnostic-deploy')
+          territory=os.environ['TERRITORY'].strip().upper()
+          scale=os.environ['SCALE'].strip().lower()
+          request_id=os.environ['REQUEST_ID'].strip().lower()
+          exit_code=int(os.environ.get('EXIT_CODE') or 1)
+          (deploy/'jobs').mkdir(parents=True,exist_ok=True)
+          status={
+              'id':request_id,
+              'territory':territory,
+              'scale':scale,
+              'cached':False,
+              'finished_at':datetime.now(timezone.utc).isoformat().replace('+00:00','Z'),
+          }
+          published=root/'output'/'published'/territory
+          required=[published/name for name in ('index.html','diagnostic.json','synthesis.json','levers.json','priorities.json')]
+          success=exit_code==0 and all(path.exists() and path.stat().st_size>0 for path in required)
+          if success:
+              target=deploy/'diagnostics'/territory
+              shutil.copytree(published,target)
+              extras={
+                  root/'output'/'diagnostic-3v-panel.json':target/'panel.json',
+                  root/'output'/'diagnostic-3ub-manifest.json':target/'cache-manifest.json',
+                  root/'output'/'diagnostic-3u-manifest.json':target/'production-manifest.json',
+              }
+              for source,destination in extras.items():
+                  if not source.exists() or source.stat().st_size<=0:
+                      raise RuntimeError(f'sortie obligatoire absente: {source}')
+                  shutil.copy2(source,destination)
+              status.update({'status':'success','result_url':f'diagnostics/{territory}/'})
+          else:
+              status.update({
+                  'status':'failure',
+                  'error':{
+                      'type':'generation_failure',
+                      'message':'Le diagnostic n’a pas pu être produit à partir des sources publiques disponibles.'
+                  },
+              })
+          (deploy/'jobs'/f'{request_id}.json').write_text(
+              json.dumps(status,ensure_ascii=False,indent=2),encoding='utf-8'
+          )
+          Path('/tmp/generation-success').write_text('1' if success else '0',encoding='ascii')
+          print(json.dumps(status,ensure_ascii=False))
+          PY
+
+      - name: Conserver le journal technique
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostic-log-${{ inputs.request_id }}
+          path: /tmp/diagnostic-run.log
+          retention-days: 7
+
+      - name: Installer le client SFTP
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
+      - name: Publier le diagnostic et son statut sur OVH
+        env:
+          OVH_SFTP_HOST: ${{ secrets.OVH_SFTP_HOST }}
+          OVH_SFTP_PORT: ${{ secrets.OVH_SFTP_PORT }}
+          OVH_SFTP_USER: ${{ secrets.OVH_SFTP_USER }}
+          OVH_SFTP_PASSWORD: ${{ secrets.OVH_SFTP_PASSWORD }}
+          OVH_DIAGNOSTIC_PATH: ${{ secrets.OVH_DIAGNOSTIC_PATH }}
+        run: |
+          test -n "$OVH_SFTP_HOST"
+          test -n "$OVH_SFTP_USER"
+          test -n "$OVH_SFTP_PASSWORD"
+          test -n "$OVH_DIAGNOSTIC_PATH"
+          port="${OVH_SFTP_PORT:-22}"
+          lftp -u "$OVH_SFTP_USER,$OVH_SFTP_PASSWORD" -p "$port" "sftp://$OVH_SFTP_HOST" -e "set sftp:auto-confirm yes; set xfer:use-temp-file yes; set net:max-retries 3; mirror -R --verbose /tmp/diagnostic-deploy $OVH_DIAGNOSTIC_PATH; bye"
+
+      - name: Signaler un échec métier après publication du statut
+        if: always()
+        run: test "$(cat /tmp/generation-success 2>/dev/null || echo 0)" = "1"
