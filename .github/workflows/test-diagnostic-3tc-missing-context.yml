@@ -60,7 +60,10 @@ jobs:
             'apartment_median_price_m2_eur':None,
           }
           d['quality']['status']='partial'
-          d['quality']['missing_or_empty_years']=[2021,2022,2023,2024,2025]
+          d['quality']['available_file_years']=[]
+          d['quality']['market_years']=[]
+          d['quality']['no_residential_sale_years']=[]
+          d['quality']['file_unavailable_years']=[2021,2022,2023,2024,2025]
           p.write_text(json.dumps(d,ensure_ascii=False,indent=2),encoding='utf-8')
 
           p=Path('output/sitadel-3ke-contract.json')
