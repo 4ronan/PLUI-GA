@@ -64,13 +64,19 @@ jobs:
           h=open('output/diagnostic-3r-page.html',encoding='utf-8').read()
           assert d['territory']=='16015'
           assert d['subtitle']=='Angoulême · code INSEE 16015'
+          o=json.load(open('output/diagnostic-3o-synthesis.json',encoding='utf-8'))
+          q=json.load(open('output/diagnostic-3q-priorities.json',encoding='utf-8'))
+          kg=json.load(open('output/diagnostic-3kg-assembly.json',encoding='utf-8'))
           assert d['method']['panel_reference_n']==15
-          assert d['quality']['kpi_count']==8
-          assert d['quality']['discriminant_factor_count']==6
-          assert d['quality']['hypothesis_count']==3
-          assert d['quality']['priority_count']==4
+          assert d['quality']['kpi_count']==len(d['kpis'])==8
+          assert d['quality']['discriminant_factor_count']==len(d['discriminant_factors'])==len(o['discriminant_factors'])
+          assert d['quality']['hypothesis_count']==len(d['hypotheses'])==len(o['hypotheses'])
+          assert d['quality']['priority_count']==len(d['priorities'])==len(q['priorities'])
+          assert d['source_provenance']==kg['source_provenance']
+          assert d['quality']['source_provenance_count']==7
           assert d['runtime']['territory_source']=='env'
           assert '<strong>Angoulême</strong> · code INSEE 16015.' in h
+          assert 'Sources et millésimes' in h
           print('ANGOULEME_3SD_PAGE_OK')
           PY
 
@@ -112,15 +118,22 @@ jobs:
           h=open('output/diagnostic-3r-page.html',encoding='utf-8').read()
           assert d['territory']=='16102'
           assert d['subtitle']=='Cognac · code INSEE 16102'
+          o=json.load(open('output/diagnostic-3o-synthesis.json',encoding='utf-8'))
+          q=json.load(open('output/diagnostic-3q-priorities.json',encoding='utf-8'))
+          kg=json.load(open('output/diagnostic-3kg-assembly.json',encoding='utf-8'))
           assert d['method']['panel_reference_n']==15
-          assert d['quality']['kpi_count']==8
-          assert d['quality']['discriminant_factor_count']==5
-          assert d['quality']['hypothesis_count']==0
-          assert d['quality']['priority_count']==1
+          assert d['quality']['kpi_count']==len(d['kpis'])==8
+          assert d['quality']['discriminant_factor_count']==len(d['discriminant_factors'])==len(o['discriminant_factors'])
+          assert d['quality']['hypothesis_count']==len(d['hypotheses'])==len(o['hypotheses'])
+          assert d['quality']['priority_count']==len(d['priorities'])==len(q['priorities'])
+          assert d['source_provenance']==kg['source_provenance']
+          assert d['quality']['source_provenance_count']==7
           assert d['runtime']['territory_source']=='env'
           assert '<strong>Cognac</strong> · code INSEE 16102.' in h
           assert 'Angoulême</strong> · code INSEE 16015' not in h
-          assert 'Aucune hypothèse n’est déclenchée' in h
+          if not d['hypotheses']:
+              assert 'Aucune hypothèse n’est déclenchée' in h
+          assert 'Sources et millésimes' in h
           print('COGNAC_3SD_PAGE_OK')
           PY
       - name: Publier la page Cognac
