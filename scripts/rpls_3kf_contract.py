@@ -1,0 +1,186 @@
+import csv, json, math, statistics
+from pathlib import Path
+from diagnostic_runtime import target, panel_peers, runtime_metadata
+
+TARGET=target()
+YEAR=2025
+PEER_CODES=panel_peers()
+PANEL_CODES=[TARGET,*PEER_CODES]
+CSV_PATH=Path('data/rpls-2025-communes.csv')
+CHECKS_PATH=Path('data/rpls-2025-checks.json')
+OUT=Path('output/rpls-3kf-contract.json')
+
+
+def num(v):
+    if v is None:
+        return None
+    s=str(v).strip().replace(' ','').replace(',','.')
+    if not s:
+        return None
+    try:
+        x=float(s)
+        return x if math.isfinite(x) else None
+    except Exception:
+        return None
+
+
+def ratio100(n,d):
+    return None if n is None or d in (None,0) else 100*n/d
+
+
+def quantile_linear(vals,p):
+    a=sorted(v for v in vals if v is not None and math.isfinite(v))
+    if not a:
+        return None
+    h=(len(a)-1)*p
+    i=math.floor(h)
+    f=h-i
+    return a[i]+(a[min(i+1,len(a)-1)]-a[i])*f
+
+
+def percentile(panel_vals,target):
+    vals=[v for v in panel_vals if v is not None and math.isfinite(v)]
+    if target is None or not vals:
+        return None
+    return 100*sum(v <= target for v in vals)/len(vals)
+
+
+def metrics(r):
+    active=num(r.get('nb_ls_actif'))
+    vacant=num(r.get('nb_ls_vacant'))
+    vacant3=num(r.get('nb_ls_vacant_3'))
+    age40_60=num(r.get('nb_ls_age_40_60'))
+    age60=num(r.get('nb_ls_age_60_plus'))
+    return {
+        'stock_social_actif':active,
+        'logements_vacants':vacant,
+        'vacance_sociale_pct':ratio100(vacant,active),
+        'vacance_plus_3_mois_n':vacant3,
+        'vacance_plus_3_mois_pct_stock':ratio100(vacant3,active),
+        'vacance_plus_3_mois_pct_vacants':ratio100(vacant3,vacant),
+        'mobilite_pct':ratio100(num(r.get('num_mob')),num(r.get('denom_mob'))),
+        'part_qpv_pct':ratio100(num(r.get('nb_ls_qpv')),active),
+        'part_collectif_pct':ratio100(num(r.get('nb_ls_coll')),active),
+        'part_age_40_plus_pct':None if active in (None,0) or age40_60 is None or age60 is None else ratio100(age40_60+age60,active),
+        'part_age_60_plus_pct':ratio100(age60,active),
+    }
+
+checks=json.loads(CHECKS_PATH.read_text(encoding='utf-8'))
+if checks.get('duplicate_commune_rows') != 0:
+    raise RuntimeError(f'Précontrôles RPLS invalides: {checks}')
+
+rows={}
+with CSV_PATH.open('r',encoding='utf-8-sig',newline='') as fh:
+    reader=csv.DictReader(fh)
+    for r in reader:
+        code=str(r.get('DEPCOM','')).strip()
+        if code in PANEL_CODES:
+            if code in rows:
+                raise RuntimeError(f'Doublon commune {code}')
+            rows[code]=r
+
+missing=sorted(set(PANEL_CODES)-set(rows))
+
+empty_metrics={
+    'stock_social_actif':None,
+    'logements_vacants':None,
+    'vacance_sociale_pct':None,
+    'vacance_plus_3_mois_n':None,
+    'vacance_plus_3_mois_pct_stock':None,
+    'vacance_plus_3_mois_pct_vacants':None,
+    'mobilite_pct':None,
+    'part_qpv_pct':None,
+    'part_collectif_pct':None,
+    'part_age_40_plus_pct':None,
+    'part_age_60_plus_pct':None,
+}
+panel={code:(metrics(rows[code]) if code in rows else dict(empty_metrics)) for code in PANEL_CODES}
+t=panel[TARGET]
+available_peer_codes=[c for c in PEER_CODES if c in rows]
+peers=[panel[c] for c in available_peer_codes]
+
+keys=['vacance_sociale_pct','mobilite_pct','part_qpv_pct','part_age_40_plus_pct']
+medians={k:quantile_linear([x[k] for x in peers],.5) for k in keys}
+percentiles={k:percentile([x[k] for x in peers],t[k]) for k in keys}
+
+signals=[
+    {
+        'id':'social_vacancy',
+        'label':'Vacance sociale plutôt contenue',
+        'value':t['vacance_sociale_pct'],
+        'panel_median':medians['vacance_sociale_pct'],
+        'percentile':percentiles['vacance_sociale_pct'],
+        'role':'contexte du fonctionnement du parc social',
+        'interpretation_limit':'Ne pas transposer à LOVAC.'
+    },
+    {
+        'id':'social_mobility',
+        'label':'Mobilité relativement élevée',
+        'value':t['mobilite_pct'],
+        'panel_median':medians['mobilite_pct'],
+        'percentile':percentiles['mobilite_pct'],
+        'role':'contexte de mobilité du parc social',
+        'interpretation_limit':'Indicateur descriptif du parc social.'
+    },
+    {
+        'id':'social_qpv',
+        'label':'Forte concentration du parc social en QPV',
+        'value':t['part_qpv_pct'],
+        'panel_median':medians['part_qpv_pct'],
+        'percentile':percentiles['part_qpv_pct'],
+        'role':'contexte spatial du parc social',
+        'interpretation_limit':'Ne constitue pas une cause prouvée de vacance privée.'
+    },
+    {
+        'id':'social_age',
+        'label':'Parc social relativement ancien',
+        'value':t['part_age_40_plus_pct'],
+        'panel_median':medians['part_age_40_plus_pct'],
+        'percentile':percentiles['part_age_40_plus_pct'],
+        'role':'contexte de structure et d’ancienneté du parc social',
+        'interpretation_limit':'Ne constitue pas une cause prouvée de vacance privée.'
+    },
+]
+
+contract={
+    'source':'RPLS 2025 - SDES',
+    'source_year':YEAR,
+    'source_snapshot':'data/rpls-2025-communes.csv',
+    'upstream_source':'https://www.statistiques.developpement-durable.gouv.fr/54-millions-de-logements-locatifs-sociaux-en-france-au-1er-janvier-2025',
+    'territory':TARGET,
+    'scope':'parc locatif social ordinaire des bailleurs sociaux',
+    'role':'contexte structurel',
+    'merge_with_lovac':False,
+    'causal_interpretation':False,
+    'universe_note':'RPLS décrit le parc locatif social. Il est distinct du champ LOVAC de la vacance du parc privé. Les foyers et résidences sociales ne relèvent pas du même champ de diffusion détaillée.',
+    'metrics':t,
+    'signals':signals,
+    'panel':{
+        'codes':PANEL_CODES,
+        'target_excluded_from_reference':True,
+        'reference_n':len(peers),
+        'requested_reference_n':len(PEER_CODES),
+        'available_peer_codes':available_peer_codes,
+        'missing_peer_codes':[c for c in PEER_CODES if c not in rows],
+        'percentile_rule':'count(available peer <= target) / n_available * 100',
+        'quartile_rule':'linear interpolation on available peers, target excluded',
+        'medians':medians,
+        'percentiles':percentiles,
+    },
+    'quality':{
+        'snapshot_rows':checks.get('rows'),
+        'snapshot_unique_communes':checks.get('unique_communes'),
+        'snapshot_duplicate_commune_rows':checks.get('duplicate_commune_rows'),
+        'panel_complete':len(rows)==len(PANEL_CODES),
+        'target_available':TARGET in rows,
+        'missing_codes':missing,
+        'missing_semantics':'valeur absente, supprimée ou secrète = null/exclue, jamais 0',
+        'vacance_plus_3_mois_rule':'nb_ls_vacant_3 décrit la vacance sociale de plus de 3 mois; ne pas l’assimiler à la vacance LOVAC de plus de 2 ans',
+        'status':'ok' if not missing else 'partial'
+    },
+    'runtime':runtime_metadata()
+}
+
+# Les valeurs Angoulême sont contrôlées dans les tests de non-régression, pas dans le contrat générique.\n\nOUT.parent.mkdir(exist_ok=True)
+OUT.write_text(json.dumps(contract,ensure_ascii=False,indent=2),encoding='utf-8')
+print(json.dumps(contract,ensure_ascii=False,indent=2))

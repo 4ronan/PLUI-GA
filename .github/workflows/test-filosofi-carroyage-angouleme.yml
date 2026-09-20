@@ -1,0 +1,29 @@
+name: Test Filosofi 2021 carroyage Angouleme
+
+on:
+  push:
+    branches:
+      - vacants-rpls-d2
+    paths:
+      - '.github/workflows/test-filosofi-carroyage-angouleme.yml'
+      - 'scripts/test_filosofi_carroyage_angouleme.py'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Tester le carroyage Filosofi 2021 pour Angouleme
+        run: python scripts/test_filosofi_carroyage_angouleme.py
+
+      - name: Publier le resultat
+        uses: actions/upload-artifact@v4
+        with:
+          name: filosofi-2021-carroyage-angouleme
+          path: output/filosofi-2021-carroyage-angouleme.json

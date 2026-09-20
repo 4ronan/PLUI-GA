@@ -1,0 +1,86 @@
+name: Test diagnostic 3X-A 3M-P parallel equivalence
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [vacants-rpls-d2]
+    paths:
+      - 'scripts/diagnostic_3mp_missing_panels.py'
+      - '.github/workflows/test-diagnostic-3xa-3mp-parallel.yml'
+
+concurrency:
+  group: diagnostic-3xa-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  equivalence:
+    runs-on: ubuntu-24.04
+    env:
+      DIAG_TERRITORY: '16015'
+      DIAG_COMMUNE_NAME: 'Angoulême'
+      DIAG_PANEL_CODES: '19031,47001,24322,40192,79191,86066,33243,17299,40088,24037,17415,16102,17306,47323,47157'
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Exécution séquentielle
+        run: |
+          export PYTHONPATH="$PWD/scripts:${PYTHONPATH:-}"
+          rm -rf tmp_3mp_panels
+          DIAG_3MP_WORKERS=1 python scripts/diagnostic_3mp_missing_panels.py
+          cp output/diagnostic-3mp-panels.json /tmp/sequential.json
+
+      - name: Exécution parallèle
+        run: |
+          export PYTHONPATH="$PWD/scripts:${PYTHONPATH:-}"
+          rm -rf tmp_3mp_panels
+          DIAG_3MP_WORKERS=4 python scripts/diagnostic_3mp_missing_panels.py
+          cp output/diagnostic-3mp-panels.json /tmp/parallel.json
+
+      - name: Vérifier équivalence et ordre
+        run: |
+          python - <<'PY'
+          import json
+
+          seq=json.load(open('/tmp/sequential.json',encoding='utf-8'))
+          par=json.load(open('/tmp/parallel.json',encoding='utf-8'))
+
+          assert seq['stage']==par['stage']=='3M-P'
+          assert seq['territory']==par['territory']=='16015'
+          assert seq['blocks']==par['blocks']
+          assert seq['quality']==par['quality']
+          assert seq['runtime']==par['runtime']
+
+          assert seq['execution']['io_workers']==1
+          assert seq['execution']['parallel_io'] is False
+          assert par['execution']['io_workers']==4
+          assert par['execution']['parallel_io'] is True
+
+          expected=['16015','19031','47001','24322','40192','79191','86066','33243','17299','40088','24037','17415','16102','17306','47323','47157']
+          for block in ('lovac','dvf','sitadel','insee_log1_vacant_profile'):
+              assert [r['code'] for r in par['blocks'][block]['rows']]==expected
+
+          result={
+              'status':'3XA_OK',
+              'sequential_seconds':seq['execution']['duration_seconds'],
+              'parallel_seconds':par['execution']['duration_seconds'],
+              'speedup_ratio':(
+                  round(seq['execution']['duration_seconds']/par['execution']['duration_seconds'],2)
+                  if par['execution']['duration_seconds']>0 else None
+              ),
+              'blocks_equal':True,
+              'ordering_equal':True,
+          }
+          print(json.dumps(result,ensure_ascii=False))
+          PY
+
+      - name: Publier les preuves 3X-A
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostic-3xa-3mp-parallel
+          path: |
+            /tmp/sequential.json
+            /tmp/parallel.json

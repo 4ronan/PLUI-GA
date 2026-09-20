@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Étape 3H-D5 — synthèse RPLS pour le moteur de diagnostic</title>
+<style>
+:root{--b:#236fc1;--y:#ffcb4a;--bg:#f5f8fc;--txt:#172433;--mut:#64748b;--line:#dfe7ef;--ok:#18794e;--bad:#b42318}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+main{max-width:1160px;margin:auto;padding:26px 16px 50px}.box{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;margin:15px 0}
+h1{margin:0 0 8px;font-size:30px}h2{margin:0 0 13px;font-size:20px}.mut{color:var(--mut);line-height:1.55}.note{background:#fff8df;border-left:4px solid var(--y);padding:12px;border-radius:8px;line-height:1.55}
+button{background:var(--b);color:white;border:0;border-radius:9px;padding:11px 15px;font-weight:800;cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.card{border:1px solid var(--line);border-radius:13px;padding:14px}.k{font-size:12px;color:var(--mut);text-transform:uppercase}.v{font-size:20px;font-weight:850;margin-top:4px}.small{font-size:13px;color:var(--mut);margin-top:5px;line-height:1.45}.ok{color:var(--ok)}.bad{color:var(--bad)}
+.status{font-size:20px;font-weight:850}.signal{border:1px solid var(--line);border-radius:13px;padding:15px;margin:10px 0}.signal b{display:block;margin-bottom:6px}
+code{font-size:12px}pre{white-space:pre-wrap;background:#0f172a;color:#dbeafe;padding:12px;border-radius:8px;max-height:420px;overflow:auto;font-size:11px}
+</style></head>
+<body><main>
+<section class="box">
+<h1>Étape 3H-D5 — synthèse RPLS pour le moteur de diagnostic</h1>
+<p class="mut">Cette étape ne crée aucun score global. Elle transforme les indicateurs RPLS validés en quelques messages structurés utilisables par le moteur de diagnostic, avec leur niveau de portée méthodologique.</p>
+<div class="note"><b>Principe :</b> RPLS décrit le parc locatif social. Les messages produits ici sont des <b>constats contextuels</b>, jamais des causes prouvées de la vacance privée LOVAC.</div>
+<button id="run">Générer la synthèse RPLS</button>
+</section>
+
+<section class="box"><h2>1. Messages structurants</h2><div id="signals"></div></section>
+
+<section class="box"><h2>2. Résumé court utilisable dans le diagnostic</h2><div id="summary" class="note">Test non lancé.</div></section>
+
+<section class="box"><h2>3. Contrat de sortie moteur</h2><pre id="contract">{}</pre></section>
+
+<section class="box"><h2>4. Validation 3H-D5</h2><p id="final" class="status">En attente.</p>
+<p class="mut">Critère : quatre dimensions distinctes doivent être produites — vacance sociale, mobilité, concentration en QPV, ancienneté du parc — sans conclusion causale sur LOVAC.</p></section>
+
+<script>
+const URL='https://sgtweezbsorlvibgngmg.supabase.co';
+const KEY='sb_publishable_edXTdlNXh4rGu0clkcmmfA_qf2YtG08';
+const codes=['16015','19031','47001','24322','40192','79191','86066','33243','17299','40088','24037','17415','16102','17306','47323','47157'];
+const $=id=>document.getElementById(id);
+const pct=v=>v.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' %';
+async function rpc(name,body){const r=await fetch(URL+'/rest/v1/rpc/'+name,{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});const t=await r.text();let j;try{j=JSON.parse(t)}catch{throw Error('HTTP '+r.status)}if(!r.ok)throw Error(j.message||('HTTP '+r.status));return j}
+function q(arr,p){const a=[...arr].sort((x,y)=>x-y),h=(a.length-1)*p,i=Math.floor(h),f=h-i;return a[i]+(a[Math.min(i+1,a.length-1)]-a[i])*f}
+function calc(i){return {
+ vac:100*i.nb_ls_vacant/i.nb_ls_actif,
+ vac3:100*i.nb_ls_vacant_3/i.nb_ls_actif,
+ share3:i.nb_ls_vacant?100*i.nb_ls_vacant_3/i.nb_ls_vacant:NaN,
+ mob:100*i.num_mob/i.denom_mob,
+ qpv:100*i.nb_ls_qpv/i.nb_ls_actif,
+ age40:100*((i.nb_ls_age_40_60||0)+(i.nb_ls_age_60_plus||0))/i.nb_ls_actif
+}}
+function percentile(panel,key,target){const vals=panel.map(x=>x[key]).filter(Number.isFinite);return 100*vals.filter(v=>v<=target).length/vals.length}
+$('run').onclick=async()=>{try{
+ const rows=await rpc('get_rpls_panel_2025',{p_codes:codes});
+ if(rows.length!==16) throw Error('Panel incomplet');
+ const data=rows.map(r=>({code:r.commune_code,...calc(r.indicators)}));
+ const t=data.find(x=>x.code==='16015'),p=data.filter(x=>x.code!=='16015');
+ const meds={vac:q(p.map(x=>x.vac),.5),mob:q(p.map(x=>x.mob),.5),qpv:q(p.map(x=>x.qpv),.5),age40:q(p.map(x=>x.age40),.5)};
+ const per={vac:percentile(p,'vac',t.vac),mob:percentile(p,'mob',t.mob),qpv:percentile(p,'qpv',t.qpv),age40:percentile(p,'age40',t.age40)};
+ const signals=[
+  {id:'social_vacancy',title:'Vacance sociale plutôt contenue',status:'constat',confidence:'élevée',
+   text:`La vacance sociale est de ${pct(t.vac)}, sous la médiane du panel (${pct(meds.vac)}), au percentile ${per.vac.toFixed(1)} %.`,
+   use:'Contexte du fonctionnement du parc social ; ne pas transposer à LOVAC.'},
+  {id:'social_mobility',title:'Mobilité relativement élevée',status:'constat',confidence:'élevée',
+   text:`Le taux de mobilité est de ${pct(t.mob)}, au percentile ${per.mob.toFixed(1)} % du panel.`,
+   use:'Indique un parc social relativement mobile par rapport aux communes comparables.'},
+  {id:'social_qpv',title:'Forte concentration du parc social en QPV',status:'constat',confidence:'élevée',
+   text:`${pct(t.qpv)} du parc social est situé en QPV, au percentile ${per.qpv.toFixed(1)} % du panel.`,
+   use:'Contexte spatial fort ; peut guider l’analyse territoriale mais ne constitue pas une cause de vacance privée.'},
+  {id:'social_age',title:'Parc social relativement ancien',status:'constat',confidence:'élevée',
+   text:`${pct(t.age40)} du parc social a 40 ans ou plus, contre une médiane de ${pct(meds.age40)} dans le panel.`,
+   use:'Contexte de structure et d’ancienneté du parc social.'}
+ ];
+ $('signals').innerHTML=signals.map(s=>`<div class="signal"><b>${s.title}</b><div>${s.text}</div><div class="small"><strong>Usage :</strong> ${s.use}</div></div>`).join('');
+ const summary=`À Angoulême, le parc social ne présente pas une vacance particulièrement élevée par rapport aux communes comparables. Il se caractérise davantage par une mobilité relativement forte, une très forte concentration en QPV et une ancienneté du parc supérieure à la médiane. Ces constats décrivent le parc locatif social et doivent rester séparés de l’analyse LOVAC de la vacance privée.`;
+ $('summary').textContent=summary;
+ const contract={source:'RPLS 2025',territory:'16015',scope:'parc locatif social',role:'contexte structurel',merge_with_lovac:false,signals,metrics:{vacance_sociale:t.vac,mobilite:t.mob,part_qpv:t.qpv,part_age_40_plus:t.age40,percentiles:per,medians_panel:meds}};
+ $('contract').textContent=JSON.stringify(contract,null,2);
+ const ok=per.vac===40 && Math.abs(per.mob-86.6666667)<.01 && Math.abs(per.qpv-93.3333333)<.01 && Math.abs(per.age40-73.3333333)<.01;
+ $('final').className='status '+(ok?'ok':'bad');
+ $('final').textContent=ok?'3H-D5 techniquement validable. Le bloc RPLS est prêt à être injecté dans le moteur de diagnostic comme contexte structurel distinct de LOVAC.':'3H-D5 non validée automatiquement.';
+}catch(e){$('final').className='status bad';$('final').textContent='3H-D5 non validée : '+e.message}
+}
+</script>
+</main></body></html>

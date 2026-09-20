@@ -1,0 +1,40 @@
+name: Test INSEE 3J-C contract
+
+on:
+  push:
+    branches: [vacants-rpls-d2]
+    paths:
+      - 'scripts/insee_3jc_contract.py'
+      - 'data/insee-rp2023-panel-3j.csv'
+      - '.github/workflows/test-insee-3jc-contract.yml'
+  workflow_dispatch:
+
+jobs:
+  contract:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Générer le contrat INSEE 3J-C
+        run: python scripts/insee_3jc_contract.py
+      - name: Vérifier le contrat
+        run: |
+          test -s output/insee-3jc-contract.json
+          python - <<'PY'
+          import json
+          p='output/insee-3jc-contract.json'
+          d=json.load(open(p,encoding='utf-8'))
+          assert d['territory']=='16015'
+          assert d['causal_interpretation'] is False
+          assert d['merge_with_lovac'] is False
+          assert d['quality']['panel_n_excluding_target']==15
+          assert len(d['signals'])==3
+          print(json.dumps(d,ensure_ascii=False,indent=2))
+          PY
+      - name: Publier le contrat 3J-C
+        uses: actions/upload-artifact@v4
+        with:
+          name: insee-3jc-contract
+          path: output/insee-3jc-contract.json

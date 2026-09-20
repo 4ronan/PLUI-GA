@@ -1,0 +1,23 @@
+name: Test INSEE 3J-B panel
+on:
+  workflow_dispatch:
+  push:
+    branches: [vacants-rpls-d2]
+    paths:
+      - 'scripts/test_insee_3jb_panel.py'
+      - '.github/workflows/test-insee-3jb-panel.yml'
+jobs:
+  panel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Calculer le panel INSEE 3J-B
+        run: python scripts/test_insee_3jb_panel.py
+      - name: Publier le résultat 3J-B
+        uses: actions/upload-artifact@v4
+        with:
+          name: insee-3jb-panel
+          path: output/insee-3jb-panel.json

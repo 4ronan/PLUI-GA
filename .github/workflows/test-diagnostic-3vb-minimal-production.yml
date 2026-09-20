@@ -1,0 +1,96 @@
+name: Test diagnostic 3V-B minimal-input production
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [vacants-rpls-d2]
+    paths:
+      - 'scripts/diagnostic_runtime.py'
+      - 'scripts/diagnostic_3v_panel_selector.py'
+      - 'scripts/diagnostic_3vd_insee_zonings.py'
+      - 'scripts/diagnostic_3u_production.py'
+      - 'scripts/diagnostic_3t_multiterritory_validate.py'
+      - 'scripts/diagnostic_3r_page.py'
+      - '.github/workflows/test-diagnostic-3vb-minimal-production.yml'
+
+concurrency:
+  group: diagnostic-3vb-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  minimal_input:
+    runs-on: ubuntu-24.04
+    env:
+      DIAG_TERRITORY: '16102'
+      DIAG_COMPARISON_SCALE: 'france'
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Vérifier l'absence des entrées techniques
+        run: |
+          test -z "${DIAG_COMMUNE_NAME:-}"
+          test -z "${DIAG_PANEL_CODES:-}"
+          echo "3VB_MINIMAL_INPUT_OK"
+
+      - name: Générer le diagnostic avec panel automatique
+        run: |
+          export PYTHONPATH="$PWD/scripts:${PYTHONPATH:-}"
+          python scripts/diagnostic_3u_production.py
+
+      - name: Vérifier la résolution automatique et la publication
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          manifest=json.load(open('output/diagnostic-3u-manifest.json',encoding='utf-8'))
+          page=json.load(open('output/published/16102/diagnostic.json',encoding='utf-8'))
+          panel=json.load(open('output/diagnostic-3v-panel.json',encoding='utf-8'))
+
+          assert manifest['status']=='success'
+          assert manifest['territory']=='16102'
+          assert manifest['commune_name']=='Cognac'
+          assert manifest['panel_reference_n']==15
+          assert len(manifest['panel_codes'])==15
+          assert manifest['panel_selection']['algorithm'] in {'3V-A-structural-v1','3V-D-insee-typology-v2'}
+          assert manifest['panel_selection']['requested_scale']=='france'
+          assert manifest['panel_selection']['effective_scale']=='france'
+          assert len(manifest['steps'])==18
+          assert manifest['steps'][-1]['stage']=='3T-M'
+          assert manifest['steps'][-1]['status']=='success'
+
+          assert panel['target']['name']=='Cognac'
+          assert panel['panel_codes']==manifest['panel_codes']
+          assert panel['quality']['status']=='ok'
+          assert panel['quality']['administrative_request_count']==2
+          assert panel['quality']['national_commune_list_requested'] is True
+
+          assert page['subtitle']=='Cognac · code INSEE 16102'
+          assert page['runtime']['commune_name_source']=='geo_api_auto'
+          assert page['runtime']['panel_source']==panel['algorithm']
+          assert page['runtime']['comparison_scale']=='france'
+          assert page['method']['panel_source']==panel['algorithm']
+          assert page['method']['comparison_scale_requested']=='france'
+          assert page['method']['comparison_scale_effective']=='france'
+          assert len(page['method']['panel_members'])==15
+          assert all(x.get('name') and x.get('code') for x in page['method']['panel_members'])
+
+          html=Path('output/published/16102/index.html').read_text(encoding='utf-8')
+          assert '<strong>Cognac</strong> · code INSEE 16102.' in html
+          assert 'Communes du panel de référence' in html
+          assert panel['algorithm'] in html
+          print('3VB_MINIMAL_PRODUCTION_OK',','.join(manifest['panel_codes']))
+          PY
+
+      - name: Publier les preuves 3V-B
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostic-3vb-cognac-auto
+          path: |
+            output/diagnostic-3v-panel.json
+            output/diagnostic-3u-manifest.json
+            output/published/16102/

@@ -1,0 +1,23 @@
+{
+  "source_url": "https://api.insee.fr/melodi/file/DS_RP_SERIE_HISTORIQUE/DS_RP_SERIE_HISTORIQUE_2023_CSV_FR",
+  "source_file": "DS_RP_SERIE_HISTORIQUE_2023_data.csv",
+  "years": [
+    "2017",
+    "2023"
+  ],
+  "panel_n": 16,
+  "rows": 160,
+  "occs": [
+    "DW_MAIN",
+    "DW_SEC_DW_OCC",
+    "DW_VAC",
+    "_T"
+  ],
+  "ocs_labels": {
+    "DW_VAC": "Logements vacants",
+    "DW_MAIN": "Résidences principales",
+    "DW_SEC_DW_OCC": "Résidences secondaires et logements occasionnels",
+    "_T": "Total"
+  },
+  "method_note": "Snapshot réduit aux 16 communes du panel, années 2017/2023, mesures POP et DWELLINGS. Produit automatiquement depuis la diffusion officielle INSEE Melodi."
+}

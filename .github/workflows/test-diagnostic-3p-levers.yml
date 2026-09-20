@@ -1,0 +1,110 @@
+name: Test diagnostic 3P levers
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [vacants-rpls-d2]
+    paths:
+      - 'scripts/diagnostic_3p_levers.py'
+      - 'scripts/diagnostic_3o_synthesis.py'
+      - 'scripts/diagnostic_3n_hypotheses.py'
+      - 'scripts/diagnostic_3m2_discriminants_extended.py'
+      - 'scripts/diagnostic_3mp_missing_panels.py'
+      - 'scripts/rpls_3kf_contract.py'
+      - '.github/workflows/test-diagnostic-3p-levers.yml'
+
+jobs:
+  levers_deterministic:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Générer LOVAC
+        run: python scripts/lovac_3kb_contract.py
+      - name: Générer INSEE LOG1
+        run: python scripts/insee_log1_3kc_contract.py
+      - name: Générer DVF
+        run: python scripts/dvf_3kd_contract.py
+      - name: Générer Sitadel
+        run: python scripts/sitadel_3ke_contract.py
+      - name: Générer RPLS
+        run: python scripts/rpls_3kf_contract.py
+      - name: Générer démographie-logement INSEE
+        run: python scripts/insee_3jc_contract.py
+      - name: Générer Filosofi
+        run: python scripts/filosofi_panel_contract_3icde.py
+      - name: Assembler 3K-G
+        run: python scripts/diagnostic_3kg_assembly.py
+      - name: Interpréter 3L
+        run: python scripts/diagnostic_3l_interpretation.py
+      - name: Détecter 3M initial
+        run: python scripts/diagnostic_3m_discriminants.py
+      - name: Matérialiser 3M-P
+        run: python scripts/diagnostic_3mp_missing_panels.py
+      - name: Recalculer 3M-2
+        run: python scripts/diagnostic_3m2_discriminants_extended.py
+      - name: Générer 3N sans IA
+        run: python scripts/diagnostic_3n_hypotheses.py
+      - name: Assembler 3O sans IA
+        run: python scripts/diagnostic_3o_synthesis.py
+      - name: Générer 3P sans IA
+        run: python scripts/diagnostic_3p_levers.py
+
+      - name: Vérifier 3P
+        run: |
+          test -s output/diagnostic-3p-levers.json
+          python - <<'PY'
+          import json
+          d=json.load(open('output/diagnostic-3p-levers.json',encoding='utf-8'))
+          assert d['stage']=='3P'
+          assert d['territory']=='16015'
+          assert d['source_stage']=='3O'
+          assert d['generation']['mode']=='deterministic_rule_engine'
+          assert d['generation']['llm_used'] is False
+          assert d['generation']['external_knowledge_lookup_used'] is False
+          assert d['generation']['web_used'] is False
+          assert d['generation']['network_calls'] is False
+          assert d['generation']['free_text_generation'] is False
+          assert d['quality']['status']=='ok'
+          o=json.load(open('output/diagnostic-3o-synthesis.json',encoding='utf-8'))
+          assert d['quality']['lever_count']==len(d['levers'])
+          assert d['quality']['all_levers_have_triggers'] is True
+          assert d['quality']['all_levers_unprioritized'] is True
+          assert d['quality']['causal_claims_included'] is False
+          assert d['quality']['effectiveness_claims_included'] is False
+          assert d['quality']['automatic_prescriptions_included'] is False
+
+          expected=set()
+          vacancy={x['id']:x for x in o['synthesis']['vacancy_status']['comparison']}
+          pv=vacancy['private_vacancy_rate']; ps=vacancy['private_structural_vacancy_rate']
+          if pv.get('comparison_sufficient',True) and ps.get('comparison_sufficient',True) and not pv['is_discriminant'] and not ps['is_discriminant']:
+              expected.add('L1_private_vacancy_monitoring')
+          hids={x['id'] for x in o['hypotheses']}
+          if 'H1_socioeconomic_market_convergence' in hids: expected.add('L2_market_feasibility_check')
+          if 'H2_construction_pipeline_gap' in hids: expected.add('L3_construction_pipeline_review')
+          if 'H3_social_housing_configuration' in hids: expected.add('L4_social_housing_context_coordination')
+          ids={x['id'] for x in d['levers']}
+          assert ids==expected
+
+          expected_suppressed=set()
+          if (
+              (pv.get('comparison_sufficient',True) and ps.get('comparison_sufficient',True) and not pv['is_discriminant'] and not ps['is_discriminant'])
+              or (not pv.get('comparison_sufficient',True) or not ps.get('comparison_sufficient',True))
+          ):
+              expected_suppressed.add('S1_mass_private_vacancy_reduction')
+          profile=o['synthesis']['vacant_stock_profile']['reading']
+          if profile in {'profil des logements vacants non discriminant dans le panel','profil des logements vacants indisponible ou non comparable'}:
+              expected_suppressed.add('S2_target_by_vacant_dwelling_profile')
+          suppressed={x['id'] for x in d['suppressed_levers']}
+          assert suppressed==expected_suppressed
+          print(json.dumps({'quality':d['quality'],'levers':d['levers'],'suppressed':d['suppressed_levers']},ensure_ascii=False,indent=2))
+          PY
+
+      - name: Publier 3P
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostic-3p-levers
+          path: output/diagnostic-3p-levers.json

@@ -1,0 +1,191 @@
+name: Test diagnostic 3T-L insufficient-panel guardrails
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [vacants-rpls-d2]
+    paths:
+      - 'scripts/diagnostic_3n_hypotheses.py'
+      - 'scripts/diagnostic_3o_synthesis.py'
+      - 'scripts/diagnostic_3p_levers.py'
+      - 'scripts/diagnostic_3r_page.py'
+      - '.github/workflows/test-diagnostic-3tl-insufficient-panel-guardrails.yml'
+
+env:
+  DIAG_TERRITORY: '16015'
+  DIAG_COMMUNE_NAME: 'Angoulême'
+  DIAG_PANEL_CODES: '16102,19031,47001,24322,40192,79191,86066,33243,17299,40088,24037,17415,17306,47323,47157'
+
+jobs:
+  no_false_normality:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Générer jusqu'à 3M-P
+        run: |
+          set -euo pipefail
+          export PYTHONPATH="$PWD/scripts:${PYTHONPATH:-}"
+          python scripts/lovac_3kb_contract.py
+          python scripts/insee_log1_3kc_contract.py
+          python scripts/dvf_3kd_contract.py
+          python scripts/sitadel_3ke_contract.py
+          python scripts/rpls_3kf_contract.py
+          python scripts/insee_3jc_contract.py
+          python scripts/filosofi_panel_contract_3icde.py
+          python scripts/diagnostic_3kg_assembly.py
+          python scripts/diagnostic_3l_interpretation.py
+          python scripts/diagnostic_3m_discriminants.py
+          python scripts/diagnostic_3mp_missing_panels.py
+
+      - name: Réduire les panels LOVAC et LOG1 à n=9
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('output/diagnostic-3mp-panels.json')
+          d=json.loads(p.read_text(encoding='utf-8'))
+          for block,keys in {
+              'lovac':['vacancy_rate_pct','structural_vacancy_rate_pct'],
+              'insee_log1_vacant_profile':['vacant_apartment_share_pct','vacant_1946_1990_share_pct'],
+          }.items():
+              for key in keys:
+                  st=d['blocks'][block]['stats'][key]
+                  st['panel_n']=9
+                  st['percentile']=50.0
+          d['quality']['status']='partial'
+          d['quality']['all_panel_stats_complete']=False
+          p.write_text(json.dumps(d,ensure_ascii=False,indent=2),encoding='utf-8')
+          print('3TL_N9_PANELS_INJECTED')
+          PY
+
+      - name: Terminer le diagnostic
+        run: |
+          set -euo pipefail
+          export PYTHONPATH="$PWD/scripts:${PYTHONPATH:-}"
+          python scripts/diagnostic_3m2_discriminants_extended.py
+          python scripts/diagnostic_3n_hypotheses.py
+          python scripts/diagnostic_3o_synthesis.py
+          python scripts/diagnostic_3p_levers.py
+          python scripts/diagnostic_3q_prioritization.py
+          python scripts/diagnostic_3r_page.py
+
+      - name: Vérifier l'absence de fausse normalité
+        run: |
+          python - <<'PY'
+          import json
+          m=json.load(open('output/diagnostic-3m2-discriminants.json',encoding='utf-8'))
+          n=json.load(open('output/diagnostic-3n-hypotheses.json',encoding='utf-8'))
+          o=json.load(open('output/diagnostic-3o-synthesis.json',encoding='utf-8'))
+          p=json.load(open('output/diagnostic-3p-levers.json',encoding='utf-8'))
+          q=json.load(open('output/diagnostic-3q-priorities.json',encoding='utf-8'))
+          r=json.load(open('output/diagnostic-3r-page.json',encoding='utf-8'))
+
+          factors={x['id']:x for x in m['discriminant_factors']+m['non_discriminant_comparators']}
+          for fid in ('private_vacancy_rate','private_structural_vacancy_rate','vacant_apartment_share','vacant_1946_1990_share'):
+              assert factors[fid]['reference_panel_n']==9
+              assert factors[fid]['comparison_sufficient'] is False
+              assert factors[fid]['direction']=='panel_insuffisant'
+              assert factors[fid]['is_discriminant'] is False
+
+          guards={x['id'] for x in n['guardrails']}
+          assert 'G1_no_relative_excess_private_vacancy' not in guards
+          assert 'G2_no_atypical_vacant_profile' not in guards
+
+          assert o['synthesis']['vacancy_status']['reading']=='vacance privée indisponible ou non comparable'
+          assert o['synthesis']['vacant_stock_profile']['reading']=='profil des logements vacants indisponible ou non comparable'
+          assert 'comparaison de la vacance privée au panel est insuffisante' in o['headline']['interpretation']
+
+          lever_ids={x['id'] for x in p['levers']}
+          assert 'L1_private_vacancy_monitoring' not in lever_ids
+          suppressed={x['id']:x['reason'] for x in p['suppressed_levers']}
+          assert 'insuffisante' in suppressed['S1_mass_private_vacancy_reduction']
+          assert 'indisponible ou non comparable' in suppressed['S2_target_by_vacant_dwelling_profile']
+
+          assert 'L1_private_vacancy_monitoring' not in {x['lever_id'] for x in q['priorities']}
+          for label in ('Vacance privée 2025','Vacance > 2 ans 2025'):
+              k=next(x for x in r['kpis'] if x['label']==label)
+              assert 'Panel insuffisant' in k['detail']
+              assert 'minimum 10' in k['detail']
+
+          print('3TL_NO_FALSE_NORMALITY_OK')
+          PY
+
+
+  no_false_hypotheses:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Générer jusqu'à 3M-2
+        run: |
+          set -euo pipefail
+          export PYTHONPATH="$PWD/scripts:${PYTHONPATH:-}"
+          python scripts/lovac_3kb_contract.py
+          python scripts/insee_log1_3kc_contract.py
+          python scripts/dvf_3kd_contract.py
+          python scripts/sitadel_3ke_contract.py
+          python scripts/rpls_3kf_contract.py
+          python scripts/insee_3jc_contract.py
+          python scripts/filosofi_panel_contract_3icde.py
+          python scripts/diagnostic_3kg_assembly.py
+          python scripts/diagnostic_3l_interpretation.py
+          python scripts/diagnostic_3m_discriminants.py
+          python scripts/diagnostic_3mp_missing_panels.py
+          python scripts/diagnostic_3m2_discriminants_extended.py
+
+      - name: Injecter trois convergences avec un facteur insuffisant
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('output/diagnostic-3m2-discriminants.json')
+          d=json.loads(p.read_text(encoding='utf-8'))
+          allf={x['id']:x for x in d['discriminant_factors']+d['non_discriminant_comparators']}
+
+          def setf(fid, direction, percentile, sufficient, discr):
+              x=allf[fid]
+              x['direction']=direction
+              x['percentile']=percentile
+              x['comparison_sufficient']=sufficient
+              x['reference_panel_n']=15 if sufficient else 9
+              x['minimum_reference_panel_n']=10
+              x['is_discriminant']=discr
+              x['strength']='marqué' if discr else None
+
+          setf('median_income','faible',10.0,False,False)
+          setf('poverty_rate','eleve',90.0,True,True)
+          setf('dvf_median_price_m2','faible',10.0,True,True)
+
+          setf('sitadel_authorized_intensity','typique',50.0,False,False)
+          setf('sitadel_started_intensity','tres_faible',5.0,True,True)
+
+          setf('social_mobility','tres_eleve',95.0,True,True)
+          setf('social_qpv_share','tres_eleve',95.0,True,True)
+          setf('social_vacancy','panel_insuffisant',50.0,False,False)
+
+          d['discriminant_factors']=[x for x in allf.values() if x['is_discriminant']]
+          d['non_discriminant_comparators']=[x for x in allf.values() if not x['is_discriminant']]
+          p.write_text(json.dumps(d,ensure_ascii=False,indent=2),encoding='utf-8')
+          print('3TL_FALSE_CONVERGENCES_INJECTED')
+          PY
+
+      - name: Vérifier qu'aucune hypothèse n'est déclenchée
+        run: |
+          export PYTHONPATH="$PWD/scripts:${PYTHONPATH:-}"
+          python scripts/diagnostic_3n_hypotheses.py
+          python - <<'PY'
+          import json
+          d=json.load(open('output/diagnostic-3n-hypotheses.json',encoding='utf-8'))
+          ids={x['id'] for x in d['hypotheses']}
+          assert 'H1_socioeconomic_market_convergence' not in ids
+          assert 'H2_construction_pipeline_gap' not in ids
+          assert 'H3_social_housing_configuration' not in ids
+          print('3TL_NO_FALSE_HYPOTHESES_OK')
+          PY

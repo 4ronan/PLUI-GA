@@ -1,0 +1,72 @@
+name: Test diagnostic 3W-C request inputs
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [vacants-rpls-d2]
+    paths:
+      - 'scripts/diagnostic_request.py'
+      - '.github/workflows/test-diagnostic-3wc-request-inputs.yml'
+
+concurrency:
+  group: diagnostic-3wc-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  request_inputs:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Aide CLI
+        run: |
+          python scripts/diagnostic_request.py --help >/tmp/help.txt
+          grep -q 'code INSEE' /tmp/help.txt
+          grep -q 'échelle de comparaison' /tmp/help.txt
+
+      - name: Rejeter une échelle invalide sans réseau
+        run: |
+          if python scripts/diagnostic_request.py 16102 invalide >/tmp/invalid-scale.json; then
+            exit 1
+          fi
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/invalid-scale.json',encoding='utf-8'))
+          assert d['status']=='failure'
+          assert d['phase']=='input_validation'
+          assert d['territory']=='16102'
+          assert d['comparison_scale']=='invalide'
+          assert d['error']['type']=='invalid_scale'
+          PY
+
+      - name: Rejeter un code INSEE invalide sans réseau
+        run: |
+          if python scripts/diagnostic_request.py ABC france >/tmp/invalid-code.json; then
+            exit 1
+          fi
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/invalid-code.json',encoding='utf-8'))
+          assert d['status']=='failure'
+          assert d['phase']=='input_validation'
+          assert d['territory']=='ABC'
+          assert d['error']['type']=='invalid_territory'
+          PY
+
+      - name: Vérifier les alias d'échelle localement
+        run: |
+          python - <<'PY'
+          import sys
+          sys.path.insert(0,'scripts')
+          from diagnostic_request import normalize_scale
+          assert normalize_scale('département')=='department'
+          assert normalize_scale('departement')=='department'
+          assert normalize_scale('région')=='region'
+          assert normalize_scale('region')=='region'
+          assert normalize_scale('France')=='france'
+          assert normalize_scale('national')=='france'
+          print('3WC_REQUEST_INPUTS_OK')
+          PY

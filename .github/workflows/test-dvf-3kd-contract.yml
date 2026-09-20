@@ -1,0 +1,72 @@
+name: Test DVF 3K-D contract
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [vacants-rpls-d2]
+    paths:
+      - 'scripts/dvf_3kd_contract.py'
+      - '.github/workflows/test-dvf-3kd-contract.yml'
+
+jobs:
+  contract:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Générer le contrat DVF 3K-D
+        run: python scripts/dvf_3kd_contract.py
+      - name: Vérifier le contrat
+        run: |
+          test -s output/dvf-3kd-contract.json
+          python - <<'PY'
+          import json
+          d=json.load(open('output/dvf-3kd-contract.json',encoding='utf-8'))
+          assert d['territory']=='16015'
+          assert d['quality']['status']=='ok'
+          assert d['years']==[2021,2022,2023,2024,2025]
+          assert len(d['series'])==5
+          assert d['selected_metrics']['latest_year']==2025
+          assert d['selected_metrics']['residential_sale_mutations_n']>0
+          assert d['selected_metrics']['simple_residential_sale_mutations_n']>0
+          assert d['selected_metrics']['median_price_m2_eur_simple']>0
+          assert '2020' in d['method']['excluded_years']
+          print(json.dumps(d['selected_metrics'],ensure_ascii=False,indent=2))
+          PY
+
+      - name: Vérifier la sémantique fichier DVF indisponible
+        run: |
+          mkdir -p /tmp/fakebin
+          cat >/tmp/fakebin/curl <<'SH'
+          #!/usr/bin/env bash
+          exit 22
+          SH
+          chmod +x /tmp/fakebin/curl
+          rm -rf tmp_3kd
+          PATH="/tmp/fakebin:$PATH" python scripts/dvf_3kd_contract.py >/tmp/dvf-unavailable.log
+          python - <<'PY'
+          import json
+          d=json.load(open('output/dvf-3kd-contract.json',encoding='utf-8'))
+          assert d['quality']['status']=='partial'
+          assert d['quality']['file_unavailable_years']==[2021,2022,2023,2024,2025]
+          assert d['quality']['available_file_years']==[]
+          assert d['quality']['market_years']==[]
+          assert d['quality']['no_residential_sale_years']==[]
+          assert d['selected_metrics']['latest_year'] is None
+          for row in d['series']:
+              assert row['availability']=='file_unavailable'
+              assert row['residential_sale_mutations_n'] is None
+              assert row['simple_residential_sale_mutations_n'] is None
+              assert row['houses']['n'] is None
+              assert row['apartments']['n'] is None
+              assert row['median_price_m2_eur_simple'] is None
+          print('DVF_UNAVAILABLE_IS_NULL_OK')
+          PY
+
+      - name: Publier le contrat 3K-D
+        uses: actions/upload-artifact@v4
+        with:
+          name: dvf-3kd-contract
+          path: output/dvf-3kd-contract.json

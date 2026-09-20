@@ -1,0 +1,103 @@
+name: Test diagnostic 3W-B request entrypoint
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [vacants-rpls-d2]
+    paths:
+      - 'scripts/diagnostic_request.py'
+      - 'scripts/diagnostic_runtime.py'
+      - 'scripts/diagnostic_3v_panel_selector.py'
+      - 'scripts/diagnostic_3vd_insee_zonings.py'
+      - 'scripts/diagnostic_3u_production.py'
+      - 'scripts/diagnostic_3ub_cached_production.py'
+      - 'scripts/diagnostic_3t_multiterritory_validate.py'
+      - 'scripts/diagnostic_3r_page.py'
+      - '.github/workflows/test-diagnostic-3wb-request.yml'
+
+concurrency:
+  group: diagnostic-3wb-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  minimal_request:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Vérifier l'interface CLI
+        run: |
+          python scripts/diagnostic_request.py --help >/tmp/help.txt
+          grep -q 'code INSEE' /tmp/help.txt
+          if python scripts/diagnostic_request.py 16102 invalide >/tmp/invalid-scale.json 2>&1; then
+            echo "Une échelle invalide aurait dû être rejetée" >&2
+            exit 1
+          fi
+          if python scripts/diagnostic_request.py ABC france >/tmp/invalid-code.json 2>&1; then
+            echo "Un code INSEE invalide aurait dû être rejeté" >&2
+            exit 1
+          fi
+          python - <<'PY'
+          import json
+          scale=json.load(open('/tmp/invalid-scale.json',encoding='utf-8'))
+          code=json.load(open('/tmp/invalid-code.json',encoding='utf-8'))
+          assert scale['status']=='failure' and scale['phase']=='input_validation'
+          assert scale['error']['type']=='invalid_scale'
+          assert code['status']=='failure' and code['phase']=='input_validation'
+          assert code['error']['type']=='invalid_territory'
+          print('3WC_INPUT_VALIDATION_OK')
+          PY
+
+      - name: Premier appel minimal
+        run: |
+          test -z "${DIAG_COMMUNE_NAME:-}"
+          test -z "${DIAG_PANEL_CODES:-}"
+          python scripts/diagnostic_request.py 16102 france > /tmp/first.json
+
+      - name: Deuxième appel identique avec API administrative volontairement indisponible
+        run: |
+          DIAG_GEO_API_BASE='http://127.0.0.1:9' python scripts/diagnostic_request.py 16102 france > /tmp/second.json
+
+      - name: Vérifier résolution automatique et cache
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          first=json.load(open('/tmp/first.json',encoding='utf-8'))
+          second=json.load(open('/tmp/second.json',encoding='utf-8'))
+
+          for d in (first,second):
+              assert d['status']=='success'
+              assert d['territory']=='16102'
+              assert d['commune_name']=='Cognac'
+              assert d['comparison_scale_requested']=='france'
+              assert d['comparison_scale_effective']=='france'
+              assert d['panel_reference_n']==15
+              assert d['panel_source'] in {'3V-D-insee-typology-v2','3V-A-structural-v1'}
+              assert d['quality']['status']=='ok'
+              for p in d['published'].values():
+                  assert Path(p).exists() and Path(p).stat().st_size>0
+
+          assert first['cache']['hit'] is False
+          assert second['cache']['hit'] is True
+          assert second['cache']['reason']=='request_index_valid_cache'
+          assert second['cache'].get('fast_path') is True
+          assert second['panel_source']==first['panel_source']
+          assert first['cache']['key']==second['cache']['key']
+          print('3WB_REQUEST_OK',first['panel_source'],first['cache']['reason'],second['cache']['reason'])
+          PY
+
+      - name: Publier les preuves 3W-B
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostic-3wb-cognac-request
+          path: |
+            /tmp/first.json
+            /tmp/second.json
+            output/diagnostic-3v-panel.json
+            output/diagnostic-3u-manifest.json
+            output/diagnostic-3ub-manifest.json
+            output/published/16102/

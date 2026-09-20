@@ -1,0 +1,42 @@
+name: Test INSEE LOG1 3K-C audit
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [vacants-rpls-d2]
+    paths:
+      - 'scripts/insee_log1_3kc_audit.py'
+      - '.github/workflows/test-insee-log1-3kc-audit.yml'
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Auditer le schéma INSEE LOG1 2023
+        run: python scripts/insee_log1_3kc_audit.py
+      - name: Vérifier la sortie
+        run: |
+          test -s output/insee-log1-3kc-audit.json
+          python - <<'PY'
+          import json
+          d=json.load(open('output/insee-log1-3kc-audit.json',encoding='utf-8'))
+          assert d['territory']=='16015'
+          assert d['target_rows_2023']>0
+          assert d['fields']
+          assert d['detected']['vacancy_from_range']
+          assert len(d['detected']['construction_periods_from_range']) >= 6
+          print(json.dumps({
+            'fields': d['fields'],
+            'detected': d['detected'],
+            'sample_rows': d['sample_rows']
+          },ensure_ascii=False,indent=2))
+          PY
+      - name: Publier l'audit 3K-C
+        uses: actions/upload-artifact@v4
+        with:
+          name: insee-log1-3kc-audit
+          path: output/insee-log1-3kc-audit.json

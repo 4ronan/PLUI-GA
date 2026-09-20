@@ -1,0 +1,146 @@
+name: Test diagnostic 3T-F RPLS missingness
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [vacants-rpls-d2]
+    paths:
+      - 'scripts/rpls_3kf_contract.py'
+      - 'scripts/diagnostic_3kg_assembly.py'
+      - 'scripts/diagnostic_3l_interpretation.py'
+      - 'scripts/diagnostic_3m_discriminants.py'
+      - 'scripts/diagnostic_3m2_discriminants_extended.py'
+      - 'scripts/diagnostic_3n_hypotheses.py'
+      - 'scripts/diagnostic_3o_synthesis.py'
+      - 'scripts/diagnostic_3p_levers.py'
+      - 'scripts/diagnostic_3q_prioritization.py'
+      - 'scripts/diagnostic_3r_page.py'
+      - '.github/workflows/test-diagnostic-3tf-rpls-missingness.yml'
+
+env:
+  DIAG_TERRITORY: '16015'
+  DIAG_COMMUNE_NAME: 'Angoulême'
+  DIAG_PANEL_CODES: '16102,19031,47001,24322,40192,79191,86066,33243,17299,40088,24037,17415,17306,47323,47157'
+
+jobs:
+  missing_target_rpls:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Retirer la commune cible du snapshot RPLS
+        run: |
+          python - <<'PY'
+          import csv
+          from pathlib import Path
+          p=Path('data/rpls-2025-communes.csv')
+          rows=list(csv.DictReader(p.open(encoding='utf-8-sig',newline='')))
+          fields=list(rows[0])
+          rows=[r for r in rows if str(r.get('DEPCOM','')).strip()!='16015']
+          with p.open('w',encoding='utf-8-sig',newline='') as f:
+              w=csv.DictWriter(f,fieldnames=fields); w.writeheader(); w.writerows(rows)
+          print('3TF_TARGET_RPLS_REMOVED')
+          PY
+
+      - name: Générer le diagnostic complet
+        run: |
+          set -euo pipefail
+          export PYTHONPATH="$PWD/scripts:${PYTHONPATH:-}"
+          python scripts/lovac_3kb_contract.py
+          python scripts/insee_log1_3kc_contract.py
+          python scripts/dvf_3kd_contract.py
+          python scripts/sitadel_3ke_contract.py
+          python scripts/rpls_3kf_contract.py
+          python scripts/insee_3jc_contract.py
+          python scripts/filosofi_panel_contract_3icde.py
+          python scripts/diagnostic_3kg_assembly.py
+          python scripts/diagnostic_3l_interpretation.py
+          python scripts/diagnostic_3m_discriminants.py
+          python scripts/diagnostic_3mp_missing_panels.py
+          python scripts/diagnostic_3m2_discriminants_extended.py
+          python scripts/diagnostic_3n_hypotheses.py
+          python scripts/diagnostic_3o_synthesis.py
+          python scripts/diagnostic_3p_levers.py
+          python scripts/diagnostic_3q_prioritization.py
+          python scripts/diagnostic_3r_page.py
+
+      - name: Vérifier la cible RPLS indisponible
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('output/rpls-3kf-contract.json',encoding='utf-8'))
+          m=json.load(open('output/diagnostic-3m-discriminants.json',encoding='utf-8'))
+          p=json.load(open('output/diagnostic-3r-page.json',encoding='utf-8'))
+          h=open('output/diagnostic-3r-page.html',encoding='utf-8').read()
+          assert r['quality']['status']=='partial'
+          assert r['quality']['target_available'] is False
+          assert all(v is None for v in [
+              r['metrics']['vacance_sociale_pct'],
+              r['metrics']['mobilite_pct'],
+              r['metrics']['part_qpv_pct'],
+              r['metrics']['part_age_40_plus_pct'],
+          ])
+          social=[x for x in m['non_discriminant_comparators'] if x['domain']=='social_housing']
+          assert len(social)==4
+          assert all(x['value'] is None and x['percentile'] is None and x['is_discriminant'] is False for x in social)
+          assert p['quality']['status']=='ok'
+          assert h.count('Indisponible') >= 2
+          print('3TF_MISSING_TARGET_RPLS_OK')
+          PY
+
+  missing_peer_rpls:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Retirer une commune pair du snapshot RPLS
+        run: |
+          python - <<'PY'
+          import csv
+          from pathlib import Path
+          p=Path('data/rpls-2025-communes.csv')
+          rows=list(csv.DictReader(p.open(encoding='utf-8-sig',newline='')))
+          fields=list(rows[0])
+          rows=[r for r in rows if str(r.get('DEPCOM','')).strip()!='16102']
+          with p.open('w',encoding='utf-8-sig',newline='') as f:
+              w=csv.DictWriter(f,fieldnames=fields); w.writeheader(); w.writerows(rows)
+          print('3TF_PEER_RPLS_REMOVED')
+          PY
+
+      - name: Générer jusqu'à 3M
+        run: |
+          set -euo pipefail
+          export PYTHONPATH="$PWD/scripts:${PYTHONPATH:-}"
+          python scripts/lovac_3kb_contract.py
+          python scripts/insee_log1_3kc_contract.py
+          python scripts/dvf_3kd_contract.py
+          python scripts/sitadel_3ke_contract.py
+          python scripts/rpls_3kf_contract.py
+          python scripts/insee_3jc_contract.py
+          python scripts/filosofi_panel_contract_3icde.py
+          python scripts/diagnostic_3kg_assembly.py
+          python scripts/diagnostic_3l_interpretation.py
+          python scripts/diagnostic_3m_discriminants.py
+
+      - name: Vérifier les tailles de panels par source
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('output/rpls-3kf-contract.json',encoding='utf-8'))
+          m=json.load(open('output/diagnostic-3m-discriminants.json',encoding='utf-8'))
+          factors={x['id']:x for x in m['discriminant_factors']+m['non_discriminant_comparators']}
+          assert r['quality']['status']=='partial'
+          assert r['panel']['reference_n']==14
+          assert '16102' in r['panel']['missing_peer_codes']
+          assert factors['social_mobility']['reference_panel_n']==14
+          assert factors['social_qpv_share']['reference_panel_n']==14
+          assert factors['population_change']['reference_panel_n']==15
+          assert factors['households_change']['reference_panel_n']==15
+          print('3TF_PER_SOURCE_PANEL_N_OK')
+          PY

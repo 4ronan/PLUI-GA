@@ -1,0 +1,89 @@
+name: Test diagnostic 3U-A production runner
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [vacants-rpls-d2]
+    paths:
+      - 'scripts/diagnostic_runtime.py'
+      - 'scripts/diagnostic_3*.py'
+      - 'scripts/lovac_*.py'
+      - 'scripts/insee_*.py'
+      - 'scripts/dvf_*.py'
+      - 'scripts/sitadel_*.py'
+      - 'scripts/rpls_*.py'
+      - 'scripts/filosofi_*.py'
+      - '.github/workflows/test-diagnostic-3ua-production.yml'
+
+concurrency:
+  group: diagnostic-3ua-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  production_runner:
+    name: "${{ matrix.name }} (${{ matrix.code }})"
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - code: '16102'
+            name: 'Cognac'
+            panel: '19031,47001,24322,40192,79191,86066,33243,17299,40088,24037,17415,16015,17306,47323,47157'
+          - code: '16271'
+            name: 'Puymoyen'
+            panel: '16015,16102,19031,47001,24322,40192,79191,86066,33243,17299,40088,24037,17415,17306,47323'
+    env:
+      DIAG_TERRITORY: "${{ matrix.code }}"
+      DIAG_COMMUNE_NAME: "${{ matrix.name }}"
+      DIAG_PANEL_CODES: "${{ matrix.panel }}"
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Exécuter le lanceur de production 3U-A
+        run: python scripts/diagnostic_3u_production.py
+
+      - name: Valider le manifeste et la publication
+        run: |
+          python - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          code=os.environ['DIAG_TERRITORY']
+          name=os.environ['DIAG_COMMUNE_NAME']
+          manifest=json.load(open('output/diagnostic-3u-manifest.json',encoding='utf-8'))
+          assert manifest['stage']=='3U-A'
+          assert manifest['status']=='success'
+          assert manifest['territory']==code
+          assert manifest['commune_name']==name
+          assert manifest['panel_reference_n']==15
+          assert len(manifest['steps'])==18
+          assert all(x['status']=='success' and x['return_code']==0 for x in manifest['steps'])
+          assert all(x.get('missing_outputs')==[] for x in manifest['steps'])
+          assert manifest['generation']['llm_used'] is False
+          assert manifest['diagnostic_summary']['kpi_count']==8
+          assert len(manifest['outputs'])==5
+          for item in manifest['outputs']:
+              p=Path(item['path'])
+              assert p.exists() and p.stat().st_size==item['bytes'] and item['bytes']>0
+              digest=hashlib.sha256(p.read_bytes()).hexdigest()
+              assert digest==item['sha256']
+          page=json.load(open(f'output/published/{code}/diagnostic.json',encoding='utf-8'))
+          assert page['territory']==code
+          assert page['subtitle']==f'{name} · code INSEE {code}'
+          html=Path(f'output/published/{code}/index.html').read_text(encoding='utf-8')
+          assert f'<strong>{name}</strong> · code INSEE {code}.' in html
+          print('3UA_PRODUCTION_OK',code,name,manifest['duration_seconds'])
+          PY
+
+      - name: Publier l'artefact de production
+        uses: actions/upload-artifact@v4
+        with:
+          name: "diagnostic-3ua-${{ matrix.code }}"
+          path: |
+            output/diagnostic-3u-manifest.json
+            output/published/${{ matrix.code }}/
+            output/runs/

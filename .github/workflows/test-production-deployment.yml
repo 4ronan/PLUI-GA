@@ -1,0 +1,76 @@
+name: Test production deployment package
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [vacants-rpls-d2]
+    paths:
+      - 'Dockerfile'
+      - '.dockerignore'
+      - 'render.yaml'
+      - 'Procfile'
+      - 'public/index.html'
+      - 'scripts/diagnostic_web_server.py'
+      - '.github/workflows/test-production-deployment.yml'
+
+concurrency:
+  group: diagnostic-production-package-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  container_smoke_test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Construire l’image de production
+        run: docker build -t diagnostic-vacance:ci .
+
+      - name: Démarrer le conteneur
+        run: |
+          docker run --rm -d --name diagnostic-vacance-ci -p 8765:8765 diagnostic-vacance:ci
+          for i in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:8765/api/ready >/tmp/ready.json; then
+              exit 0
+            fi
+            sleep 0.5
+          done
+          docker logs diagnostic-vacance-ci
+          exit 1
+
+      - name: Vérifier l’interface, l’API et la sécurité
+        run: |
+          curl --fail --silent http://127.0.0.1:8765/ >/tmp/index.html
+          grep -q 'Comprendre la vacance des logements' /tmp/index.html
+          grep -q '/api/diagnostics' /tmp/index.html
+          curl --fail --silent http://127.0.0.1:8765/api/health >/tmp/health.json
+          python - <<'PY'
+          import json
+          health=json.load(open('/tmp/health.json',encoding='utf-8'))
+          ready=json.load(open('/tmp/ready.json',encoding='utf-8'))
+          assert health['status']=='ok'
+          assert health['service']=='diagnostic-vacance'
+          assert health['llm_used'] is False
+          assert ready['status']=='ready'
+          PY
+          curl --silent --dump-header /tmp/headers.txt --output /dev/null http://127.0.0.1:8765/
+          grep -qi '^content-security-policy:' /tmp/headers.txt
+          grep -qi '^x-content-type-options: nosniff' /tmp/headers.txt
+
+      - name: Vérifier les rejets sans lancer le moteur
+        run: |
+          status=$(curl --silent --output /tmp/invalid.json --write-out '%{http_code}' \
+            -X POST -H 'Content-Type: application/json' \
+            -d '{"territory":"ABC","scale":"france"}' \
+            http://127.0.0.1:8765/api/diagnostics)
+          test "$status" = "400"
+          python - <<'PY'
+          import json
+          data=json.load(open('/tmp/invalid.json',encoding='utf-8'))
+          assert data['status']=='failure'
+          assert data['phase']=='input_validation'
+          PY
+
+      - name: Arrêter le conteneur
+        if: always()
+        run: docker stop diagnostic-vacance-ci || true

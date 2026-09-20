@@ -1,0 +1,92 @@
+name: Test diagnostic 3V-D Insee typology panel
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [vacants-rpls-d2]
+    paths:
+      - 'scripts/diagnostic_3v_panel_selector.py'
+      - 'scripts/diagnostic_3vd_insee_zonings.py'
+      - '.github/workflows/test-diagnostic-3vd-insee-panel.yml'
+
+concurrency:
+  group: diagnostic-3vd-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  enriched_panel:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - code: '16102'
+            scale: 'departement'
+            expected_name: 'Cognac'
+          - code: '2A004'
+            scale: 'region'
+            expected_name: 'Ajaccio'
+          - code: '97209'
+            scale: 'departement'
+            expected_name: 'Fort-de-France'
+    env:
+      DIAG_TERRITORY: ${{ matrix.code }}
+      DIAG_COMPARISON_SCALE: ${{ matrix.scale }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Générer le panel enrichi Insee
+        run: |
+          export PYTHONPATH="$PWD/scripts:${PYTHONPATH:-}"
+          python scripts/diagnostic_3v_panel_selector.py
+
+      - name: Vérifier les typologies Insee
+        env:
+          EXPECTED_NAME: ${{ matrix.expected_name }}
+        run: |
+          python - <<'PY'
+          import json, os
+          d=json.load(open('output/diagnostic-3v-panel.json',encoding='utf-8'))
+          assert d['stage']=='3V-D'
+          assert d['algorithm']=='3V-D-insee-typology-v2'
+          assert d['territory']==os.environ['DIAG_TERRITORY']
+          assert d['target']['name']==os.environ['EXPECTED_NAME']
+          assert d['quality']['status']=='ok'
+          assert d['quality']['insee_typology_enabled'] is True
+          assert d['quality']['population_band_priority_respected'] is True
+          assert d['quality']['administrative_request_count']==2
+          assert d['quality']['national_commune_list_requested'] is False
+          assert len(d['source']['administrative']['candidate_urls'])==1
+          candidate_bands=d['quality']['candidate_population_band_counts']
+          selected_bands=d['quality']['selected_population_band_counts']
+          if candidate_bands['0']>=15:
+              assert selected_bands['0']==15
+          else:
+              assert selected_bands['0']==candidate_bands['0']
+          src=d['source']['insee_zonings']
+          assert src['status']=='available'
+          assert src['density_commune_n']>30000
+          assert src['aav_commune_n']>30000
+          assert src['density_sha256']
+          assert src['aav_sha256']
+          assert d['target'].get('density7')
+          assert d['target'].get('aav_category')
+          assert d['target'].get('aav_size') is not None
+          assert len(d['selected'])==15
+          assert all(x.get('density7') for x in d['selected'])
+          assert all(x.get('aav_category') for x in d['selected'])
+          assert all(x.get('density7_distance') is not None for x in d['selected'])
+          assert all(x.get('aav_role_distance') is not None for x in d['selected'])
+          assert all(x.get('aav_size_distance') is not None for x in d['selected'])
+          print('3VD_INSEE_PANEL_OK',d['territory'],d['target']['density7'],d['target']['aav_category'],','.join(d['panel_codes']))
+          PY
+
+      - name: Publier le panel enrichi
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostic-3vd-${{ matrix.code }}
+          path: output/diagnostic-3v-panel.json

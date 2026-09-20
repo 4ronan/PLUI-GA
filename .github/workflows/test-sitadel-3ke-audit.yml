@@ -1,0 +1,36 @@
+name: Test Sitadel 3K-E audit
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [vacants-rpls-d2]
+    paths:
+      - 'scripts/sitadel_3ke_audit.py'
+      - '.github/workflows/test-sitadel-3ke-audit.yml'
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Auditer le schéma Sitadel 3K-E
+        run: python scripts/sitadel_3ke_audit.py
+      - name: Vérifier l'audit
+        run: |
+          test -s output/sitadel-3ke-audit.json
+          python - <<'PY'
+          import json
+          d=json.load(open('output/sitadel-3ke-audit.json',encoding='utf-8'))
+          assert d['territory']=='16015'
+          assert d['rows_n']>0
+          assert d['fields']
+          print(json.dumps({'rows_n':d['rows_n'],'fields':d['fields']},ensure_ascii=False,indent=2))
+          PY
+      - name: Publier l'audit Sitadel 3K-E
+        uses: actions/upload-artifact@v4
+        with:
+          name: sitadel-3ke-audit
+          path: output/sitadel-3ke-audit.json

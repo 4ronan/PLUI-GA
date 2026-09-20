@@ -1,0 +1,93 @@
+name: Test diagnostic 3Q priorities
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [vacants-rpls-d2]
+    paths:
+      - 'scripts/diagnostic_3q_prioritization.py'
+      - 'scripts/diagnostic_3p_levers.py'
+      - 'scripts/diagnostic_3o_synthesis.py'
+      - 'scripts/diagnostic_3n_hypotheses.py'
+      - 'scripts/diagnostic_3m2_discriminants_extended.py'
+      - 'scripts/rpls_3kf_contract.py'
+      - '.github/workflows/test-diagnostic-3q-priorities.yml'
+
+jobs:
+  priorities_deterministic:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Générer LOVAC
+        run: python scripts/lovac_3kb_contract.py
+      - name: Générer INSEE LOG1
+        run: python scripts/insee_log1_3kc_contract.py
+      - name: Générer DVF
+        run: python scripts/dvf_3kd_contract.py
+      - name: Générer Sitadel
+        run: python scripts/sitadel_3ke_contract.py
+      - name: Générer RPLS
+        run: python scripts/rpls_3kf_contract.py
+      - name: Générer démographie-logement INSEE
+        run: python scripts/insee_3jc_contract.py
+      - name: Générer Filosofi
+        run: python scripts/filosofi_panel_contract_3icde.py
+      - name: Assembler 3K-G
+        run: python scripts/diagnostic_3kg_assembly.py
+      - name: Interpréter 3L
+        run: python scripts/diagnostic_3l_interpretation.py
+      - name: Détecter 3M initial
+        run: python scripts/diagnostic_3m_discriminants.py
+      - name: Matérialiser 3M-P
+        run: python scripts/diagnostic_3mp_missing_panels.py
+      - name: Recalculer 3M-2
+        run: python scripts/diagnostic_3m2_discriminants_extended.py
+      - name: Générer 3N sans IA
+        run: python scripts/diagnostic_3n_hypotheses.py
+      - name: Assembler 3O sans IA
+        run: python scripts/diagnostic_3o_synthesis.py
+      - name: Générer 3P sans IA
+        run: python scripts/diagnostic_3p_levers.py
+      - name: Prioriser 3Q sans IA
+        run: python scripts/diagnostic_3q_prioritization.py
+      - name: Vérifier 3Q
+        run: |
+          test -s output/diagnostic-3q-priorities.json
+          python - <<'PY'
+          import json
+          d=json.load(open('output/diagnostic-3q-priorities.json',encoding='utf-8'))
+          assert d['stage']=='3Q'
+          assert d['territory']=='16015'
+          assert d['source_stage']=='3P'
+          assert d['generation']['mode']=='deterministic_operational_ordering'
+          assert d['generation']['llm_used'] is False
+          assert d['generation']['scoring_used'] is False
+          assert d['quality']['status']=='ok'
+          p=json.load(open('output/diagnostic-3p-levers.json',encoding='utf-8'))
+          expected_order={
+            'L1_private_vacancy_monitoring':1,
+            'L2_market_feasibility_check':2,
+            'L3_construction_pipeline_review':3,
+            'L4_social_housing_context_coordination':4,
+          }
+          active=[x['id'] for x in p['levers']]
+          expected=sorted(active,key=lambda x:expected_order[x])
+          assert d['quality']['priority_count']==len(d['priorities'])==len(active)
+          assert d['quality']['orders_unique'] is True
+          assert d['quality']['all_priorities_traceable_to_3p'] is True
+          assert d['quality']['all_have_local_verification'] is True
+          assert d['quality']['global_score_included'] is False
+          assert d['quality']['effectiveness_ranking_included'] is False
+          assert [x['lever_id'] for x in d['priorities']]==expected
+          assert [x['order'] for x in d['priorities']]==[expected_order[x] for x in expected]
+          assert d['suppressed_levers']==p['suppressed_levers']
+          print(json.dumps({'quality':d['quality'],'priorities':d['priorities']},ensure_ascii=False,indent=2))
+          PY
+      - name: Publier 3Q
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostic-3q-priorities
+          path: output/diagnostic-3q-priorities.json

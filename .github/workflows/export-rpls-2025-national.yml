@@ -1,0 +1,74 @@
+name: Export RPLS 2025 national
+
+on:
+  push:
+    branches:
+      - vacants-rpls-d2
+    paths:
+      - 'scripts/export_rpls_2025_national.R'
+      - '.github/workflows/export-rpls-2025-national.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - name: Installer les dependances R minimales
+        run: |
+          install.packages(c("jsonlite","dplyr"))
+        shell: Rscript {0}
+
+      - name: Telecharger les sources publiques propre.rpls
+        run: |
+          url="https://gitlab-forge.din.developpement-durable.gouv.fr/api/v4/projects/28046/repository/archive.tar.gz?sha=HEAD"
+          rm -f propre-rpls.tar.gz
+          for attempt in 1 2 3 4 5; do
+            echo "Téléchargement RPLS — tentative $attempt/5"
+            if curl --fail --location --retry 3 --retry-all-errors --retry-delay 5 \
+              --connect-timeout 60 --speed-time 180 --speed-limit 1024 \
+              --continue-at - "$url" -o propre-rpls.tar.gz; then
+              break
+            fi
+            if [ "$attempt" = "5" ]; then
+              echo "Échec du téléchargement après 5 tentatives" >&2
+              exit 1
+            fi
+            sleep 10
+          done
+          mkdir -p vendor/propre-rpls
+          tar -xzf propre-rpls.tar.gz -C vendor/propre-rpls --strip-components=1
+
+      - name: Exporter le millesime 2025 communal
+        run: Rscript scripts/export_rpls_2025_national.R vendor/propre-rpls
+
+      - name: Publier le CSV et les controles
+        uses: actions/upload-artifact@v4
+        with:
+          name: rpls-2025-communes
+          path: |
+            output/rpls-2025-communes.csv
+            output/rpls-2025-checks.json
+
+      - name: Mettre a jour le snapshot versionne
+        run: |
+          mkdir -p data
+          cp output/rpls-2025-communes.csv data/rpls-2025-communes.csv
+          cp output/rpls-2025-checks.json data/rpls-2025-checks.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/rpls-2025-communes.csv data/rpls-2025-checks.json
+          if git diff --cached --quiet; then
+            echo "Snapshot RPLS inchange"
+          else
+            git commit -m "Update RPLS 2025 communal snapshot"
+            git push
+          fi

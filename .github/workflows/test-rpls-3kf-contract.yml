@@ -1,0 +1,47 @@
+name: Test RPLS 3K-F contract
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [vacants-rpls-d2]
+    paths:
+      - 'scripts/rpls_3kf_contract.py'
+      - 'data/rpls-2025-communes.csv'
+      - 'data/rpls-2025-checks.json'
+      - '.github/workflows/test-rpls-3kf-contract.yml'
+
+jobs:
+  contract:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Générer le contrat RPLS 3K-F
+        run: python scripts/rpls_3kf_contract.py
+      - name: Vérifier le contrat
+        run: |
+          test -s output/rpls-3kf-contract.json
+          python - <<'PY'
+          import json
+          d=json.load(open('output/rpls-3kf-contract.json',encoding='utf-8'))
+          assert d['territory']=='16015'
+          assert d['quality']['status']=='ok'
+          assert d['panel']['reference_n']==15
+          assert len(d['signals'])==4
+          assert abs(d['metrics']['vacance_sociale_pct']-1.70)<0.02
+          assert abs(d['metrics']['mobilite_pct']-9.61)<0.02
+          assert abs(d['metrics']['part_qpv_pct']-56.92)<0.02
+          assert abs(d['metrics']['part_age_40_plus_pct']-66.84)<0.02
+          assert abs(d['panel']['percentiles']['vacance_sociale_pct']-40.0)<0.01
+          assert abs(d['panel']['percentiles']['mobilite_pct']-86.6666666667)<0.01
+          assert abs(d['panel']['percentiles']['part_qpv_pct']-93.3333333333)<0.01
+          assert abs(d['panel']['percentiles']['part_age_40_plus_pct']-73.3333333333)<0.01
+          print(json.dumps({'metrics':d['metrics'],'percentiles':d['panel']['percentiles']},ensure_ascii=False,indent=2))
+          PY
+      - name: Publier le contrat 3K-F
+        uses: actions/upload-artifact@v4
+        with:
+          name: rpls-3kf-contract
+          path: output/rpls-3kf-contract.json

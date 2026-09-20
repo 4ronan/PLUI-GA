@@ -1,0 +1,44 @@
+name: Test diagnostic 3K-A readiness
+
+on:
+  push:
+    branches:
+      - vacants-rpls-d2
+    paths:
+      - 'scripts/diagnostic_3ka_readiness.py'
+      - 'scripts/filosofi_panel_contract_3icde.py'
+      - 'scripts/insee_3jc_contract.py'
+      - 'data/insee-rp2023-panel-3j.csv'
+      - 'data/insee-rp2023-panel-3j-meta.json'
+      - 'data/rpls-2025-communes.csv'
+      - 'data/rpls-2025-checks.json'
+      - '.github/workflows/test-diagnostic-3ka-readiness.yml'
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Auditer la préparation 3K-A
+        run: python scripts/diagnostic_3ka_readiness.py
+      - name: Vérifier le manifeste
+        run: |
+          test -s output/diagnostic-3ka-readiness.json
+          python - <<'PY'
+          import json
+          p='output/diagnostic-3ka-readiness.json'
+          d=json.load(open(p,encoding='utf-8'))
+          assert d['stage']=='3K-A'
+          assert d['validated_blocks_n']==7
+          assert d['reproducible_contracts_n']>=2
+          print(json.dumps(d,ensure_ascii=False,indent=2))
+          PY
+      - name: Publier le manifeste 3K-A
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostic-3ka-readiness
+          path: output/diagnostic-3ka-readiness.json

@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Diagnostic territorial de la vacance | Zonage Terrain</title>
+<meta name="description" content="Générez le diagnostic territorial de la vacance privée d’une commune et comparez-la automatiquement à 15 territoires de référence.">
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--ink:#172033;--muted:#667085;--line:#dfe7f1;--blue:#236fc1;--yellow:#ffcb4a;--green:#137a5a;--shadow:0 14px 40px rgba(26,49,84,.08)}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#eef5fc 0,#f7f9fc 300px,#f4f7fb 100%);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink)}
+.wrap{width:min(1220px,calc(100% - 32px));margin:auto}.top{padding:40px 0 26px}.brand{display:flex;align-items:center;gap:12px;font-weight:850}.logo{width:42px;height:42px;border-radius:13px;background:var(--blue);color:#fff;display:grid;place-items:center;font-weight:900;box-shadow:var(--shadow)}
+h1{font-size:clamp(32px,5vw,58px);line-height:1.02;letter-spacing:-.045em;margin:26px 0 14px;max-width:980px}.lead{max-width:920px;color:#475467;font-size:18px;line-height:1.62}.badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}.badge{font-size:12px;font-weight:800;border:1px solid #addfcd;background:#f1fbf7;color:#0d674a;border-radius:999px;padding:7px 10px}
+.search{background:#10233f;color:#fff;border-radius:22px;padding:22px;box-shadow:var(--shadow);margin:8px 0 26px}.searchgrid{display:grid;grid-template-columns:1.2fr .8fr auto;gap:12px;align-items:end}.field label{display:block;color:#c9d7e8;font-size:12px;font-weight:750;margin-bottom:7px}.field input,.field select{width:100%;height:46px;border:1px solid #3c5471;border-radius:12px;padding:0 13px;background:#fff;color:#172033;font:inherit}.btn{height:46px;border:0;border-radius:12px;padding:0 17px;font:inherit;font-weight:850;cursor:pointer}.btn:disabled{opacity:.65;cursor:wait}.primary{background:var(--yellow);color:#182253}.secondary{background:#254363;color:#fff;border:1px solid #46627f}.help{color:#c9d7e8;font-size:13px;line-height:1.5;margin-top:10px}.notice{display:none;margin-top:12px;padding:12px 14px;border-radius:12px;background:#fff7e6;color:#714a00;font-size:13px}.notice.show{display:block}.choice{margin:8px 8px 0 0;border:1px solid #d29b22;background:#fff;color:#4f3500;border-radius:9px;padding:8px 10px;font:inherit;font-size:12px;font-weight:750;cursor:pointer}[hidden]{display:none!important}
+.statusbar{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0}.status{background:#fff;border:1px solid var(--line);border-radius:12px;padding:9px 12px;font-size:12px;box-shadow:0 4px 16px rgba(28,55,90,.04)}.status b{color:var(--blue)}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px;margin-bottom:18px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow)}.s12{grid-column:span 12}.s8{grid-column:span 8}.s7{grid-column:span 7}.s6{grid-column:span 6}.s5{grid-column:span 5}.s4{grid-column:span 4}
+h2{font-size:20px;margin:0 0 4px;letter-spacing:-.02em}.sub{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:16px}.headline{font-size:22px;line-height:1.4;margin:0;font-weight:780}.pill{display:inline-flex;border-radius:999px;padding:5px 9px;font-size:11px;font-weight:850;background:#edf5ff;color:#1e5b9c}.pill.ok{background:#eaf8f2;color:#0a6a4a}.pill.warn{background:#fff4dc;color:#8a5100}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.kpi{border:1px solid var(--line);border-radius:15px;padding:15px;background:#fbfdff}.kpi .l{font-size:12px;color:var(--muted);min-height:32px}.kpi .v{font-size:25px;font-weight:880;letter-spacing:-.03em;margin:4px 0}.kpi .d{font-size:11px;color:#667085;line-height:1.4}
+.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:14px}table{border-collapse:collapse;width:100%;min-width:760px}th,td{padding:11px 12px;text-align:left;border-bottom:1px solid #e7edf5;font-size:12px;vertical-align:top}th{background:#f5f8fc;color:#455468;font-weight:800}tr:last-child td{border-bottom:0}.meter{height:7px;background:#e9eef5;border-radius:99px;overflow:hidden;margin-top:5px}.meter i{display:block;height:100%;background:var(--blue)}
+.empty{border:1px dashed #cbd8e6;background:#f8fbff;border-radius:14px;padding:18px;color:#5f6d80;font-size:14px}.priority{border-left:5px solid var(--yellow);padding-left:16px}.priority h3{margin:8px 0;font-size:17px}.priority p,.list li{font-size:13px;line-height:1.55;color:#4d5b70}.list{padding-left:19px}
+.panel{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.peer{border:1px solid var(--line);border-radius:13px;padding:12px;background:#fbfdff}.peer .n{font-weight:850}.peer .m{font-size:11px;color:var(--muted);line-height:1.45;margin-top:4px}.peer .r{font-size:11px;font-weight:800;color:var(--blue);margin-top:6px}
+.method,.checks{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.method div{border:1px solid var(--line);border-radius:13px;padding:13px;background:#fafcff}.method b{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#607087;margin-bottom:6px}.method span{font-size:13px;font-weight:750}.check{border:1px solid #b8dfd0;background:#f3fcf8;border-radius:13px;padding:12px;font-size:12px;color:#1b5d48}.check b{display:block;color:#0e7653;margin-bottom:4px}.raw pre{max-height:360px;overflow:auto;background:#0c1624;color:#cfe2f7;border-radius:12px;padding:14px;font-size:11px;white-space:pre-wrap}.footer{padding:26px 0 48px;color:#6b778a;font-size:12px;line-height:1.6}
+@media(max-width:900px){.searchgrid{grid-template-columns:1fr 1fr}.kpis{grid-template-columns:repeat(2,1fr)}.s8,.s7,.s6,.s5,.s4{grid-column:span 12}.panel,.method,.checks{grid-template-columns:1fr 1fr}}@media(max-width:560px){.wrap{width:min(100% - 20px,1220px)}.searchgrid,.kpis,.panel,.method,.checks{grid-template-columns:1fr}.card{padding:16px}h1{font-size:36px}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+<div class="brand"><div class="logo">ZT</div><div>Zonage Terrain · moteur vacance</div></div>
+<h1>Comprendre la vacance des logements dans votre commune</h1>
+<p class="lead">Saisissez une commune pour obtenir un diagnostic fondé sur LOVAC et six sources publiques complémentaires. Le territoire est comparé à 15 communes de profil voisin avant de proposer des facteurs à examiner, des priorités et des leviers d’action.</p>
+<div class="badges"><span class="badge">Données publiques récentes</span><span class="badge">15 communes comparables</span><span class="badge">Méthode transparente</span><span class="badge">Aucune causalité automatique</span></div>
+</div></header>
+
+<main class="wrap">
+<section class="search">
+<div class="searchgrid">
+<div class="field"><label>Commune, code postal ou code INSEE</label><input id="code" value="" maxlength="80" autocomplete="off" placeholder="Ex. Angoulême, 16000 ou 16015"></div>
+<div class="field"><label>Échelle de comparaison</label><select id="scale"><option value="department">Département</option><option value="region">Région</option><option value="france" selected>France</option></select></div>
+<button class="btn primary" id="load">Générer le diagnostic</button>
+</div>
+<div class="help">La première génération peut prendre quelques minutes. Une demande déjà calculée est normalement restituée beaucoup plus rapidement grâce au cache.</div>
+<div class="notice" id="notice"></div>
+</section>
+
+<div id="results" hidden>
+<div class="statusbar" id="status"></div>
+
+<div class="grid">
+<section class="card s12"><span class="pill ok" id="mode">Diagnostic généré</span><div class="sub" id="subtitle" style="margin-top:10px"></div><p class="headline" id="headline"></p></section>
+
+<section class="card s12"><h2>Indicateurs clés</h2><div class="sub">Les 8 KPI publiés par la page 3R. Les univers statistiques ne sont pas fusionnés.</div><div class="kpis" id="kpis"></div></section>
+
+<section class="card s8"><h2>Facteurs discriminants</h2><div class="sub">Qualification relative au panel, seulement si au moins 10 références sur 15 sont disponibles.</div><div class="tablewrap"><table><thead><tr><th>Facteur</th><th>Cible</th><th>Médiane</th><th>Percentile</th><th>Panel</th><th>Univers</th></tr></thead><tbody id="factors"></tbody></table></div></section>
+
+<section class="card s4"><h2>Hypothèses automatiques</h2><div class="sub">Aucune explication n’est forcée lorsque les règles ne sont pas réunies.</div><div id="hypotheses"></div></section>
+
+<section class="card s6"><h2>Priorité</h2><div class="sub">Ordre d’examen, jamais classement d’efficacité.</div><div id="priority"></div></section>
+<section class="card s6"><h2>Levier</h2><div class="sub">Levier activé par les garde-fous déterministes.</div><div id="lever"></div></section>
+
+<section class="card s12"><h2>Panel automatique 3V-D</h2><div class="sub">Population voisine d’abord, puis proximité DENS7, rôle AAV, taille AAV et distance structurelle. Les typologies servent uniquement à choisir les références.</div><div class="panel" id="panel"></div></section>
+
+<section class="card s7"><h2>Méthode et traçabilité</h2><div class="method" id="method"></div><p class="sub" style="margin-top:14px">Les percentiles sont conditionnels à la composition du panel. Un autre panel admissible peut modifier certains facteurs sans changer les valeurs brutes communales ni constituer une preuve causale.</p></section>
+
+<section class="card s5"><h2>Garanties méthodologiques</h2><div class="checks">
+<div class="check"><b>✓ 3T</b>Multi-territoires, petite/grande commune, littoral, Corse et outre-mer.</div>
+<div class="check"><b>✓ Cœur/contextuel</b>LOVAC bloque si absent ; contexte absent reste null.</div>
+<div class="check"><b>✓ 3V-D</b>15 comparables automatiques avec DENS7 et AAV.</div>
+<div class="check"><b>✓ 3V-E</b>Sensibilité au panel documentée et affichée.</div>
+<div class="check"><b>✓ 3U</b>Publication atomique, manifeste, sorties fraîches et cache.</div>
+<div class="check"><b>✓ 3W</b>Entrée utilisateur : territoire + échelle seulement.</div>
+</div></section>
+
+<section class="card s12"><h2>Sources et millésimes</h2><div class="sub">Chaque univers conserve son propre millésime. Aucun rapprochement temporel artificiel n’est utilisé pour fabriquer un indicateur synthétique.</div><div class="tablewrap"><table><thead><tr><th>Bloc</th><th>Source</th><th>Millésime</th><th>Qualité</th><th>Disponibilité</th></tr></thead><tbody id="sources"></tbody></table></div></section>
+
+<section class="card s12"><h2>Limites méthodologiques</h2><ul class="list" id="limits"></ul></section>
+<section class="card s12 raw"><details><summary><b>Voir les données structurées du diagnostic</b></summary><pre id="raw"></pre></details></section>
+</div>
+</div>
+</main>
+
+<footer class="footer"><div class="wrap"><b>Diagnostic territorial de la vacance · Zonage Terrain.</b><br>Cet outil d’aide à l’analyse ne remplace pas une étude locale. Le navigateur n’effectue aucune inférence métier : il affiche les sorties du moteur déterministe et leurs limites.</div></footer>
+
+<script>
+const SAMPLE={
+ diagnostic:{
+  territory:"16102",subtitle:"Cognac · code INSEE 16102",
+  headline:"la vacance privée n’est pas atypique dans le panel; le diagnostic met en évidence des contextes discriminants distincts à examiner sans causalité automatique",
+  quality:{status:"ok",kpi_count:8,discriminant_factor_count:6,hypothesis_count:0,priority_count:1,source_provenance_count:7},
+  source_provenance:{
+   vacancy_private:{source:"LOVAC open data - Ministère de la Transition écologique",period_label:"taux 2025 · volumes 2026",quality_status:"ok",availability_policy:"required_core"},
+   vacant_stock_profile:{source:"Insee RP2023 - DS_RP_TD_LOGEMENT_CARACT_PRINC",period_label:"2023",quality_status:"ok",availability_policy:"contextual"},
+   real_estate_market:{source:"DVF géolocalisées (Etalab / data.gouv.fr)",period_label:"fenêtre 2021–2025",quality_status:"ok",availability_policy:"contextual_partial_allowed"},
+   demography_housing:{source:"INSEE - Recensement de la population 2023, séries historiques",period_label:"évolution 2017–2023",quality_status:"ok",availability_policy:"contextual"},
+   socioeconomic_context:{source:"Filosofi 2021 - Insee",period_label:"2021",quality_status:"ok",availability_policy:"contextual_missing_values_allowed"},
+   construction:{source:"SDES - Sitadel, logements autorisés et commencés, séries annuelles non estimées",period_label:"autorisations 2025 · mises en chantier 2024",quality_status:"ok",availability_policy:"contextual_partial_allowed"},
+   social_housing:{source:"RPLS 2025 - SDES",period_label:"2025",quality_status:"ok",availability_policy:"contextual"}
+  },
+  kpis:[
+   ["Vacance privée 2025","10,05%","Panel médian 10,26% · percentile 46,7"],
+   ["Vacance > 2 ans 2025","5,39%","Panel médian 5,30% · percentile 53,3"],
+   ["Prix médian DVF 2025","1663 €/m²","Panel médian 1899 €/m² · percentile 40,0"],
+   ["Niveau de vie médian","21980 €","Panel médian 20480 € · percentile 93,3"],
+   ["Taux de pauvreté","18,0%","Panel médian 20,0% · percentile 20,0"],
+   ["Mises en chantier 2024","2,97 / 1 000 hab.","Panel médian 2,95 · percentile 53,3"],
+   ["Mobilité du parc social","7,98%","Panel médian 9,12% · percentile 26,7"],
+   ["Parc social en QPV","46,18%","Panel médian 42,60% · percentile 60,0"]
+  ],
+  factors:[
+   ["Niveau de vie médian",21980,20480,93.3,15,"population fiscale communale"],
+   ["Taux de pauvreté",18,20,20,15,"population fiscale communale"],
+   ["Vacance du parc social",4.22,2.05,86.7,15,"parc locatif social RPLS"],
+   ["Part du parc social âgé de 40 ans ou plus",82.49,68.93,80,15,"parc locatif social RPLS"],
+   ["Part des appartements parmi les logements vacants INSEE",48.69,null,0,15,"logements vacants au recensement"],
+   ["Part des logements vacants construits entre 1946 et 1990",44.52,null,20,15,"logements vacants au recensement"]
+  ],
+  hypotheses:[],
+  priority:{title:"Qualifier et localiser la vacance privée avant toute intervention ciblée",priority_class:"préalable",reason:"qualification nécessaire avant toute intervention ciblée sur la vacance privée",gate:"ne pas choisir un outil opérationnel tant que la localisation et la nature de la vacance durable ne sont pas suffisamment qualifiées",verify:["localisation infra-communale des logements vacants durables","statut et état apparent des logements ciblés lorsque disponible","ancienneté réelle de la vacance à l’échelle du logement lorsque disponible","existence d’opérations ou dispositifs déjà engagés sur les secteurs concernés"]},
+  lever:{title:"Qualifier et localiser la vacance privée avant toute intervention ciblée",family:"observation et qualification",objective:"Éviter de déduire d’un taux communal non atypique qu’une intervention générale est nécessaire; concentrer l’étape suivante sur la localisation et la qualification de la vacance durable.",actions:["suivre séparément vacance totale et vacance de plus de deux ans","localiser les concentrations infra-communales si une donnée compatible est disponible","vérifier les situations individuelles ou micro-territoriales avant de choisir un outil opérationnel"]},
+  limits:["Aucun taux de vacance 2026 n’est calculé faute de dénominateur 2026 compatible.","Le profil des logements vacants INSEE ne suffit pas à conclure à une surreprésentation sans référence compatible du parc occupé.","Les prix DVF décrivent les mutations observées et ne prouvent aucune cause de vacance.","Les indicateurs démographiques décrivent un contexte et n’expliquent pas à eux seuls la vacance privée.","Filosofi décrit le contexte socio-économique communal et non la situation des propriétaires de logements vacants.","Sitadel autorisations et mises en chantier ne doivent pas être confondues entre millésimes.","RPLS décrit le parc locatif social et ne doit pas être transposé à LOVAC."]
+ },
+ panel:{
+  algorithm:"3V-D-insee-typology-v2",requested_scale:"france",effective_scale:"france",
+  target:{name:"Cognac",code:"16102",density:"Centres urbains intermédiaires",aav:"commune-centre"},
+  peers:[
+   ["43157","Le Puy-en-Velay",100],["73011","Albertville",108],["14366","Lisieux",106],["17306","Royan",105],["71306","Montceau-les-Mines",92],
+   ["74081","Cluses",96],["40088","Dax",119],["50502","Saint-Lô",105],["51230","Épernay",120],["17299","Rochefort",127],
+   ["27375","Louviers",101],["35115","Fougères",110],["03190","Moulins",104],["70550","Vesoul",81],["80001","Abbeville",121]
+  ],
+  quality:{candidate_band0:394,selected_band0:15,population_priority:true,insee_typology:true}
+ },
+ cache:{hit:true,reason:"valid_cache"},
+ source:"Dernier diagnostic Cognac validé par 3W-B"
+};
+
+const $=q=>document.querySelector(q);
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt=n=>n==null?"—":new Intl.NumberFormat("fr-FR",{maximumFractionDigits:2}).format(n);
+
+function render(b,mode){
+ const d=b.diagnostic,p=b.panel;
+ $("#subtitle").textContent=d.subtitle; $("#headline").textContent=d.headline;
+ $("#mode").textContent="Diagnostic généré";
+ $("#mode").className="pill ok";
+ $("#status").innerHTML='<span class="status"><b>Panel</b> '+esc(p.algorithm)+'</span><span class="status"><b>Échelle</b> '+esc(p.requested_scale)+' → '+esc(p.effective_scale)+'</span><span class="status"><b>Références</b> '+p.peers.length+'</span><span class="status"><b>Qualité 3R</b> '+esc(d.quality.status)+'</span><span class="status"><b>Cache</b> '+(b.cache?.hit?"hit":"miss")+' · '+esc(b.cache?.reason||"n/a")+'</span>';
+ $("#kpis").innerHTML=d.kpis.map(x=>'<div class="kpi"><div class="l">'+esc(x[0])+'</div><div class="v">'+esc(x[1])+'</div><div class="d">'+esc(x[2])+'</div></div>').join("");
+ $("#factors").innerHTML=d.factors.map(x=>'<tr><td><b>'+esc(x[0])+'</b></td><td>'+fmt(x[1])+'</td><td>'+fmt(x[2])+'</td><td><b>'+fmt(x[3])+'</b><div class="meter"><i style="width:'+Math.max(0,Math.min(100,x[3]||0))+'%"></i></div></td><td>'+x[4]+' / min. 10</td><td>'+esc(x[5])+'</td></tr>').join("");
+ $("#hypotheses").innerHTML=d.hypotheses.length?d.hypotheses.map(h=>typeof h==="string"?'<div class="priority"><p>'+esc(h)+'</p></div>':'<div class="priority"><span class="pill warn">Confiance '+esc(h.confidence||"à examiner")+'</span><h3>'+esc(h.title||"Hypothèse")+'</h3><p>'+esc(h.statement||"")+'</p><p>'+esc(h.confidence_meaning||"")+'</p>'+(h.cautions?.length?'<b>Précautions</b><ul class="list">'+h.cautions.map(v=>'<li>'+esc(v)+'</li>').join("")+'</ul>':"")+'</div>').join(""):'<div class="empty"><b>Aucune hypothèse automatique déclenchée.</b><br>Le moteur ne force pas d’explication.</div>';
+ const priorities=d.priorities?.length?d.priorities:(d.priority?[d.priority]:[]);
+ $("#priority").innerHTML=priorities.length?priorities.map(x=>'<div class="priority"><span class="pill warn">'+esc(x.priority_class||"à examiner")+'</span><h3>'+esc(x.title)+'</h3><p>'+esc(x.reason||"")+'</p><p><b>Condition préalable :</b> '+esc(x.gate||x.decision_gate||"")+'</p><b>Données locales à vérifier</b><ul class="list">'+(x.verify||x.local_data_to_verify||[]).map(v=>'<li>'+esc(v)+'</li>').join("")+'</ul></div>').join(""):'<div class="empty">Aucune priorité supplémentaire déclenchée.</div>';
+ const levers=d.levers?.length?d.levers:(d.lever?[d.lever]:[]);
+ $("#lever").innerHTML=levers.length?levers.map(x=>'<div class="priority"><span class="pill ok">'+esc(x.family||"levier")+'</span><h3>'+esc(x.title)+'</h3><p>'+esc(x.objective||"")+'</p><b>Actions</b><ul class="list">'+(x.actions||[]).map(v=>'<li>'+esc(v)+'</li>').join("")+'</ul></div>').join(""):'<div class="empty">Aucun levier supplémentaire déclenché.</div>';
+ $("#panel").innerHTML=p.peers.map((x,i)=>'<div class="peer"><div class="n">'+(i+1)+' · '+esc(x[1])+'</div><div class="m">'+esc(x[0])+' · '+esc(x[3]||"Profil Insee disponible")+'<br>'+esc(x[4]||"Aire d’attraction renseignée")+'</div><div class="r">Population : '+x[2]+' % de la cible</div></div>').join("");
+ $("#method").innerHTML='<div><b>Commune cible</b><span>'+esc(p.target.name)+' · '+esc(p.target.code)+'</span></div><div><b>Profil Insee</b><span>'+esc(p.target.density)+' · '+esc(p.target.aav)+'</span></div><div><b>Panel</b><span>'+p.peers.length+' communes · cible exclue</span></div><div><b>Algorithme</b><span>'+esc(p.algorithm)+'</span></div><div><b>Échelle demandée</b><span>'+esc(p.requested_scale)+'</span></div><div><b>Priorité population</b><span>'+esc(p.quality.selected_band0??"—")+'/'+p.peers.length+' dans la bande 70–130 %</span></div>';
+ const sourceLabels={vacancy_private:"Vacance privée",vacant_stock_profile:"Profil du parc vacant",real_estate_market:"Marché immobilier",demography_housing:"Démographie / logement",socioeconomic_context:"Contexte socio-économique",construction:"Construction",social_housing:"Parc locatif social"};
+ $("#sources").innerHTML=Object.entries(d.source_provenance||{}).map(([key,x])=>'<tr><td><b>'+esc(sourceLabels[key]||key)+'</b></td><td>'+esc(x.source||"Indisponible")+'</td><td>'+esc(x.period_label||"Indisponible")+'</td><td><span class="pill '+(x.quality_status==="ok"?"green":"orange")+'">'+esc(x.quality_status||"Indisponible")+'</span></td><td>'+esc(x.availability_policy||"Indisponible")+'</td></tr>').join("");
+ $("#limits").innerHTML=d.limits.map(v=>'<li>'+esc(v)+'</li>').join("");
+ $("#raw").textContent=JSON.stringify(b,null,2);
+ $("#code").value=d.territory; $("#scale").value=p.requested_scale;
+ $("#results").hidden=false;
+}
+
+function normalizePublished(d,p,l,pr,m){
+ return {
+  diagnostic:{
+   territory:d.territory,subtitle:d.subtitle,headline:d.headline.interpretation,quality:d.quality,
+   kpis:d.kpis.map(x=>[x.label,x.value,x.detail]),
+   factors:d.discriminant_factors.map(x=>[x.label,x.value,x.panel_median,x.percentile,x.reference_panel_n,x.universe]),
+   hypotheses:d.hypotheses||[],
+   source_provenance:d.source_provenance||{},
+   priorities:pr.priorities||d.priorities||[],
+   levers:l.levers||[],
+   limits:d.limits||[]
+  },
+  panel:{
+   algorithm:p.algorithm,requested_scale:p.requested_scale,effective_scale:p.effective_scale,
+   target:{name:p.target.name,code:p.territory,density:p.target.density7_label||"—",aav:p.target.aav_name||("catégorie "+(p.target.aav_category||"—"))},
+   peers:(p.selected||[]).map(x=>[x.code,x.name,Math.round((x.population_ratio||0)*100),x.density7_label,x.aav_name||("catégorie "+(x.aav_category||"—"))]),
+   quality:{...p.quality,selected_band0:p.quality?.selected_population_band_counts?.["0"]??p.quality?.selected_band0}
+  },
+  cache:{hit:m.cache?.hit,reason:m.cache?.reason},source:"JSON publié"
+ };
+}
+
+const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+
+async function lookupCommunes(value){
+ const query=value.trim();
+ if(!query)throw new Error("Indiquez une commune, un code postal ou un code INSEE.");
+ if(/^[0-9A-Z]{5}$/i.test(query)){
+   try{
+     const exact=await fetch("https://geo.api.gouv.fr/communes/"+encodeURIComponent(query.toUpperCase())+"?fields=nom,code,codesPostaux,departement,region",{cache:"force-cache"});
+     if(exact.ok)return [await exact.json()];
+   }catch(e){}
+ }
+ const params=/^\d{5}$/.test(query)
+   ?"codePostal="+encodeURIComponent(query)
+   :"nom="+encodeURIComponent(query)+"&boost=population";
+ const response=await fetch("https://geo.api.gouv.fr/communes?"+params+"&fields=nom,code,codesPostaux,departement,region&limit=8",{cache:"force-cache"});
+ if(!response.ok)throw new Error("La recherche de commune est momentanément indisponible.");
+ const communes=await response.json();
+ if(!communes.length)throw new Error("Aucune commune trouvée pour cette recherche.");
+ return communes;
+}
+
+function communeLabel(commune){
+ const postal=(commune.codesPostaux||[])[0]||"";
+ const dep=commune.departement?.nom||"";
+ return commune.nom+" · "+postal+" · "+commune.code+(dep?" · "+dep:"");
+}
+
+async function pollJob(statusUrl,territory){
+ const started=Date.now();
+ while(Date.now()-started<GENERATION_CLIENT_TIMEOUT){
+   const response=await fetch(statusUrl,{cache:"no-store"});
+   const job=await response.json();
+   if(!response.ok)throw new Error(job?.error?.message||"Impossible de suivre la génération.");
+   if(job.status==="success"){
+     const b=job.result;
+     if(b.status!=="success"||b.diagnostic?.territory!==territory||b.panel?.territory!==territory)throw new Error("Le résultat publié ne correspond pas à la commune demandée.");
+     return b;
+   }
+   if(job.status==="failure")throw new Error(job?.error?.message||"La génération du diagnostic a échoué.");
+   const elapsed=Math.max(1,Math.round((Date.now()-started)/1000));
+   $("#notice").innerHTML='<b>Diagnostic en cours…</b> Le moteur collecte et contrôle les données publiques ('+elapsed+' s). Vous pouvez laisser cette page ouverte.';
+   await wait(2000);
+ }
+ throw new Error("La génération prend plus de temps que prévu. Réessayez dans quelques minutes : le calcul peut continuer en arrière-plan.");
+}
+
+const GENERATION_CLIENT_TIMEOUT=15*60*1000;
+
+async function startDiagnostic(code,scale,label){
+ const n=$("#notice"),btn=$("#load");
+ btn.disabled=true;btn.textContent="Diagnostic en cours…";
+ n.innerHTML='Préparation du diagnostic de <b>'+esc(label)+'</b>…';n.classList.add("show");
+ try{
+   const response=await fetch("/api/diagnostics",{
+     method:"POST",headers:{"Content-Type":"application/json"},
+     body:JSON.stringify({territory:code,scale})
+   });
+   const job=await response.json();
+   if(!response.ok)throw new Error(job?.error?.message||"Le service ne peut pas traiter la demande.");
+   const bundle=await pollJob(job.status_url,code);
+   render(normalizePublished(bundle.diagnostic,bundle.panel,bundle.levers,bundle.priorities,bundle.cache_manifest),"published");
+   n.innerHTML='<b>Diagnostic terminé.</b> Les résultats ci-dessous ont été contrôlés avant publication.';
+   n.classList.add("show");
+   document.querySelector("#results").scrollIntoView({behavior:"smooth",block:"start"});
+ }finally{
+   btn.disabled=false;btn.textContent="Générer le diagnostic";
+ }
+}
+
+async function loadPublished(){
+ const value=$("#code").value.trim(),scale=$("#scale").value,n=$("#notice");
+ n.classList.remove("show");
+ try{
+   const communes=await lookupCommunes(value);
+   if(communes.length>1&&!/^[0-9A-Z]{5}$/i.test(value)){
+     n.innerHTML='<b>Plusieurs communes correspondent.</b><br>'+communes.map(c=>'<button class="choice" data-code="'+esc(c.code)+'">'+esc(communeLabel(c))+'</button>').join("");
+     n.classList.add("show");
+     n.querySelectorAll(".choice").forEach(button=>button.addEventListener("click",()=>{
+       const commune=communes.find(c=>c.code===button.dataset.code);
+       $("#code").value=communeLabel(commune);
+       startDiagnostic(commune.code,scale,commune.nom).catch(showError);
+     }));
+     return;
+   }
+   const commune=communes[0];
+   await startDiagnostic(commune.code,scale,commune.nom);
+ }catch(error){showError(error)}
+}
+
+function showError(error){
+ const n=$("#notice");
+ n.textContent=error?.message||"Une erreur inattendue s’est produite.";
+ n.classList.add("show");
+ $("#load").disabled=false;$("#load").textContent="Générer le diagnostic";
+}
+
+$("#load").addEventListener("click",loadPublished);
+$("#code").addEventListener("keydown",event=>{if(event.key==="Enter")loadPublished()});
+</script>
+</body></html>

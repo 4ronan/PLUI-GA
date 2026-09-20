@@ -1,0 +1,107 @@
+name: Test diagnostic 3T multi-territory
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [vacants-rpls-d2]
+    paths:
+      - 'scripts/diagnostic_runtime.py'
+      - 'scripts/lovac_3kb_contract.py'
+      - 'scripts/insee_log1_3kc_contract.py'
+      - 'scripts/dvf_3kd_contract.py'
+      - 'scripts/sitadel_3ke_contract.py'
+      - 'scripts/rpls_3kf_contract.py'
+      - 'scripts/insee_3jc_contract.py'
+      - 'scripts/filosofi_panel_contract_3icde.py'
+      - 'scripts/diagnostic_3kg_assembly.py'
+      - 'scripts/diagnostic_3l_interpretation.py'
+      - 'scripts/diagnostic_3m_discriminants.py'
+      - 'scripts/diagnostic_3mp_missing_panels.py'
+      - 'scripts/diagnostic_3m2_discriminants_extended.py'
+      - 'scripts/diagnostic_3n_hypotheses.py'
+      - 'scripts/diagnostic_3o_synthesis.py'
+      - 'scripts/diagnostic_3p_levers.py'
+      - 'scripts/diagnostic_3q_prioritization.py'
+      - 'scripts/diagnostic_3r_page.py'
+      - 'scripts/diagnostic_3t_multiterritory_validate.py'
+      - '.github/workflows/test-diagnostic-3t-multiterritory.yml'
+
+jobs:
+  multiterritory:
+    name: "${{ matrix.name }} (${{ matrix.code }})"
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - code: '19031'
+            name: 'Brive-la-Gaillarde'
+          - code: '47001'
+            name: 'Agen'
+          - code: '24322'
+            name: 'Périgueux'
+          - code: '40192'
+            name: 'Mont-de-Marsan'
+          - code: '79191'
+            name: 'Niort'
+          - code: '33243'
+            name: 'Libourne'
+    env:
+      DIAG_TERRITORY: "${{ matrix.code }}"
+      DIAG_COMMUNE_NAME: "${{ matrix.name }}"
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Construire le panel de 15 communes
+        shell: bash
+        run: |
+          python - <<'PY' >> "$GITHUB_ENV"
+          import os
+          universe=[
+            '16015','16102','19031','47001','24322','40192','79191','86066',
+            '33243','17299','40088','24037','17415','17306','47323','47157'
+          ]
+          target=os.environ['DIAG_TERRITORY']
+          peers=[c for c in universe if c != target]
+          assert len(peers)==15
+          print('DIAG_PANEL_CODES='+','.join(peers))
+          PY
+
+      - name: Générer le diagnostic complet
+        run: |
+          set -euo pipefail
+          python scripts/lovac_3kb_contract.py
+          python scripts/insee_log1_3kc_contract.py
+          python scripts/dvf_3kd_contract.py
+          python scripts/sitadel_3ke_contract.py
+          python scripts/rpls_3kf_contract.py
+          python scripts/insee_3jc_contract.py
+          python scripts/filosofi_panel_contract_3icde.py
+          python scripts/diagnostic_3kg_assembly.py
+          python scripts/diagnostic_3l_interpretation.py
+          python scripts/diagnostic_3m_discriminants.py
+          python scripts/diagnostic_3mp_missing_panels.py
+          python scripts/diagnostic_3m2_discriminants_extended.py
+          python scripts/diagnostic_3n_hypotheses.py
+          python scripts/diagnostic_3o_synthesis.py
+          python scripts/diagnostic_3p_levers.py
+          python scripts/diagnostic_3q_prioritization.py
+          python scripts/diagnostic_3r_page.py
+
+      - name: Valider les invariants 3T
+        run: python scripts/diagnostic_3t_multiterritory_validate.py
+
+      - name: Publier la page et les sorties de diagnostic
+        uses: actions/upload-artifact@v4
+        with:
+          name: "diagnostic-3t-${{ matrix.code }}"
+          path: |
+            output/diagnostic-3r-page.json
+            output/diagnostic-3r-page.html
+            output/diagnostic-3o-synthesis.json
+            output/diagnostic-3p-levers.json
+            output/diagnostic-3q-priorities.json
