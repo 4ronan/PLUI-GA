@@ -67,21 +67,37 @@ jobs:
           assert d['quality']['causal_claims_included'] is False
           assert d['quality']['recommendations_included'] is False
           assert d['quality']['global_score_included'] is False
+          m2=json.load(open('output/diagnostic-3m2-discriminants.json',encoding='utf-8'))
+          factors={x['id']:x for x in m2['discriminant_factors']+m2['non_discriminant_comparators']}
+          def sufficient(*ids):
+              return all(factors[i].get('comparison_sufficient',True) for i in ids)
+          expected=set()
+          mi,pov,price=(factors[i] for i in ('median_income','poverty_rate','dvf_median_price_m2'))
+          if sufficient('median_income','poverty_rate','dvf_median_price_m2') and mi['direction'] in {'faible','tres_faible'} and pov['direction'] in {'eleve','tres_eleve'} and price['direction'] in {'faible','tres_faible'}:
+              expected.add('H1_socioeconomic_market_convergence')
+          aut,started=(factors[i] for i in ('sitadel_authorized_intensity','sitadel_started_intensity'))
+          if sufficient('sitadel_authorized_intensity','sitadel_started_intensity') and started['direction'] in {'faible','tres_faible'} and aut['percentile'] is not None and 25 < float(aut['percentile']) < 75:
+              expected.add('H2_construction_pipeline_gap')
+          mob,qpv,svac=(factors[i] for i in ('social_mobility','social_qpv_share','social_vacancy'))
+          if sufficient('social_mobility','social_qpv_share','social_vacancy') and mob['direction'] in {'eleve','tres_eleve'} and qpv['direction'] in {'eleve','tres_eleve'} and not svac['is_discriminant']:
+              expected.add('H3_social_housing_configuration')
           ids={x['id'] for x in d['hypotheses']}
-          assert ids=={
-              'H1_socioeconomic_market_convergence',
-              'H2_construction_pipeline_gap',
-              'H3_social_housing_configuration',
-          }
+          assert ids==expected
+
+          expected_guards=set()
+          priv,structural,apt,age=(factors[i] for i in ('private_vacancy_rate','private_structural_vacancy_rate','vacant_apartment_share','vacant_1946_1990_share'))
+          if sufficient('private_vacancy_rate','private_structural_vacancy_rate') and not priv['is_discriminant'] and not structural['is_discriminant']:
+              expected_guards.add('G1_no_relative_excess_private_vacancy')
+          if sufficient('vacant_apartment_share','vacant_1946_1990_share') and apt.get('percentile') is not None and age.get('percentile') is not None and not apt['is_discriminant'] and not age['is_discriminant']:
+              expected_guards.add('G2_no_atypical_vacant_profile')
           guards={x['id'] for x in d['guardrails']}
-          assert guards=={
-              'G1_no_relative_excess_private_vacancy',
-              'G2_no_atypical_vacant_profile',
-          }
-          conf={x['id']:x['confidence'] for x in d['hypotheses']}
-          assert conf['H1_socioeconomic_market_convergence']=='moyen'
-          assert conf['H2_construction_pipeline_gap']=='faible'
-          assert conf['H3_social_housing_configuration']=='faible'
+          assert guards==expected_guards
+
+          for h in d['hypotheses']:
+              domains={x['domain'] for x in (factors[i] for i in h['supporting_factor_ids'])}
+              expected_conf='eleve' if len(domains)>=3 else ('moyen' if len(domains)==2 else 'faible')
+              assert h['confidence']==expected_conf
+              assert all(factors[i].get('comparison_sufficient',True) for i in h['supporting_factor_ids'])
           print(json.dumps({'quality':d['quality'],'hypotheses':d['hypotheses'],'guardrails':d['guardrails']},ensure_ascii=False,indent=2))
           PY
 
