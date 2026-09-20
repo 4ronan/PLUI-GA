@@ -9,7 +9,7 @@ from pathlib import Path
 from diagnostic_runtime import target, comparison_scale
 from diagnostic_3vd_insee_zonings import load_insee_zonings
 
-API_BASE='https://geo.api.gouv.fr'
+API_BASE=os.getenv('DIAG_GEO_API_BASE','https://geo.api.gouv.fr').rstrip('/')
 FIELDS='nom,code,codeDepartement,codeRegion,population,surface'
 OUT=Path('output/diagnostic-3v-panel.json')
 PANEL_N=15
