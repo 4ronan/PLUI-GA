@@ -126,8 +126,8 @@ for code,value in ordered_map(population_row,missing_population_codes):
     pop2023[code]=value
 TIMINGS['population_fallback']=round(time.monotonic()-_t,3)
 
-# 1. LOVAC
-_t=time.monotonic() : même fichier national, même millésime et même dénominateur pour les 16 communes.
+# 1. LOVAC : même fichier national, même millésime et même dénominateur pour les 16 communes.
+_t=time.monotonic()
 lp=TMP/'lovac.csv'; curl(LOVAC_URL,lp); raw=lp.read_bytes()
 text=None
 for enc in ('utf-8-sig','cp1252','latin-1'):
