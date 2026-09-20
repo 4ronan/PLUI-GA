@@ -96,6 +96,60 @@ rpls = blocks['social_housing']
 if rpls.get('quality', {}).get('status') not in {'ok','partial'}:
     raise RuntimeError('RPLS: qualité non validée')
 
+source_provenance = {
+    'vacancy_private': {
+        'source': lovac.get('source'),
+        'period_label': 'taux 2025 · volumes 2026',
+        'reference_years': [2025, 2026],
+        'selected_year': lovac_metrics.get('latest_compatible_rate_year'),
+    },
+    'vacant_stock_profile': {
+        'source': log1.get('source'),
+        'period_label': '2023',
+        'reference_years': [log1.get('year')],
+        'selected_year': log1.get('year'),
+    },
+    'real_estate_market': {
+        'source': dvf.get('source'),
+        'period_label': 'fenêtre 2021–2025',
+        'reference_years': dvf.get('years'),
+        'selected_year': (dvf.get('selected_metrics') or {}).get('latest_year'),
+    },
+    'construction': {
+        'source': sitadel.get('source'),
+        'period_label': (
+            f"autorisations {(sitadel.get('selected_metrics') or {}).get('latest_authorized_year') or 'indisponible'} · "
+            f"mises en chantier {(sitadel.get('selected_metrics') or {}).get('latest_started_year') or 'indisponible'}"
+        ),
+        'reference_years': (sitadel.get('quality') or {}).get('years'),
+        'selected_year': None,
+    },
+    'social_housing': {
+        'source': rpls.get('source'),
+        'period_label': str(rpls.get('source_year') or 'indisponible'),
+        'reference_years': [rpls.get('source_year')] if rpls.get('source_year') is not None else [],
+        'selected_year': rpls.get('source_year'),
+    },
+    'demography_housing': {
+        'source': blocks['demography_housing'].get('source'),
+        'period_label': 'évolution 2017–2023',
+        'reference_years': blocks['demography_housing'].get('years'),
+        'selected_year': 2023,
+    },
+    'socioeconomic_context': {
+        'source': blocks['socioeconomic_context'].get('source'),
+        'period_label': '2021',
+        'reference_years': [2021],
+        'selected_year': 2021,
+    },
+}
+for name,meta in source_provenance.items():
+    block=blocks[name]
+    meta['quality_status']=(block.get('quality') or {}).get('status')
+    meta['availability_policy']=DATA_AVAILABILITY_POLICY[name]
+    meta['missing_semantics']=(block.get('quality') or {}).get('missing_semantics')
+    meta['role']=block.get('role')
+
 assembly = {
     'stage': '3K-G',
     'territory': TARGET,
@@ -113,6 +167,7 @@ assembly = {
         'social_housing',
     ],
     'data_availability_policy': DATA_AVAILABILITY_POLICY,
+    'source_provenance': source_provenance,
     'methodological_boundaries': {
         'lovac_role': 'source principale pour la vacance privée et la vacance durable >2 ans',
         'insee_log1_role': 'profil du parc vacant au recensement; univers distinct de LOVAC',
@@ -131,6 +186,7 @@ assembly = {
         'loaded_blocks': len(blocks),
         'all_same_territory': all(c['territory_ok'] for c in checks),
         'ready_for_interpretation_layer': len(blocks) == len(SOURCES),
+        'all_sources_have_provenance': set(source_provenance) == set(SOURCES),
         'status': 'ok',
     },
 }
